@@ -2,6 +2,8 @@
 
 All commands assume the repository root and that `AMBIT_DATA_ROOT` / `AMBIT_CKPT_ROOT` are set. Launchers read GPU lists from `CUDA_VISIBLE_DEVICES`; they do not pin a laboratory device map.
 
+Train in this order: FOA VAE (frozen afterwards) → generation DiT → generation AR → editing CLAP → editing DiT → editing AR. The root README has the copy-paste commands for each stage.
+
 ## FOA VAE
 
 ```bash

@@ -2,6 +2,8 @@
 
 AMBIT does not ship audio, latents, or indexes. Set `AMBIT_DATA_ROOT` to the directory that will hold them.
 
+Training targets are **ScenePlan-simulated FOA**, not raw downloads. Public corpora supply mono speech/music/sound assets (and extra FOA for the VAE). The construction pipeline is: download → index → caption → sample ScenePlan → pyroomacoustics render → write generation requests / edit pairs. The paper README in the repository root lists the corpora and splits.
+
 ## Public source download
 
 From the repository root:
