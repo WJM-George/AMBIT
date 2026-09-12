@@ -2,7 +2,7 @@
 
 **Executable Scene Plans for Native Ambisonic Generation and Editing**
 
-Official code for **AMBIT** (ICLR 2027 submission): a Transfusion-style system that *plans* a first-order Ambisonic (FOA) scene and then *renders* it.
+Official code for **AMBIT**: a Transfusion-style system that *plans* a first-order Ambisonic (FOA) scene and then *renders* it.
 
 Spatial audio is not only “what should I hear?”, it is also *when* each source is active and *where* it moves. AMBIT makes those decisions explicit. A language request or an edit instruction is turned into a **ScenePlan**. A deterministic compiler converts that plan into renderer conditions. A shared Transformer then synthesizes native four-channel FOA with rectified flow in a frozen FOA VAE latent space.
 
@@ -325,11 +325,9 @@ Tests that need a local codec or index skip if `$AMBIT_DATA_ROOT` is empty.
 ## Citation
 
 ```bibtex
-@inproceedings{ambit2027,
-  title     = {AMBIT: Executable Scene Plans for Native Ambisonic Generation and Editing},
-  author    = {Anonymous},
-  booktitle = {International Conference on Learning Representations},
-  year      = {2027}
+@misc{ambit,
+  title  = {AMBIT: Executable Scene Plans for Native Ambisonic Generation and Editing},
+  author = {Anonymous}
 }
 ```
 
