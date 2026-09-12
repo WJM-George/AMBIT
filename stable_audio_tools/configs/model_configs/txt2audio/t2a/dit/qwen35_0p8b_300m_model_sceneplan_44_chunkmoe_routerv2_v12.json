@@ -1,0 +1,19 @@
+{
+    "extends": "qwen35_0p8b_300m_model_sceneplan_44_chunkmoe_v12.json",
+    "_task": "P10-v12 MoE router-v2 pilot: collapse-resistant ScenePlan-aligned chunk delta-MoE.",
+    "_stage": "MoE-only ablation upcycled from canonical P10-v11 Dense DiT after the router-v1 step-500 diagnostic.",
+    "_note": "The Dense path and expert layout are unchanged. Router-v2 reduces early load-balance pressure, sharpens Top-2 probabilities, bounds the learned prior/evidence blend, and regularizes its raw conflict logit so maximum-entropy evidence-only routing cannot silently pass the pilot gate.",
+    "model": {
+        "diffusion": {
+            "config": {
+                "sceneplan_chunk_moe": {
+                    "load_balance_loss_weight": 0.001,
+                    "router_temperature": 0.7,
+                    "conflict_gate_min": 0.05,
+                    "conflict_gate_max": 0.95,
+                    "conflict_logit_l2_loss_weight": 0.0001
+                }
+            }
+        }
+    }
+}

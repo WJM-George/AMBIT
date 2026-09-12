@@ -1,0 +1,21 @@
+{
+    "_comment": "Stage-1 4ch VAE training on the CONSTRUCTED spatial dataset = 200k total: (a) 140k synthesized FOA from build_spatial_dataset.py (audio 80k + music 60k via pyroom; sources AudioCaps/AudioSet/MusicCaps/PicoAudio/VGGSound) + (b) 60k REAL Spatial LibriSpeech FOA used DIRECTLY (no downmix, no re-spatialization, no mixing -- it is the speech category). max_files=60000 is a deterministic SLS subsample (same 60k as the pre-encode config). No mrsdrama / mrsaudio / sphere360 / fsdkaggle.",
+    "dataset_type": "audio_dir_multichannel",
+    "random_crop": true,
+    "normalize": "joint_peak",
+    "peak": 0.9,
+    "drop_last": true,
+    "datasets": [
+        {
+            "id": "spatial_foa_construct",
+            "path": "/mnt/sdd/audio_dataset/spatial_foa/audio",
+            "format": "foa"
+        },
+        {
+            "id": "spatial_librispeech",
+            "path": "/mnt/sdb/audio_dataset/datasets/spatial_librispeech/ambisonics",
+            "format": "foa",
+            "max_files": 60255
+        }
+    ]
+}

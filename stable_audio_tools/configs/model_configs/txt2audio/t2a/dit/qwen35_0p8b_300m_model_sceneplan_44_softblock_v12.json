@@ -1,0 +1,19 @@
+{
+    "extends": "qwen35_0p8b_300m_model_sceneplan_44_upgrade_v12_base.json",
+    "_task": "P10-v12 Attention pilot: ScenePlan-guided global-local soft-block caption cross-attention.",
+    "_stage": "Attention-only ablation upcycled from canonical P10-v11 Dense DiT.",
+    "_note": "All caption tokens remain globally visible. Per-layer event and transcript score gates are bounded and initialized at exactly zero, so step-zero inference follows the P10-v11 Dense path.",
+    "model": {
+        "diffusion": {
+            "config": {
+                "sceneplan_soft_block_attention": {
+                    "enabled": true,
+                    "max_sources": 4,
+                    "max_bias": 4.0,
+                    "layer_start": 0,
+                    "layer_count": 15
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,1 @@
+from stable_audio_tools.models.synchformer.synchformer import Synchformer

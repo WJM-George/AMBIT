@@ -1,0 +1,5 @@
+Listen to the audio and write a natural English semantic description of the overall audible content in about 20–30 words.
+
+Mention the main audible source or sources, their actions, and useful timbre or musical style details.
+
+Output only the description.

@@ -1,0 +1,16 @@
+{
+    "extends": "qwen35_0p8b_300m_model_sceneplan_44_chunkmoe_routerv3_v12.json",
+    "_task": "P10-v12 MoE router-v4 pilot: target-entropy ScenePlan chunk routing.",
+    "_stage": "MoE-only ablation upcycled from canonical P10-v11 Dense DiT after router-v3 became effectively Top-1 by step 101.",
+    "_note": "Router-v4 replaces unbounded linear entropy minimization with a two-sided squared target at 0.9 nats. It penalizes both maximum-entropy averaging and near-hard Top-1 routing while load balance protects global expert coverage.",
+    "model": {
+        "diffusion": {
+            "config": {
+                "sceneplan_chunk_moe": {
+                    "router_entropy_loss_weight": 0.02,
+                    "router_entropy_target": 0.9
+                }
+            }
+        }
+    }
+}

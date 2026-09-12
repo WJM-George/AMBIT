@@ -1,0 +1,33 @@
+{
+  "_task": "Canonical P11-v6 train: all 1.6M frozen latest-P10 scenes expanded into balanced G/U/E rows.",
+  "dataset_type": "sceneplan_p11_single_turn",
+  "manifest_path": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/manifests/p11_train_4p8m_v6.sqlite",
+  "codec_path": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4",
+  "p10_semantic_caption_contract": "p10_semantic_caption_v2_only_20260830",
+  "p10_semantic_caption_compiler_version": 2,
+  "transcript_state_authority": "sceneplan.source.transcript",
+  "semantic_cache_path": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/semantic_cache/p11_train_clap_htsat_fused_v2.sqlite",
+  "semantic_dim": 512,
+  "semantic_encoder_revision": "365dea6ef167def6676140ed93bbc43f84dabb28",
+  "semantic_representation": "windowed_clap_pooler_output",
+  "semantic_window_sec": 5.0,
+  "semantic_hop_sec": 5.0,
+  "expected_num_samples": 4800000,
+  "index_num_samples": 1600000,
+  "latent_crop_length": 648,
+  "latent_downsampling_ratio": 1024,
+  "require_complete": true,
+  "shuffle": false,
+  "pin_memory": true,
+  "persistent_workers": true,
+  "prefetch_factor": 4,
+  "in_order": true,
+  "drop_last": true,
+  "datasets": [
+    {
+      "id": "sceneplan_v2_speech_expansion_noalign_15s_v1_train",
+      "path": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1/training_index/train.sqlite",
+      "weight": 1.0
+    }
+  ]
+}

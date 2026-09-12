@@ -1,0 +1,136 @@
+{
+    "_task": "(V)ideo + (T)ext -> 4ch Spatial Audio waveform. Video condition = offline VideoMAE-v2; text condition = frozen Qwen3.5-0.8B.",
+    "_stage": "Sphere360 VT2A baseline: DiT + rectified flow on ds1024/z64 4ch VAE latents. Reuses the T2A Qwen text encoder and adds VideoMAE-v2 motion tokens.",
+    "_note": "Use with a pre_encoded dataset whose per-latent JSON contains 'video_motion' and 'prompt'. 'video_motion' is loaded from 'videomae_feats_path' by a custom_metadata_module.",
+    "model_type": "diffusion_cond",
+    "sample_size": 442368,
+    "sample_rate": 44100,
+    "audio_channels": 4,
+    "model": {
+        "pretransform": {
+            "type": "autoencoder",
+            "iterate_batch": true,
+            "config": {
+                "encoder": {
+                    "type": "oobleck",
+                    "config": {
+                        "in_channels": 4,
+                        "channels": 128,
+                        "c_mults": [1, 2, 4, 8, 16],
+                        "strides": [2, 2, 4, 8, 8],
+                        "latent_dim": 128,
+                        "use_snake": true
+                    }
+                },
+                "decoder": {
+                    "type": "oobleck",
+                    "config": {
+                        "out_channels": 4,
+                        "channels": 128,
+                        "c_mults": [1, 2, 4, 8, 16],
+                        "strides": [2, 2, 4, 8, 8],
+                        "latent_dim": 64,
+                        "use_snake": true,
+                        "final_tanh": false
+                    }
+                },
+                "bottleneck": { "type": "vae" },
+                "latent_dim": 64,
+                "downsampling_ratio": 1024,
+                "io_channels": 4
+            }
+        },
+        "conditioning": {
+            "cond_dim": 768,
+            "configs": [
+                {
+                    "id": "video_motion",
+                    "type": "videomae_v2",
+                    "config": {
+                        "feat_dim": 768,
+                        "max_tokens": 64
+                    }
+                },
+                {
+                    "id": "prompt",
+                    "type": "qwen_text",
+                    "config": {
+                        "model_path": "/mnt/sdc/ckpts/Qwen/Qwen3.5-0.8B",
+                        "max_length": 128,
+                        "enable_grad": false,
+                        "project_out": false,
+                        "padding_mode": "zero"
+                    }
+                },
+                {
+                    "id": "spatial_format",
+                    "type": "spatial_format",
+                    "config": { "output_dim": 768 }
+                },
+                {
+                    "id": "seconds_start",
+                    "type": "number",
+                    "config": { "min_val": 0, "max_val": 512 }
+                },
+                {
+                    "id": "seconds_total",
+                    "type": "number",
+                    "config": { "min_val": 0, "max_val": 512 }
+                }
+            ]
+        },
+        "diffusion": {
+            "diffusion_objective": "rectified_flow",
+            "cross_attention_cond_ids": ["video_motion", "prompt", "spatial_format"],
+            "global_cond_ids": ["seconds_start", "seconds_total"],
+            "type": "dit",
+            "config": {
+                "io_channels": 64,
+                "embed_dim": 1536,
+                "depth": 24,
+                "num_heads": 24,
+                "cond_token_dim": 768,
+                "global_cond_dim": 1536,
+                "project_cond_tokens": false,
+                "transformer_type": "continuous_transformer"
+            }
+        },
+        "io_channels": 64
+    },
+    "training": {
+        "use_ema": true,
+        "log_loss_info": false,
+        "cfg_dropout_prob": 0.1,
+        "pre_encoded": true,
+        "optimizer_configs": {
+            "diffusion": {
+                "optimizer": {
+                    "type": "AdamW",
+                    "config": {
+                        "lr": 5e-5,
+                        "betas": [0.9, 0.999],
+                        "weight_decay": 1e-3
+                    }
+                },
+                "scheduler": {
+                    "type": "InverseLR",
+                    "config": {
+                        "inv_gamma": 1000000,
+                        "power": 0.5,
+                        "warmup": 0.99
+                    }
+                }
+            }
+        },
+        "demo": {
+            "demo_every": 20000,
+            "demo_steps": 250,
+            "num_demos": 2,
+            "demo_cond": [
+                {"video_motion": null, "prompt": "ambient sound in a 360 degree outdoor scene", "spatial_format": "foa", "seconds_start": 0, "seconds_total": 10},
+                {"video_motion": null, "prompt": "movement and environmental sound in an immersive video", "spatial_format": "foa", "seconds_start": 0, "seconds_total": 10}
+            ],
+            "demo_cfg_scales": [3, 6]
+        }
+    }
+}

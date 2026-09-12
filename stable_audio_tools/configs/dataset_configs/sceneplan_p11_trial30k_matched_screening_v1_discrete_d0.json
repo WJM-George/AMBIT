@@ -1,0 +1,5 @@
+{
+  "extends": "sceneplan_p11_trial30k_matched_screening_v1.json",
+  "_task": "D0 control for canonical P11-v4 10k-scene screening: autoregressive full ScenePlan/Atomic Patch with evaluator-owned fair lexical assembly.",
+  "p11_contract": "discrete_d0_v1"
+}

@@ -1,0 +1,31 @@
+{
+    "extends": "qwen35_0p8b_300m_model_sceneplan_44.json",
+    "_task": "Production P10 ScenePlan 4+4 DiT trained from scratch with the Stable Audio Open optimization recipe selected by the 8-GPU controlled ablation.",
+    "_stage": "P10 production candidate. The 256-channel four-event/four-trajectory architecture and independent 15% semantic/structured CFG are unchanged; only the timestep and optimizer recipe differ from r10.",
+    "_note": "A same-seed 2x2 scratch comparison at 2,000 steps rejected compact 64-channel structured controls and selected the 256-channel arm using truncated-logit-normal timesteps, AdamW 2e-4 with betas 0.9/0.95 and weight decay 0.01, plus InverseLR warmup 0.995.",
+    "training": {
+        "timestep_sampler": "trunc_logit_normal",
+        "optimizer_configs": {
+            "diffusion": {
+                "optimizer": {
+                    "type": "AdamW",
+                    "config": {
+                        "lr": 0.0002,
+                        "betas": [0.9, 0.95],
+                        "eps": 1e-8,
+                        "weight_decay": 0.01,
+                        "fused": true
+                    }
+                },
+                "scheduler": {
+                    "type": "InverseLR",
+                    "config": {
+                        "inv_gamma": 1000000,
+                        "power": 0.5,
+                        "warmup": 0.995
+                    }
+                }
+            }
+        }
+    }
+}

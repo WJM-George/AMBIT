@@ -1,0 +1,7 @@
+{
+    "extends": "qwen35_0p8b_300m_model_sceneplan_44_soundexp_noalign.json",
+    "_task": "Production P10 ScenePlan 4+4 DiT with a variable 432/648-frame, 15.0476-second no-align envelope.",
+    "_stage": "From-scratch candidate for the 1.624M speech-expansion revision.",
+    "_note": "The frozen FOA VAE is convolutional and was shape-probed at 432, 648, and 864 frames. This revision deliberately stops at 648. Formal speech uses exact transcript cross-attention plus ScenePlan onset/offset 4+4 control; no word timestamp sidecar, forced-aligner teacher, frame-text alignment module, or duration teacher is loaded.",
+    "sample_size": 663552
+}

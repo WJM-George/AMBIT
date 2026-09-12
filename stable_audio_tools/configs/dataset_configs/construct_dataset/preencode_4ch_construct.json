@@ -1,0 +1,23 @@
+{
+    "_comment": "Pre-encode the CONSTRUCTED dataset to 4ch VAE latents (run pre_encode_4ch.py with the unwrapped Stage-1 VAE). Two sources: (a) synthesized FOA with captions from refine_caption.py ({id, foa_path, caption}); (b) 60k REAL Spatial LibriSpeech FOA used directly, with its original real-geometry prompts (sls_prompts.jsonl). max_files=60000 matches the VAE config (same deterministic SLS subset). NOTE: refine_caption.py auto-merges its multi-GPU shards (captions.gpuN.jsonl) into captions.jsonl on completion; only if a run was interrupted, merge by hand with: cat captions.gpu*.jsonl >> captions.jsonl",
+    "dataset_type": "audio_dir_multichannel",
+    "random_crop": false,
+    "normalize": "joint_peak",
+    "peak": 0.9,
+    "drop_last": false,
+    "datasets": [
+        {
+            "id": "spatial_foa_construct",
+            "path": "/mnt/sdd/audio_dataset/spatial_foa/audio",
+            "format": "foa",
+            "captions": "/mnt/sdd/audio_dataset/spatial_foa/captions.jsonl"
+        },
+        {
+            "id": "spatial_librispeech",
+            "path": "/mnt/sdb/audio_dataset/datasets/spatial_librispeech/ambisonics",
+            "format": "foa",
+            "max_files": 60255,
+            "captions": "/mnt/sdb/audio_dataset/datasets/spatial_librispeech/sls_prompts.jsonl"
+        }
+    ]
+}

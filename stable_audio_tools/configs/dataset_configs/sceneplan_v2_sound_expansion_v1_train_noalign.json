@@ -1,0 +1,24 @@
+{
+    "_task": "Frozen ScenePlan-v2 Sound-expansion train split without any external speech timing teacher.",
+    "caption_max_tokens": 512,
+    "dataset_type": "sceneplan_v2_preencoded",
+    "datasets": [
+        {
+            "id": "sceneplan_v2_sound_expansion_v1_train_noalign",
+            "path": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/sound_expansion_v1/training_index/train.sqlite",
+            "weight": 1.0
+        }
+    ],
+    "drop_last": true,
+    "expected_num_samples": 1100000,
+    "in_order": true,
+    "latent_crop_length": 432,
+    "latent_downsampling_ratio": 1024,
+    "max_item_retries": 0,
+    "max_length_sec": 10.031020408163267,
+    "persistent_workers": true,
+    "pin_memory": true,
+    "prefetch_factor": 2,
+    "random_crop": false,
+    "require_complete": true
+}

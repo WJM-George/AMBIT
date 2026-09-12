@@ -1,0 +1,43 @@
+{
+    "_task": "Ten fixed single-source ScenePlans from sound_expansion_v1 for a no-forced-alignment 4+4 scratch sanity check.",
+    "dataset_type": "sceneplan_v2_preencoded",
+    "random_crop": false,
+    "latent_crop_length": 432,
+    "latent_downsampling_ratio": 1024,
+    "caption_max_tokens": 512,
+    "max_length_sec": 10.031020408163266,
+    "expected_num_samples": 10,
+    "index_num_samples": 1100000,
+    "sample_ordinals": [
+        500003,
+        500005,
+        500019,
+        500002,
+        500010,
+        500014,
+        0,
+        8,
+        1000,
+        9
+    ],
+    "sample_contract": {
+        "music": 3,
+        "new_sound_replacements": 3,
+        "speech": 4,
+        "single_source_only": true
+    },
+    "require_complete": true,
+    "max_item_retries": 0,
+    "pin_memory": true,
+    "persistent_workers": true,
+    "prefetch_factor": 2,
+    "in_order": true,
+    "drop_last": false,
+    "datasets": [
+        {
+            "id": "sceneplan_44_sound_expansion_v1_noalign_overfit10",
+            "path": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/sound_expansion_v1/training_index/train.sqlite",
+            "weight": 1.0
+        }
+    ]
+}

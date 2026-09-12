@@ -1,0 +1,2420 @@
+#!/usr/bin/env python3
+"""Select a full Editing-DiT EMA checkpoint on frozen 20K validation.
+
+This is the promotion boundary between the standalone Editing DiT and the
+shared-block Editing AR/RF stage.  It deliberately evaluates the exact weights
+that joint training will consume (DiT EMA plus conditioner EMA), rather than
+the online weights used by Lightning's built-in validation loop.
+
+The model-facing route is fixed to::
+
+    [noisy target:64 || complete new ScenePlan:256 || clean source:64]
+        -> edited-target RF velocity
+
+No old/source ScenePlan is exposed to the model.  Candidates are ranked on a
+deterministic stratified 10K selection fold.  Exactly the top candidate is
+then tested once on a disjoint sealed 10K holdout with paired clean-vs-zero,
+clean-vs-shuffled-source, and selected-vs-P10 confidence gates before it can be
+handed to Editing AR.
+"""
+
+from __future__ import annotations
+
+import argparse
+import gc
+import hashlib
+import json
+import math
+import os
+from pathlib import Path
+import re
+import sqlite3
+from statistics import NormalDist
+import sys
+from typing import Any, Callable, Iterable, Mapping, Sequence
+
+import torch
+from torch import distributed as dist
+from torch.utils.data import DataLoader
+
+
+REPO_ROOT = Path(__file__).resolve().parents[3]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from stable_audio_tools.configuration import load_config  # noqa: E402
+from stable_audio_tools.data.sceneplan_bucket_sampler import (  # noqa: E402
+    sceneplan_bucket_collation,
+)
+from stable_audio_tools.data.sceneplan_transfusion_editing_dataset import (  # noqa: E402
+    ScenePlanTransfusionEditingDataset,
+    verify_editing_source_latent_shards,
+    verify_editing_target_latent_shards,
+)
+from stable_audio_tools.data.sceneplan_transfusion_editing_index import (  # noqa: E402
+    sha256_file,
+)
+from stable_audio_tools.models.factory import create_model_from_config  # noqa: E402
+from stable_audio_tools.models.sceneplan_transfusion_editing_provenance import (  # noqa: E402
+    verify_frozen_qwen_runtime,
+)
+from stable_audio_tools.training.factory import (  # noqa: E402
+    create_training_wrapper_from_config,
+)
+from scripts.t2a.train.sceneplan_transfusion_editing_dit_run_contract import (  # noqa: E402
+    CONTRACT_NAME as TRAIN_CONTRACT_NAME,
+    validate_checkpoint_lineage,
+    validate_contract as validate_training_run_contract,
+)
+from scripts.t2a.train.prepare_sceneplan_transfusion_editing_full import (  # noqa: E402
+    CURRENT_SHARED_CONTRACT,
+    INDEX_BUILD_SHARED_CONTRACT_SHA256,
+)
+
+
+SCHEMA = "sceneplan_transfusion_editing_dit_checkpoint_selection"
+SCHEMA_VERSION = 1
+SELECTION_CONTRACT = (
+    "full_20k_10k_select_10k_holdout_ema_rf_paired_source_and_p10_gate_5k_v4"
+)
+VISIBLE_GPUS = "3,4,5,6,7"
+PHYSICAL_GPUS = [3, 4, 5, 6, 7]
+WORLD_SIZE = 5
+EXPECTED_ROWS = 20_000
+EXPECTED_SHORT_ROWS = 15_000
+EXPECTED_LONG_ROWS = 5_000
+EXPECTED_MAX_STEP = 30_000
+EXPECTED_CHECKPOINT_EVERY = 5_000
+EXPECTED_CANDIDATE_STEPS = tuple(
+    range(EXPECTED_CHECKPOINT_EVERY, EXPECTED_MAX_STEP + 1, EXPECTED_CHECKPOINT_EVERY)
+)
+CHECKPOINT_RETENTION = "all_6_named_candidates_plus_last_copy"
+EXPECTED_OPERATIONS = (
+    "event_addition",
+    "event_removal",
+    "linear_to_static",
+    "static_to_linear",
+    "stationary_spatial_relocation",
+)
+DEFAULT_TIMESTEPS = (0.1, 0.3, 0.5, 0.7, 0.9, 1.0)
+CONFIDENCE = 0.99
+CANONICAL_P10 = Path(
+    "/mnt/sdc/ckpts/dit/"
+    "sceneplan_dit_v11_semantic_v2_protected_resume_150k/"
+    "checkpoints/epoch=48-step=150000.ckpt"
+)
+CANONICAL_P10_SHA256 = (
+    "be8c90cd1434bd71f73951531175c3674ff0f3173d5db591e2e1c476152ff59e"
+)
+DEFAULT_ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1")
+DEFAULT_RUN = Path(
+    "/mnt/sdb/model_archives/transfusion_editing/mainline/"
+    "sceneplan_transfusion_editing_dit_full_seed42_v1"
+)
+DEFAULT_MODEL_CONFIG = REPO_ROOT / (
+    "stable_audio_tools/configs/model_configs/txt2audio/t2a/dit/"
+    "qwen35_0p8b_300m_sceneplan_transfusion_editing_dit_full_v1.json"
+)
+FORBIDDEN_OLD_PLAN_KEYS = {
+    "old_sceneplan",
+    "old_plan",
+    "source_sceneplan",
+    "source_plan",
+    "previous_sceneplan",
+    "previous_plan",
+}
+AUDITED_SOURCE_PATHS = (
+    "pyproject.toml",
+    "uv.lock",
+    "train.py",
+    "scripts/t2a/eval/select_sceneplan_transfusion_editing_dit_checkpoint.py",
+    "scripts/t2a/eval/run_sceneplan_transfusion_editing_dit_checkpoint_selection_5gpu.sh",
+    "scripts/t2a/train/prepare_sceneplan_transfusion_editing_full.py",
+    "scripts/t2a/train/run_sceneplan_transfusion_editing_full_chain_5gpu.sh",
+    "scripts/t2a/train/run_sceneplan_transfusion_editing_dit_full_5gpu.sh",
+    "scripts/t2a/train/run_t2a_common_8gpu.sh",
+    "scripts/t2a/train/sceneplan_transfusion_editing_dit_run_contract.py",
+    "stable_audio_tools/configuration.py",
+    "stable_audio_tools/data/dataset.py",
+    "stable_audio_tools/data/model_sceneplan.py",
+    "stable_audio_tools/data/resumable_dataloader.py",
+    "stable_audio_tools/data/sceneplan_bucket_sampler.py",
+    "stable_audio_tools/data/sceneplan_transfusion_editing.py",
+    "stable_audio_tools/data/sceneplan_transfusion_editing_dataset.py",
+    "stable_audio_tools/data/sceneplan_transfusion_editing_index.py",
+    "stable_audio_tools/data/text_conditioning.py",
+    "stable_audio_tools/inference/generation.py",
+    "stable_audio_tools/inference/sampling.py",
+    "stable_audio_tools/models/blocks.py",
+    "stable_audio_tools/models/conditioners.py",
+    "stable_audio_tools/models/diffusion.py",
+    "stable_audio_tools/models/dit.py",
+    "stable_audio_tools/models/factory.py",
+    "stable_audio_tools/models/pretransforms.py",
+    "stable_audio_tools/models/sceneplan_transfusion_editing_provenance.py",
+    "stable_audio_tools/models/transformer.py",
+    "stable_audio_tools/models/utils.py",
+    "stable_audio_tools/training/diffusion.py",
+    "stable_audio_tools/training/distributed.py",
+    "stable_audio_tools/training/ema.py",
+    "stable_audio_tools/training/factory.py",
+    "stable_audio_tools/training/utils.py",
+)
+
+
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--run-dir", type=Path, default=DEFAULT_RUN)
+    parser.add_argument("--data-root", type=Path, default=DEFAULT_ROOT)
+    parser.add_argument("--preflight", type=Path)
+    parser.add_argument("--model-config", type=Path, default=DEFAULT_MODEL_CONFIG)
+    parser.add_argument("--validation-index", type=Path)
+    parser.add_argument("--validation-index-sha256")
+    parser.add_argument("--p10-checkpoint", type=Path, default=CANONICAL_P10)
+    parser.add_argument("--expected-max-step", type=int, default=EXPECTED_MAX_STEP)
+    parser.add_argument(
+        "--checkpoint-every", type=int, default=EXPECTED_CHECKPOINT_EVERY
+    )
+    parser.add_argument("--short-batch-size", type=int, default=72)
+    parser.add_argument("--long-batch-size", type=int, default=48)
+    parser.add_argument("--num-workers", type=int, default=8)
+    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument(
+        "--timesteps", type=float, nargs="+", default=list(DEFAULT_TIMESTEPS)
+    )
+    parser.add_argument("--output", type=Path)
+    return parser.parse_args()
+
+
+def _atomic_json(path: Path, value: Any) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(path.name + f".tmp.{os.getpid()}")
+    temporary.write_text(
+        json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    os.replace(temporary, path)
+
+
+def _canonical_sha256(value: Any) -> str:
+    payload = json.dumps(
+        value, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
+
+
+def _ordinal_sha256(values: Sequence[int]) -> str:
+    return hashlib.sha256(
+        "".join(f"{int(value)}\n" for value in values).encode("ascii")
+    ).hexdigest()
+
+
+def _source_sha256() -> dict[str, str]:
+    return {
+        relative: sha256_file((REPO_ROOT / relative).resolve(strict=True))
+        for relative in AUDITED_SOURCE_PATHS
+    }
+
+
+def _distributed() -> tuple[int, int, torch.device]:
+    if os.environ.get("CUDA_DEVICE_ORDER") != "PCI_BUS_ID":
+        raise RuntimeError("Editing DiT selection requires CUDA_DEVICE_ORDER=PCI_BUS_ID")
+    visible = os.environ.get("CUDA_VISIBLE_DEVICES", "").replace(" ", "")
+    if visible != VISIBLE_GPUS:
+        raise RuntimeError(
+            f"Editing DiT selection may expose only physical GPUs {VISIBLE_GPUS}"
+        )
+    rank = int(os.environ.get("RANK", "0"))
+    local_rank = int(os.environ.get("LOCAL_RANK", "0"))
+    world_size = int(os.environ.get("WORLD_SIZE", "1"))
+    if (
+        world_size != WORLD_SIZE
+        or not 0 <= rank < WORLD_SIZE
+        or local_rank != rank
+        or torch.cuda.device_count() != WORLD_SIZE
+    ):
+        raise RuntimeError("Editing DiT selection requires exactly five local ranks")
+    torch.cuda.set_device(local_rank)
+    device = torch.device("cuda", local_rank)
+    dist.init_process_group("nccl", device_id=device)
+    return rank, local_rank, device
+
+
+def _gpu_topology() -> dict[str, Any]:
+    """Prove that nvidia-smi physical indices match PCI-ordered CUDA indices."""
+
+    import subprocess
+
+    raw = subprocess.check_output(
+        [
+            "nvidia-smi",
+            "--query-gpu=index,pci.bus_id,uuid,name",
+            "--format=csv,noheader,nounits",
+        ],
+        text=True,
+    )
+    rows = []
+    for line in raw.splitlines():
+        fields = [value.strip() for value in line.split(",", 3)]
+        if len(fields) != 4:
+            raise RuntimeError("could not parse nvidia-smi topology")
+        rows.append(
+            {
+                "index": int(fields[0]),
+                "pci_bus_id": fields[1].upper(),
+                "uuid": fields[2],
+                "name": fields[3],
+            }
+        )
+    if (
+        [row["index"] for row in rows] != list(range(len(rows)))
+        or [row["pci_bus_id"] for row in rows]
+        != sorted(row["pci_bus_id"] for row in rows)
+        or len(rows) < max(PHYSICAL_GPUS) + 1
+    ):
+        raise RuntimeError(
+            "nvidia-smi indices do not match CUDA PCI_BUS_ID ordering"
+        )
+    selected = [rows[index] for index in PHYSICAL_GPUS]
+    if len({row["uuid"] for row in selected}) != WORLD_SIZE:
+        raise RuntimeError("Editing GPU 3-7 topology is not one-to-one")
+    return {
+        "cuda_device_order": "PCI_BUS_ID",
+        "physical_indices": PHYSICAL_GPUS,
+        "devices": selected,
+        "mapping": [
+            {
+                "local_rank": local_rank,
+                "physical_index": physical_index,
+                "pci_bus_id": rows[physical_index]["pci_bus_id"],
+                "uuid": rows[physical_index]["uuid"],
+            }
+            for local_rank, physical_index in enumerate(PHYSICAL_GPUS)
+        ],
+    }
+
+
+def _broadcast(value: Any, *, rank: int, device: torch.device) -> Any:
+    values = [value if rank == 0 else None]
+    dist.broadcast_object_list(values, src=0, device=device)
+    return values[0]
+
+
+def _rank0_audit(
+    function: Callable[[], Any], *, rank: int, device: torch.device
+) -> Any:
+    """Run expensive filesystem identity work once and fail all ranks alike."""
+
+    envelope: list[dict[str, Any] | None] = [None]
+    if rank == 0:
+        try:
+            envelope[0] = {"value": function()}
+        except Exception as exc:  # noqa: BLE001
+            envelope[0] = {"error": f"{type(exc).__name__}: {exc}"}
+    dist.broadcast_object_list(envelope, src=0, device=device)
+    if envelope[0] is None or envelope[0].get("error"):
+        detail = None if envelope[0] is None else envelope[0].get("error")
+        raise RuntimeError(f"rank-0 Editing identity audit failed: {detail}")
+    return envelope[0]["value"]
+
+
+def _all_reduce(values: Sequence[float], device: torch.device) -> list[float]:
+    tensor = torch.tensor(list(values), dtype=torch.float64, device=device)
+    dist.all_reduce(tensor, op=dist.ReduceOp.SUM)
+    return tensor.cpu().tolist()
+
+
+def _latent_audit_complete(
+    value: Mapping[str, Any], *, role: str, expected_rows: int
+) -> bool:
+    if role not in {"source", "target"}:
+        return False
+    digest = str(value.get(f"{role}_latent_shard_inventory_sha256") or "")
+    return bool(
+        value.get(f"{role}_latent_shards_exhaustively_verified") is True
+        and int(value.get(f"{role}_pair_rows", -1)) == int(expected_rows)
+        and int(value.get(f"{role}_latent_shards", -1)) > 0
+        and re.fullmatch(r"[0-9a-f]{64}", digest) is not None
+    )
+
+
+def _source_latent_audit_complete(
+    value: Mapping[str, Any], *, expected_rows: int
+) -> bool:
+    return _latent_audit_complete(
+        value, role="source", expected_rows=expected_rows
+    )
+
+
+def _target_latent_audit_complete(
+    value: Mapping[str, Any], *, expected_rows: int
+) -> bool:
+    return _latent_audit_complete(
+        value, role="target", expected_rows=expected_rows
+    )
+
+
+def _validate_preflight(
+    path: Path,
+    *,
+    model_config: Path,
+    validation_index: Path,
+    validation_sha256: str | None,
+    p10_checkpoint: Path,
+) -> tuple[dict[str, Any], str]:
+    path = path.expanduser().resolve(strict=True)
+    value = json.loads(path.read_text(encoding="utf-8"))
+    latest = dict(value.get("latest_route") or {})
+    validation = dict(value.get("indices", {}).get("validation") or {})
+    token_audit = dict(value.get("train_plan_token_audit") or {})
+    split_disjointness = dict(value.get("split_disjointness") or {})
+    shared_contract = dict(value.get("shared_contract") or {})
+    qwen_runtime = verify_frozen_qwen_runtime()
+    expected_validation_sha = str(validation.get("sha256") or "")
+    if validation_sha256 is not None and validation_sha256 != expected_validation_sha:
+        raise RuntimeError("requested validation SHA differs from full preflight")
+    if not (
+        value.get("schema")
+        == "sceneplan_transfusion_editing_full_training_preflight"
+        and int(value.get("schema_version", -1)) == 2
+        and value.get("status") == "PASS"
+        and latest.get("editing_ar_inputs")
+        == ["source_foa_latent", "raw_edit_request"]
+        and latest.get("editing_ar_target") == "complete_new_sceneplan"
+        and latest.get("old_sceneplan_input") is False
+        and int(latest.get("editing_dit_frame_channels", -1)) == 384
+        and latest.get("editing_dit_clean_source_always_present") is True
+        and int(latest.get("editing_ar_required_max_plan_tokens", -1)) == 1024
+        and int(latest.get("editing_evaluation_max_plan_tokens", -1)) == 512
+        and 0 < int(latest.get("max_plan_tokens_observed", -1)) <= 512
+        and token_audit.get("evaluation_budget_covers_all_rows") is True
+        and int(token_audit.get("rows_over_evaluation_budget", -1)) == 0
+        and split_disjointness.get("status") == "PASS"
+        and split_disjointness.get("checks")
+        == {
+            "train_vs_test": True,
+            "train_vs_validation": True,
+            "validation_vs_test": True,
+        }
+        and Path(shared_contract.get("path", "")).resolve()
+        == CURRENT_SHARED_CONTRACT.resolve(strict=True)
+        and shared_contract.get("sha256")
+        == sha256_file(CURRENT_SHARED_CONTRACT.resolve(strict=True))
+        and shared_contract.get("index_build_sha256")
+        == INDEX_BUILD_SHARED_CONTRACT_SHA256
+        and shared_contract.get("index_build_role")
+        == "historical_pair_construction_provenance"
+        and shared_contract.get("current_role") == "active_execution_contract"
+        and Path(validation.get("path", "")).resolve() == validation_index
+        and int(validation.get("rows", -1)) == EXPECTED_ROWS
+        and int(validation.get("short_rows", -1)) == EXPECTED_SHORT_ROWS
+        and int(validation.get("long_rows", -1)) == EXPECTED_LONG_ROWS
+        and _source_latent_audit_complete(
+            validation, expected_rows=EXPECTED_ROWS
+        )
+        and _target_latent_audit_complete(
+            validation, expected_rows=EXPECTED_ROWS
+        )
+        and len(expected_validation_sha) == 64
+        and Path(value.get("model_config", "")).resolve() == model_config
+        and value.get("model_config_sha256") == sha256_file(model_config)
+        and value.get("frozen_qwen_runtime") == qwen_runtime
+        and Path(value.get("canonical_p10_checkpoint", "")).resolve()
+        == p10_checkpoint
+        and value.get("canonical_p10_checkpoint_sha256")
+        == CANONICAL_P10_SHA256
+    ):
+        raise RuntimeError("full Editing preflight is not the latest frozen route")
+    return value, expected_validation_sha
+
+
+def _validation_layout(
+    index: Path, *, expected_sha256: str
+) -> tuple[dict[str, Any], list[tuple[int, int, str]]]:
+    index = index.expanduser().resolve(strict=True)
+    marker_path = index.with_suffix(index.suffix + ".frozen.json")
+    marker = json.loads(marker_path.read_text(encoding="utf-8"))
+    observed_sha = sha256_file(index)
+    if observed_sha != expected_sha256:
+        raise RuntimeError("frozen validation index SHA256 changed")
+    connection = sqlite3.connect(f"file:{index}?mode=ro&immutable=1", uri=True)
+    try:
+        metadata = dict(connection.execute("SELECT key,value FROM metadata"))
+        rows = [
+            (int(ordinal), int(bucket), str(operation))
+            for ordinal, bucket, operation in connection.execute(
+                "SELECT pair_ordinal,latent_bucket_frames,operation "
+                "FROM pairs ORDER BY pair_ordinal"
+            )
+        ]
+        invalid = int(
+            connection.execute(
+                "SELECT COUNT(*) FROM pairs "
+                "WHERE split!='validation' OR materialization_status!='encoded' "
+                "OR target_latent_tensor_sha256 IS NULL "
+                "OR materialized_record_sha256 IS NULL"
+            ).fetchone()[0]
+        )
+    finally:
+        connection.close()
+    ordinals = [row[0] for row in rows]
+    short = sum(row[1] == 432 for row in rows)
+    long = sum(row[1] == 648 for row in rows)
+    operations: dict[str, int] = {}
+    for _, _, operation in rows:
+        operations[operation] = operations.get(operation, 0) + 1
+    if not (
+        len(rows) == EXPECTED_ROWS
+        and ordinals == list(range(EXPECTED_ROWS))
+        and short == EXPECTED_SHORT_ROWS
+        and long == EXPECTED_LONG_ROWS
+        and invalid == 0
+        and metadata.get("schema")
+        == "sceneplan_transfusion_editing_training_index"
+        and metadata.get("schema_version") == "1"
+        and metadata.get("state") == "materialized_complete_frozen"
+        and metadata.get("split") == "validation"
+        and metadata.get("editing_ar_input_contract")
+        == "source_foa_latent_plus_raw_edit_request_v2"
+        and metadata.get("editing_ar_old_sceneplan_input") == "false"
+        and metadata.get("target_latents_exhaustively_reopened") == "true"
+        and metadata.get("target_tensor_hashes_exhaustively_verified") == "true"
+        and marker.get("state") == "materialized_complete_frozen"
+        and marker.get("split") == "validation"
+        and int(marker.get("rows", -1)) == EXPECTED_ROWS
+        and marker.get("index_sha256") == observed_sha
+        and Path(marker.get("index_path", "")).resolve() == index
+    ):
+        raise RuntimeError("frozen validation index is incomplete or stale")
+    source_shard_audit = verify_editing_source_latent_shards(index)
+    target_shard_audit = verify_editing_target_latent_shards(index)
+    if not _source_latent_audit_complete(
+        source_shard_audit, expected_rows=EXPECTED_ROWS
+    ):
+        raise RuntimeError("validation source-latent shard audit is incomplete")
+    if not _target_latent_audit_complete(
+        target_shard_audit, expected_rows=EXPECTED_ROWS
+    ):
+        raise RuntimeError("validation target-latent shard audit is incomplete")
+    summary = {
+        "path": str(index),
+        "sha256": observed_sha,
+        "marker_path": str(marker_path.resolve()),
+        "marker_sha256": sha256_file(marker_path),
+        "rows": len(rows),
+        "short_rows": short,
+        "long_rows": long,
+        "operation_counts": dict(sorted(operations.items())),
+        "pair_ordinal_sha256": _ordinal_sha256(ordinals),
+        "editing_ar_input_contract": metadata["editing_ar_input_contract"],
+        "editing_ar_old_sceneplan_input": False,
+        **source_shard_audit,
+        **target_shard_audit,
+    }
+    return summary, rows
+
+
+def _rank_ordinals(
+    rows: Sequence[tuple[int, int, str]], rank: int
+) -> tuple[list[int], dict[str, Any]]:
+    by_bucket = {
+        bucket: [ordinal for ordinal, observed, _ in rows if observed == bucket]
+        for bucket in (432, 648)
+    }
+    assigned_by_bucket = {
+        bucket: values[rank::WORLD_SIZE] for bucket, values in by_bucket.items()
+    }
+    assigned = assigned_by_bucket[432] + assigned_by_bucket[648]
+    if not (
+        len(assigned) == EXPECTED_ROWS // WORLD_SIZE
+        and len(assigned_by_bucket[432]) == EXPECTED_SHORT_ROWS // WORLD_SIZE
+        and len(assigned_by_bucket[648]) == EXPECTED_LONG_ROWS // WORLD_SIZE
+        and len(set(assigned)) == len(assigned)
+    ):
+        raise RuntimeError("validation rank assignment is not exact")
+    return assigned, {
+        "rank": rank,
+        "physical_gpu": rank + 3,
+        "rows": len(assigned),
+        "short_rows": len(assigned_by_bucket[432]),
+        "long_rows": len(assigned_by_bucket[648]),
+        "pair_ordinal_sha256": _ordinal_sha256(assigned),
+    }
+
+
+def _selection_holdout_folds(
+    rows: Sequence[tuple[int, int, str]],
+) -> tuple[dict[int, str], dict[str, Any]]:
+    """Freeze a balanced 10K selection / 10K untouched promotion split.
+
+    Candidate ranking sees only ``selection``.  Exactly one ranked candidate is
+    then tested once on ``holdout``; no fallback candidate may reuse holdout.
+    Odd stratum remainders are assigned deterministically until the global
+    selection quota is exactly half of validation.
+    """
+
+    strata: dict[tuple[int, str], list[int]] = {}
+    for ordinal, bucket, operation in rows:
+        strata.setdefault((int(bucket), str(operation)), []).append(int(ordinal))
+    if len(rows) != EXPECTED_ROWS or not strata:
+        raise RuntimeError("formal validation fold source is incomplete")
+    desired_selection = EXPECTED_ROWS // 2
+    base_selection = sum(len(values) // 2 for values in strata.values())
+    extras_needed = desired_selection - base_selection
+    odd_strata = [key for key in sorted(strata) if len(strata[key]) % 2]
+    if not 0 <= extras_needed <= len(odd_strata):
+        raise RuntimeError("could not balance validation selection/holdout folds")
+    extra_selection = set(odd_strata[:extras_needed])
+    mapping: dict[int, str] = {}
+    summary: dict[str, dict[str, int]] = {
+        "selection": {"rows": 0, "short_rows": 0, "long_rows": 0},
+        "holdout": {"rows": 0, "short_rows": 0, "long_rows": 0},
+    }
+    stratum_counts: dict[str, dict[str, int]] = {}
+    for key in sorted(strata):
+        bucket, operation = key
+        values = sorted(strata[key])
+        selection_count = len(values) // 2 + int(key in extra_selection)
+        # Pair-id order is already frozen into pair_ordinal order.  Alternate
+        # after fixing the quota so neither fold is a contiguous time slice.
+        selection_values = set(values[::2][:selection_count])
+        if len(selection_values) < selection_count:
+            selection_values.update(
+                value
+                for value in values
+                if value not in selection_values
+                and len(selection_values) < selection_count
+            )
+        for ordinal in values:
+            fold = "selection" if ordinal in selection_values else "holdout"
+            mapping[ordinal] = fold
+            summary[fold]["rows"] += 1
+            summary[fold]["short_rows" if bucket == 432 else "long_rows"] += 1
+        stratum_counts[f"{bucket}:{operation}"] = {
+            "rows": len(values),
+            "selection": selection_count,
+            "holdout": len(values) - selection_count,
+        }
+    if (
+        len(mapping) != EXPECTED_ROWS
+        or summary["selection"]["rows"] != desired_selection
+        or summary["holdout"]["rows"] != desired_selection
+    ):
+        raise RuntimeError("validation folds are not exactly 10K/10K")
+    for fold in ("selection", "holdout"):
+        ordinals = sorted(key for key, value in mapping.items() if value == fold)
+        summary[fold]["pair_ordinal_sha256"] = _ordinal_sha256(ordinals)
+    return mapping, {
+        "contract": "stratified_deterministic_disjoint_10k_select_10k_holdout_v1",
+        "selection": summary["selection"],
+        "holdout": summary["holdout"],
+        "by_bucket_operation": stratum_counts,
+    }
+
+
+def _subset_evaluation(
+    value: Mapping[str, Any], fold_by_ordinal: Mapping[int, str], fold: str
+) -> dict[str, Any]:
+    selected = torch.tensor(
+        [fold_by_ordinal[int(ordinal)] == fold for ordinal in value["ordinals"]],
+        dtype=torch.bool,
+    )
+    if not bool(selected.any()):
+        raise RuntimeError(f"validation fold {fold!r} is empty on this rank")
+    return {
+        "ordinals": [
+            int(ordinal)
+            for ordinal, keep in zip(value["ordinals"], selected.tolist())
+            if keep
+        ],
+        "operations": [
+            operation
+            for operation, keep in zip(value["operations"], selected.tolist())
+            if keep
+        ],
+        "buckets": [
+            int(bucket)
+            for bucket, keep in zip(value["buckets"], selected.tolist())
+            if keep
+        ],
+        "losses": {
+            name: matrix[selected] for name, matrix in value["losses"].items()
+        },
+        "prediction_l1": {
+            name: matrix[selected]
+            for name, matrix in value["prediction_l1"].items()
+        },
+    }
+
+
+def _chunks(values: Sequence[int], size: int) -> Iterable[list[int]]:
+    for start in range(0, len(values), int(size)):
+        yield [int(value) for value in values[start : start + int(size)]]
+
+
+def _local_donor_mapping(
+    rows: Sequence[tuple[int, int, str]], assigned: Sequence[int]
+) -> tuple[dict[int, int], str]:
+    """Create a fixed within-(bucket,operation) derangement on each rank."""
+
+    row_by_ordinal = {
+        int(ordinal): (int(bucket), str(operation))
+        for ordinal, bucket, operation in rows
+    }
+    strata: dict[tuple[int, str], list[int]] = {}
+    for ordinal in assigned:
+        strata.setdefault(row_by_ordinal[int(ordinal)], []).append(int(ordinal))
+    mapping: dict[int, int] = {}
+    for key, values in sorted(strata.items()):
+        values = sorted(values)
+        if len(values) < 2:
+            raise RuntimeError(f"source donor stratum is too small: {key}")
+        for index, ordinal in enumerate(values):
+            mapping[ordinal] = values[(index + 1) % len(values)]
+    if set(mapping) != set(int(value) for value in assigned) or any(
+        source == donor for source, donor in mapping.items()
+    ):
+        raise RuntimeError("source donor mapping is not a complete derangement")
+    digest = hashlib.sha256(
+        "".join(f"{source}:{mapping[source]}\n" for source in sorted(mapping)).encode(
+            "ascii"
+        )
+    ).hexdigest()
+    return mapping, digest
+
+
+class _SourceDonorResolver:
+    def __init__(
+        self,
+        dataset: ScenePlanTransfusionEditingDataset,
+        assigned: Sequence[int],
+        donor_by_ordinal: Mapping[int, int],
+    ) -> None:
+        self.dataset = dataset
+        self.local_by_ordinal = {
+            int(ordinal): index for index, ordinal in enumerate(assigned)
+        }
+        self.donor_by_ordinal = dict(donor_by_ordinal)
+
+    def __call__(
+        self,
+        metadata: Sequence[Mapping[str, Any]],
+        frames: int,
+        device: torch.device,
+    ) -> torch.Tensor:
+        values = []
+        for row in metadata:
+            donor = self.donor_by_ordinal[int(row["pair_ordinal"])]
+            _, donor_metadata = self.dataset[self.local_by_ordinal[donor]]
+            values.append(donor_metadata["source_foa_latent"][:, : int(frames)])
+        return torch.stack(values).to(
+            device=device, dtype=torch.float32, non_blocking=True
+        )
+
+
+def _make_loader(
+    dataset: ScenePlanTransfusionEditingDataset,
+    *,
+    short_batch_size: int,
+    long_batch_size: int,
+    num_workers: int,
+) -> tuple[DataLoader, dict[str, Any]]:
+    buckets = dataset.length_bucket_indices()
+    if set(buckets) != {432, 648}:
+        raise RuntimeError("validation rank must contain both length buckets")
+    batches = [
+        batch
+        for bucket, batch_size in ((432, short_batch_size), (648, long_batch_size))
+        for batch in _chunks(buckets[bucket], batch_size)
+    ]
+    covered = [index for batch in batches for index in batch]
+    if len(covered) != len(dataset) or sorted(covered) != list(range(len(dataset))):
+        raise RuntimeError("validation batches dropped or duplicated rows")
+    loader_kwargs: dict[str, Any] = {
+        "batch_sampler": batches,
+        "collate_fn": sceneplan_bucket_collation,
+        "num_workers": int(num_workers),
+        "pin_memory": True,
+        "persistent_workers": int(num_workers) > 0,
+    }
+    if int(num_workers) > 0:
+        loader_kwargs["prefetch_factor"] = 2
+    loader = DataLoader(dataset, **loader_kwargs)
+    return loader, {
+        "batches": len(batches),
+        "short_batches": sum(
+            1 for batch in batches if batch[0] in set(buckets[432])
+        ),
+        "long_batches": sum(
+            1 for batch in batches if batch[0] in set(buckets[648])
+        ),
+        "short_batch_size": int(short_batch_size),
+        "long_batch_size": int(long_batch_size),
+        "drop_last": False,
+    }
+
+
+def _last_json_events(log_text: str, prefix: str) -> list[dict[str, Any]]:
+    pattern = re.compile(re.escape(prefix) + r"=(\{[^\r\n]*\})")
+    output = []
+    for match in pattern.finditer(log_text):
+        output.append(json.loads(match.group(1)))
+    return output
+
+
+def _marked_json_events(log_text: str, marker: str) -> list[dict[str, Any]]:
+    pattern = re.compile(re.escape(marker) + r"\s*(\{[^\r\n]*\})")
+    return [json.loads(match.group(1)) for match in pattern.finditer(log_text)]
+
+
+def _completed_training_gate_valid(
+    training: Mapping[str, Any], *, expected_max_step: int
+) -> bool:
+    """Validate either a fresh or an exact full-state-resume training segment.
+
+    ``TrainingHealthGateCallback`` is intentionally process-local: after a
+    checkpoint resume its optimizer-event and metric counters describe only the
+    remaining segment, while the restored global step and EMA counters retain
+    the complete run history.  Requiring every successful process invocation to
+    observe all 30K optimizer steps would therefore reject a healthy resumed
+    run.  The invariant we need is instead an exact, non-empty interval
+    ``initial_global_step -> expected_max_step`` on every DDP rank.
+    """
+
+    try:
+        initial = int(training["initial_global_step"])
+        final = int(training["global_step"])
+        segment_steps = final - initial
+        health = dict(training["distributed_health"])
+        ema_initial = dict(training["ema_initial"])
+        ema_final = dict(training["ema_final"])
+        ema_advances = dict(training["ema_advances"])
+        return bool(
+            training.get("status") == "PASS"
+            and 0 <= initial < int(expected_max_step)
+            and final == int(expected_max_step)
+            and segment_steps == int(expected_max_step) - initial
+            and int(training["optimizer_events"]) == segment_steps
+            and int(training["metric_observations"]) == segment_steps
+            and int(training["optimizer_state_step_max"]) == final
+            and int(ema_initial["diffusion_ema"]) == initial
+            and int(ema_initial["conditioner_ema"]) == initial
+            and int(ema_final["diffusion_ema"]) == final
+            and int(ema_final["conditioner_ema"]) == final
+            and int(ema_advances["diffusion_ema"]) == segment_steps
+            and int(ema_advances["conditioner_ema"]) == segment_steps
+            and int(health["optimizer_events_min"]) == segment_steps
+            and int(health["optimizer_events_max"]) == segment_steps
+            and int(health["optimizer_state_step_min"]) == final
+            and int(health["optimizer_state_step_max"]) == final
+            and int(health["ema_advance_min"]) == segment_steps
+            and int(health["ema_advance_max"]) == segment_steps
+            and int(health["metric_observations_min"]) == segment_steps
+            and int(health["metric_observations_max"]) == segment_steps
+        )
+    except (KeyError, TypeError, ValueError):
+        return False
+
+
+def _audit_completed_training(
+    run_dir: Path,
+    *,
+    expected_max_step: int,
+    checkpoint_every: int,
+    training_run_contract: Mapping[str, Any],
+    training_run_contract_sha256: str,
+) -> dict[str, Any]:
+    # The common launcher prints its shell summary before the tee that captures
+    # the Python trainer's output.  Those headers therefore do not belong to
+    # logs/train.log.  Use the already-validated, pre-fit frozen contract for
+    # launch settings, and the trainer's own events for actual execution.
+    # Candidate lineage is checked separately against this same contract.
+    contract_path = (run_dir / TRAIN_CONTRACT_NAME).resolve(strict=True)
+    schedule = dict(training_run_contract.get("training") or {})
+    expected_schedule = {
+        "max_steps": expected_max_step,
+        "checkpoint_every": checkpoint_every,
+        "short_batch_size_per_gpu": 72,
+        "long_batch_size_per_gpu": 48,
+        "num_workers_per_rank": 12,
+        "world_size": WORLD_SIZE,
+        "accumulate_grad_batches": 1,
+        "gradient_clip_val": 1.0,
+        "save_top_k": -1,
+    }
+    if not (
+        sha256_file(contract_path) == training_run_contract_sha256
+        and json.loads(contract_path.read_text(encoding="utf-8"))
+        == training_run_contract
+        and Path(str(training_run_contract.get("run_dir", ""))).resolve()
+        == run_dir.resolve()
+        and all(schedule.get(key) == value for key, value in expected_schedule.items())
+    ):
+        raise RuntimeError("completed Editing DiT frozen launch contract changed")
+    log_path = (run_dir / "logs/train.log").resolve(strict=True)
+    text = log_path.read_text(encoding="utf-8", errors="replace")
+    training_events = _last_json_events(text, "SAT_TRAINING_GATE_RESULT")
+    warmstart_events = _last_json_events(text, "SAT_PRETRAINED_ROUTE_GATE")
+    validation_events = _last_json_events(text, "SAT_EDITING_VALIDATION")
+    bucket_events = _marked_json_events(text, "[p10-data]")
+    if not training_events or len(warmstart_events) < WORLD_SIZE:
+        raise RuntimeError("full Editing DiT log lacks training/warm-start gates")
+    training = training_events[-1]
+    health = dict(training.get("distributed_health") or {})
+    expected_warmstart = {
+        "loaded": 612,
+        "target_total": 612,
+        "shape_mismatches": 4,
+        "shape_mismatch_targets": 2,
+        "partial_expansions": 2,
+        "semantic_role_expansions": 0,
+        "missing": 0,
+        "shape_mismatch_target_names": [
+            "model.model.preprocess_conv.weight",
+            "model.model.transformer.project_in.weight",
+        ],
+        "partial_expansion_targets": [
+            "model.model.preprocess_conv.weight",
+            "model.model.transformer.project_in.weight",
+        ],
+        "semantic_role_expansion_targets": [],
+        "missing_names": [],
+    }
+    unique_warmstarts = {
+        _canonical_sha256(event): event for event in warmstart_events
+    }
+    local_ranks = {
+        int(value)
+        for value in re.findall(
+            r"LOCAL_RANK:\s*([0-4])\s*-\s*CUDA_VISIBLE_DEVICES:\s*"
+            r"\[3,4,5,6,7\]",
+            text,
+        )
+    }
+    bucket_ranks = {
+        int(event.get("rank", -1))
+        for event in bucket_events
+        if (
+            event.get("bucket_counts") == {"432": 750_000, "648": 250_000}
+            and int(event.get("short_batch_size", -1)) == 72
+            and int(event.get("long_batch_size", -1)) == 48
+            and int(event.get("world_size", -1)) == WORLD_SIZE
+            and int(event.get("batches_per_epoch", -1)) == 3_124
+        )
+    }
+    validation_log_valid = bool(validation_events)
+    validation_steps = []
+    for event in validation_events:
+        try:
+            step = int(event["global_step"])
+            metrics = dict(event["metrics"])
+            validation_log_valid = validation_log_valid and (
+                0 < step <= expected_max_step
+                and step % 1_000 == 0
+                and "val/avg_loss" in metrics
+                and all(math.isfinite(float(value)) for value in metrics.values())
+            )
+            validation_steps.append(step)
+        except (KeyError, TypeError, ValueError):
+            validation_log_valid = False
+    if not (
+        _completed_training_gate_valid(
+            training, expected_max_step=expected_max_step
+        )
+        and health.get("backend") == "nccl"
+        and health.get("initialized") is True
+        and int(health.get("expected_world_size", -1)) == WORLD_SIZE
+        and int(health.get("rank_count", -1)) == WORLD_SIZE
+        and int(health.get("world_size", -1)) == WORLD_SIZE
+        and local_ranks == set(range(WORLD_SIZE))
+        and bool(bucket_events)
+        and len(bucket_ranks) == WORLD_SIZE
+        and all(
+            event.get("bucket_counts") == {"432": 750_000, "648": 250_000}
+            and int(event.get("short_batch_size", -1)) == 72
+            and int(event.get("long_batch_size", -1)) == 48
+            and int(event.get("world_size", -1)) == WORLD_SIZE
+            and int(event.get("batches_per_epoch", -1)) == 3_124
+            for event in bucket_events
+        )
+        and len(unique_warmstarts) == 1
+        and next(iter(unique_warmstarts.values())) == expected_warmstart
+        and validation_log_valid
+        and max(validation_steps, default=-1) >= expected_max_step - 1_000
+        and f"max_steps={expected_max_step}` reached" in text
+    ):
+        raise RuntimeError("full Editing DiT training run did not pass exact gates")
+    return {
+        "log_path": str(log_path),
+        "log_sha256": sha256_file(log_path),
+        "launch_settings_evidence": {
+            "path": str(contract_path),
+            "sha256": training_run_contract_sha256,
+            "source": "validated_pre_fit_frozen_training_run_contract",
+            "settings": expected_schedule,
+        },
+        "training_gate": training,
+        "warmstart_gate": expected_warmstart,
+        "warmstart_gate_occurrences": len(warmstart_events),
+        "visible_local_ranks": sorted(local_ranks),
+        "length_bucket_batching": {
+            "events": len(bucket_events),
+            "ranks": sorted(bucket_ranks),
+            "bucket_counts": {"432": 750_000, "648": 250_000},
+            "short_batch_size_per_rank": 72,
+            "long_batch_size_per_rank": 48,
+            "batches_per_epoch": 3_124,
+        },
+        "durable_validation_log": {
+            "marker": "SAT_EDITING_VALIDATION",
+            "events": len(validation_events),
+            "steps": sorted(set(validation_steps)),
+            "last": validation_events[-1],
+        },
+    }
+
+
+def _discover_candidates(
+    run_dir: Path, *, expected_max_step: int, checkpoint_every: int
+) -> tuple[list[tuple[int, Path]], Path]:
+    checkpoint_dir = (run_dir / "checkpoints").resolve(strict=True)
+    expected_steps = tuple(
+        range(checkpoint_every, expected_max_step + 1, checkpoint_every)
+    )
+    if expected_steps != EXPECTED_CANDIDATE_STEPS:
+        raise RuntimeError("formal Editing DiT selection requires six fixed 5K candidates")
+    pattern = re.compile(r"epoch=\d+-step=(\d+)\.ckpt$")
+    by_step: dict[int, list[Path]] = {}
+    for path in checkpoint_dir.glob("epoch=*-step=*.ckpt"):
+        match = pattern.fullmatch(path.name)
+        if match is None:
+            continue
+        step = int(match.group(1))
+        if step in expected_steps:
+            by_step.setdefault(step, []).append(path.resolve(strict=True))
+    if set(by_step) != set(expected_steps) or any(
+        len(paths) != 1 for paths in by_step.values()
+    ):
+        raise RuntimeError("full Editing DiT candidate set is incomplete or ambiguous")
+    candidates = [(step, by_step[step][0]) for step in expected_steps]
+    if any(path.parent != checkpoint_dir for _, path in candidates):
+        raise RuntimeError("Editing DiT candidate escaped its checkpoint directory")
+    last = (checkpoint_dir / "last.ckpt").resolve(strict=True)
+    return candidates, last
+
+
+def _load_checkpoint_payload(
+    path: Path,
+    *,
+    step: int,
+    resolved_model_config: Mapping[str, Any],
+    expected_conditioner_ema_names: Sequence[str],
+    training_run_contract: Mapping[str, Any],
+    training_run_contract_path: Path,
+    training_run_contract_sha256: str,
+) -> tuple[dict[str, torch.Tensor], dict[str, Any]]:
+    payload = torch.load(
+        path, map_location="cpu", weights_only=True, mmap=True
+    )
+    if not isinstance(payload, dict) or not isinstance(payload.get("state_dict"), dict):
+        raise RuntimeError(f"invalid Lightning checkpoint: {path}")
+    state = payload["state_dict"]
+    shape_contract = {
+        "diffusion.model.model.transformer.project_in.weight": (1024, 384),
+        "diffusion.model.model.preprocess_conv.weight": (384, 384, 1),
+        "diffusion_ema.ema_model.model.transformer.project_in.weight": (1024, 384),
+        "diffusion_ema.ema_model.model.preprocess_conv.weight": (384, 384, 1),
+    }
+    observed_shapes = {
+        key: tuple(state[key].shape) if key in state else None
+        for key in shape_contract
+    }
+    scalar_contract = {
+        "diffusion_ema.step": step,
+        "conditioner_ema.step": step,
+    }
+    scalars = {
+        key: int(state[key].detach().reshape(-1)[0].item())
+        if key in state
+        else -1
+        for key in scalar_contract
+    }
+    initted = {
+        key: bool(state[key].detach().reshape(-1)[0].item())
+        if key in state
+        else False
+        for key in ("diffusion_ema.initted", "conditioner_ema.initted")
+    }
+    if not (
+        int(payload.get("global_step", -1)) == step
+        and int(payload.get("epoch", -1)) >= 0
+        and payload.get("model_config") == resolved_model_config
+        and payload.get("editing_run_contract") == training_run_contract
+        and payload.get("editing_run_contract_sha256")
+        == training_run_contract_sha256
+        and Path(str(payload.get("editing_run_contract_path", ""))).resolve()
+        == training_run_contract_path
+        and observed_shapes == shape_contract
+        and scalars == scalar_contract
+        and all(initted.values())
+        and list(payload.get("conditioner_ema_parameter_names") or [])
+        == list(expected_conditioner_ema_names)
+    ):
+        raise RuntimeError(f"Editing DiT checkpoint contract changed: {path}")
+    metadata = {
+        "global_step": step,
+        "epoch": int(payload["epoch"]),
+        "pytorch_lightning_version": payload.get("pytorch-lightning_version"),
+        "state_dict_tensors": len(state),
+        "shape_contract": {
+            key: list(value) for key, value in observed_shapes.items()
+        },
+        "ema_steps": scalars,
+        "ema_initted": initted,
+        "conditioner_ema_parameter_names": list(expected_conditioner_ema_names),
+        "embedded_model_config_canonical_sha256": _canonical_sha256(
+            payload["model_config"]
+        ),
+        "embedded_training_run_contract_sha256": training_run_contract_sha256,
+    }
+    return state, metadata
+
+
+def _load_candidate(
+    wrapper,
+    path: Path,
+    *,
+    step: int,
+    resolved_model_config: Mapping[str, Any],
+    training_run_contract: Mapping[str, Any],
+    training_run_contract_path: Path,
+    training_run_contract_sha256: str,
+) -> dict[str, Any]:
+    state, metadata = _load_checkpoint_payload(
+        path,
+        step=step,
+        resolved_model_config=resolved_model_config,
+        expected_conditioner_ema_names=list(wrapper.conditioner_ema.parameter_names),
+        training_run_contract=training_run_contract,
+        training_run_contract_path=training_run_contract_path,
+        training_run_contract_sha256=training_run_contract_sha256,
+    )
+    incompatible = wrapper.load_state_dict(state, strict=False)
+    if incompatible.missing_keys or incompatible.unexpected_keys:
+        raise RuntimeError(
+            "Editing checkpoint/model mismatch: "
+            f"missing={incompatible.missing_keys[:12]} "
+            f"unexpected={incompatible.unexpected_keys[:12]}"
+        )
+    del state
+    gc.collect()
+    return metadata
+
+
+def _variant_conditioning(
+    diffusion, positive: Mapping[str, Any], source: torch.Tensor
+) -> dict[str, Any]:
+    condition = dict(positive)
+    condition["source_foa_latent"] = [source, None]
+    return diffusion.get_conditioning_inputs(condition)
+
+
+def _masked_per_sample(value: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
+    numerator = (value * mask[:, None]).sum(dim=(1, 2))
+    denominator = mask.sum(dim=1).clamp_min(1) * int(value.shape[1])
+    return numerator / denominator
+
+
+def _reject_old_plan_metadata(metadata: Sequence[Mapping[str, Any]]) -> None:
+    for row in metadata:
+        normalized = {str(key).lower().replace("-", "_") for key in row}
+        leaked = normalized & FORBIDDEN_OLD_PLAN_KEYS
+        if leaked:
+            raise RuntimeError(f"Editing validation exposed old-plan keys: {leaked}")
+
+
+@torch.no_grad()
+def _evaluate_route(
+    route,
+    diffusion,
+    loader: DataLoader,
+    *,
+    device: torch.device,
+    rank: int,
+    seed: int,
+    timesteps: Sequence[float],
+    source_variants: Sequence[str],
+    conditioner_context,
+    shuffled_source_provider=None,
+) -> dict[str, Any]:
+    if not source_variants or source_variants[0] != "clean":
+        raise ValueError("clean source must be the first evaluation variant")
+    allowed = {"clean", "zero", "shuffled"}
+    if len(set(source_variants)) != len(source_variants) or not set(
+        source_variants
+    ) <= allowed:
+        raise ValueError("invalid source intervention list")
+    generator = torch.Generator(device=device).manual_seed(
+        int(seed) * 1_000_003 + rank * 10_007
+    )
+    losses: dict[str, list[torch.Tensor]] = {
+        name: [] for name in source_variants
+    }
+    prediction_l1: dict[str, list[torch.Tensor]] = {
+        name: [] for name in source_variants if name != "clean"
+    }
+    ordinals: list[int] = []
+    operations: list[str] = []
+    buckets: list[int] = []
+    route.eval().requires_grad_(False)
+    diffusion.conditioner.eval().requires_grad_(False)
+    with conditioner_context:
+        for reals, raw_metadata in loader:
+            metadata = list(raw_metadata)
+            _reject_old_plan_metadata(metadata)
+            target = reals.to(device=device, dtype=torch.float32, non_blocking=True)
+            mask = torch.stack([row["padding_mask"][0] for row in metadata]).to(
+                device=device, dtype=torch.bool, non_blocking=True
+            )
+            source = torch.stack([row["source_foa_latent"] for row in metadata]).to(
+                device=device, dtype=torch.float32, non_blocking=True
+            )
+            if (
+                target.ndim != 3
+                or source.shape != target.shape
+                or int(target.shape[1]) != 64
+                or mask.shape != (target.shape[0], target.shape[2])
+            ):
+                raise RuntimeError("Editing validation lost aligned [B,64,T] geometry")
+            shuffled = (
+                shuffled_source_provider(metadata, int(target.shape[-1]), device)
+                if shuffled_source_provider is not None
+                else (source.roll(1, dims=0) if len(source) > 1 else -source)
+            )
+            if tuple(shuffled.shape) != tuple(source.shape) or torch.equal(
+                shuffled, source
+            ):
+                raise RuntimeError("shuffled Editing source is invalid")
+            variants = {
+                "clean": source,
+                "zero": torch.zeros_like(source),
+                "shuffled": shuffled,
+            }
+            with torch.autocast("cuda", dtype=torch.bfloat16):
+                positive = diffusion.conditioner(metadata, device)
+                model_inputs = {
+                    name: _variant_conditioning(diffusion, positive, variants[name])
+                    for name in source_variants
+                }
+            noise = torch.randn(
+                target.shape,
+                generator=generator,
+                device=device,
+                dtype=torch.float32,
+            )
+            batch_losses: dict[str, list[torch.Tensor]] = {
+                name: [] for name in source_variants
+            }
+            batch_l1: dict[str, list[torch.Tensor]] = {
+                name: [] for name in source_variants if name != "clean"
+            }
+            for raw_timestep in timesteps:
+                timestep = float(raw_timestep)
+                t = torch.full((target.shape[0],), timestep, device=device)
+                noised = (1.0 - timestep) * target + timestep * noise
+                velocity_target = noise - target
+                predictions: dict[str, torch.Tensor] = {}
+                for name in source_variants:
+                    with torch.autocast("cuda", dtype=torch.bfloat16):
+                        prediction = route(
+                            noised,
+                            t,
+                            **model_inputs[name],
+                            cfg_dropout_prob=0.0,
+                            padding_mask=mask,
+                        )
+                    prediction = prediction.float()
+                    predictions[name] = prediction
+                    batch_losses[name].append(
+                        _masked_per_sample(
+                            (prediction - velocity_target) ** 2, mask
+                        ).cpu()
+                    )
+                for name in batch_l1:
+                    batch_l1[name].append(
+                        _masked_per_sample(
+                            (predictions["clean"] - predictions[name]).abs(), mask
+                        ).cpu()
+                    )
+            for name in source_variants:
+                losses[name].append(torch.stack(batch_losses[name], dim=1))
+            for name in batch_l1:
+                prediction_l1[name].append(torch.stack(batch_l1[name], dim=1))
+            ordinals.extend(int(row["pair_ordinal"]) for row in metadata)
+            operations.extend(str(row["operation"]) for row in metadata)
+            buckets.extend(int(row["latent_bucket_frames"]) for row in metadata)
+    output = {
+        "ordinals": ordinals,
+        "operations": operations,
+        "buckets": buckets,
+        "losses": {name: torch.cat(values, dim=0) for name, values in losses.items()},
+        "prediction_l1": {
+            name: torch.cat(values, dim=0)
+            for name, values in prediction_l1.items()
+        },
+    }
+    for matrix in [*output["losses"].values(), *output["prediction_l1"].values()]:
+        if matrix.shape != (len(ordinals), len(timesteps)) or not torch.isfinite(
+            matrix
+        ).all():
+            raise RuntimeError("Editing validation produced incomplete/non-finite rows")
+    return output
+
+
+def _matrix_summary(
+    matrix: torch.Tensor,
+    *,
+    operations: Sequence[str],
+    buckets: Sequence[int],
+    timesteps: Sequence[float],
+    device: torch.device,
+) -> dict[str, Any]:
+    matrix = matrix.to(torch.float64)
+    if matrix.shape != (len(operations), len(timesteps)):
+        raise RuntimeError("metric matrix labels changed")
+    timestep_sums = matrix.sum(dim=0).tolist()
+    timestep_values = _all_reduce(
+        [*timestep_sums, *([float(len(matrix))] * len(timesteps))], device
+    )
+    split = len(timesteps)
+    global_sums = timestep_values[:split]
+    global_counts = timestep_values[split:]
+    by_timestep = {
+        f"{float(timestep):.1f}": global_sums[index]
+        / max(1.0, global_counts[index])
+        for index, timestep in enumerate(timesteps)
+    }
+
+    def categories(labels: Sequence[Any], expected: Sequence[Any]) -> dict[str, Any]:
+        raw: list[float] = []
+        for label in expected:
+            selected = torch.tensor(
+                [value == label for value in labels], dtype=torch.bool
+            )
+            raw.extend(
+                [
+                    float(matrix[selected].sum()),
+                    float(selected.sum()) * len(timesteps),
+                    float(selected.sum()),
+                ]
+            )
+        reduced = _all_reduce(raw, device)
+        result = {}
+        for index, label in enumerate(expected):
+            total, evaluations, rows = reduced[index * 3 : index * 3 + 3]
+            result[str(label)] = {
+                "mean": total / max(1.0, evaluations),
+                "rows": int(rows),
+                "evaluations": int(evaluations),
+            }
+        return result
+
+    operation_names = sorted(set(operations))
+    # Every rank is deterministically stratified and therefore sees all names.
+    all_operation_names = _broadcast(operation_names, rank=dist.get_rank(), device=device)
+    if operation_names != all_operation_names:
+        raise RuntimeError("validation operations differ across ranks")
+    total, evaluations, rows = _all_reduce(
+        [float(matrix.sum()), float(matrix.numel()), float(len(matrix))], device
+    )
+    return {
+        "mean": total / max(1.0, evaluations),
+        "rows": int(rows),
+        "evaluations": int(evaluations),
+        "by_timestep": by_timestep,
+        "by_operation": categories(operations, all_operation_names),
+        "by_latent_bucket": categories(buckets, [432, 648]),
+        "aggregation": "mean_of_per_sample_valid_frame_channel_mse",
+    }
+
+
+def _paired_stats(values: torch.Tensor, device: torch.device) -> dict[str, Any]:
+    values = values.to(torch.float64).reshape(-1)
+    local = [float(len(values)), float(values.sum()), float((values**2).sum())]
+    count, total, square_total = _all_reduce(local, device)
+    count_int = int(count)
+    mean = total / max(1.0, count)
+    variance = (
+        max(0.0, (square_total - total * total / count) / (count - 1.0))
+        if count > 1
+        else 0.0
+    )
+    standard_error = math.sqrt(variance / max(1.0, count))
+    z_value = NormalDist().inv_cdf(CONFIDENCE)
+    return {
+        "rows": count_int,
+        "mean_difference": mean,
+        "sample_standard_deviation": math.sqrt(variance),
+        "standard_error": standard_error,
+        "confidence": CONFIDENCE,
+        "one_sided_lower_confidence_bound": mean - z_value * standard_error,
+        "pass": mean - z_value * standard_error > 0.0,
+    }
+
+
+def _paired_report(
+    values: torch.Tensor,
+    *,
+    operations: Sequence[str],
+    buckets: Sequence[int],
+    device: torch.device,
+) -> dict[str, Any]:
+    row_values = values.to(torch.float64).mean(dim=1)
+    operation_names = sorted(set(operations))
+    return {
+        "overall": _paired_stats(row_values, device),
+        "by_operation": {
+            name: _paired_stats(
+                row_values[
+                    torch.tensor([value == name for value in operations])
+                ],
+                device,
+            )
+            for name in operation_names
+        },
+        "by_latent_bucket": {
+            str(bucket): _paired_stats(
+                row_values[
+                    torch.tensor([value == bucket for value in buckets])
+                ],
+                device,
+            )
+            for bucket in (432, 648)
+        },
+    }
+
+
+def _paired_report_pass(value: Mapping[str, Any]) -> bool:
+    return (
+        bool(value["overall"]["pass"])
+        and all(bool(record["pass"]) for record in value["by_operation"].values())
+        and all(
+            bool(record["pass"])
+            for record in value["by_latent_bucket"].values()
+        )
+    )
+
+
+def _checkpoint_sha(path: Path, *, rank: int, device: torch.device) -> str:
+    return str(
+        _broadcast(sha256_file(path) if rank == 0 else None, rank=rank, device=device)
+    )
+
+
+def _validate_existing_selection(
+    path: Path,
+    *,
+    run_dir: Path,
+    preflight: Path,
+    model_config: Path,
+    validation_index: Path,
+    training_run_contract: Mapping[str, Any],
+    training_run_contract_path: Path,
+    training_run_contract_sha256: str,
+) -> dict[str, Any] | None:
+    if not path.is_file():
+        return None
+    value = json.loads(path.read_text(encoding="utf-8"))
+    selected = Path(value.get("selected_checkpoint", "")).expanduser().resolve(
+        strict=True
+    )
+    checkpoint_dir = (run_dir / "checkpoints").resolve(strict=True)
+    sources = dict(value.get("source_sha256") or {})
+    expected_sources = _source_sha256()
+    validation_sha = sha256_file(validation_index)
+    expected_validation, validation_layout = _validation_layout(
+        validation_index, expected_sha256=validation_sha
+    )
+    _, expected_folds = _selection_holdout_folds(validation_layout)
+    expected_run_audit = _audit_completed_training(
+        run_dir,
+        expected_max_step=EXPECTED_MAX_STEP,
+        checkpoint_every=EXPECTED_CHECKPOINT_EVERY,
+        training_run_contract=training_run_contract,
+        training_run_contract_sha256=training_run_contract_sha256,
+    )
+    discovered_candidates, discovered_last = _discover_candidates(
+        run_dir,
+        expected_max_step=EXPECTED_MAX_STEP,
+        checkpoint_every=EXPECTED_CHECKPOINT_EVERY,
+    )
+    current_candidate_sha256 = {
+        int(step): sha256_file(candidate)
+        for step, candidate in discovered_candidates
+    }
+    for step, candidate in discovered_candidates:
+        observed_step, payload = validate_checkpoint_lineage(
+            candidate,
+            contract_path=training_run_contract_path,
+            expected_step=step,
+            validated_contract=training_run_contract,
+            validated_contract_sha256=training_run_contract_sha256,
+        )
+        del payload
+        if observed_step != step:
+            raise RuntimeError("Editing-DiT candidate lineage step changed")
+    candidate_rows = list(value.get("candidates") or [])
+    candidate_steps = [int(row.get("step", -1)) for row in candidate_rows]
+    candidate_paths = [
+        Path(row.get("checkpoint", "")).expanduser().resolve(strict=True)
+        for row in candidate_rows
+    ]
+    selected_step = int(value.get("selected_checkpoint_step", -1))
+    selected_rows = [
+        row for row in candidate_rows if int(row.get("step", -1)) == selected_step
+    ]
+    selected_record = selected_rows[0] if len(selected_rows) == 1 else {}
+    final_rows = [
+        row
+        for row in candidate_rows
+        if int(row.get("step", -1)) == EXPECTED_MAX_STEP
+    ]
+    final_candidate_sha = (
+        final_rows[0].get("checkpoint_sha256") if len(final_rows) == 1 else None
+    )
+    training_run = dict(value.get("training_run") or {})
+    latest_route = dict(value.get("latest_route") or {})
+    promotion_gate = dict(value.get("selected_promotion_gate") or {})
+    expected_gate_checks = {
+        "clean_better_than_zero_source_99pct",
+        "clean_better_than_shuffled_source_99pct",
+        "clean_better_than_p10_warmstart_99pct",
+        "positive_zero_source_prediction_response_99pct",
+        "positive_shuffled_source_prediction_response_99pct",
+    }
+
+    def metric_summary_has_rows(raw: Any, rows: int) -> bool:
+        if not isinstance(raw, Mapping):
+            return False
+        try:
+            operation_rows = {
+                name: int(raw["by_operation"][name]["rows"])
+                for name in EXPECTED_OPERATIONS
+            }
+            bucket_rows = {
+                str(bucket): int(raw["by_latent_bucket"][str(bucket)]["rows"])
+                for bucket in (432, 648)
+            }
+            timestep_keys = set(raw["by_timestep"])
+            numeric_values = [
+                float(raw["mean"]),
+                *[float(item) for item in raw["by_timestep"].values()],
+                *[
+                    float(raw["by_operation"][name]["mean"])
+                    for name in EXPECTED_OPERATIONS
+                ],
+                *[
+                    float(raw["by_latent_bucket"][str(bucket)]["mean"])
+                    for bucket in (432, 648)
+                ],
+            ]
+            return (
+                int(raw["rows"]) == rows
+                and int(raw["evaluations"]) == rows * len(DEFAULT_TIMESTEPS)
+                and set(raw["by_operation"]) == set(EXPECTED_OPERATIONS)
+                and set(raw["by_latent_bucket"]) == {"432", "648"}
+                and timestep_keys
+                == {f"{float(timestep):.1f}" for timestep in DEFAULT_TIMESTEPS}
+                and sum(operation_rows.values()) == rows
+                and sum(bucket_rows.values()) == rows
+                and all(count > 0 for count in operation_rows.values())
+                and all(count > 0 for count in bucket_rows.values())
+                and all(math.isfinite(item) for item in numeric_values)
+            )
+        except (KeyError, TypeError, ValueError):
+            return False
+
+    def paired_report_passes(raw: Any, rows: int) -> bool:
+        if not isinstance(raw, Mapping):
+            return False
+        try:
+            operation = raw["by_operation"]
+            buckets = raw["by_latent_bucket"]
+            reports = [raw["overall"], *operation.values(), *buckets.values()]
+            return (
+                set(operation) == set(EXPECTED_OPERATIONS)
+                and set(buckets) == {"432", "648"}
+                and int(raw["overall"]["rows"]) == rows
+                and sum(int(item["rows"]) for item in operation.values()) == rows
+                and sum(int(item["rows"]) for item in buckets.values()) == rows
+                and all(bool(item["pass"]) for item in reports)
+                and all(
+                    math.isfinite(float(item["one_sided_lower_confidence_bound"]))
+                    and float(item["one_sided_lower_confidence_bound"]) > 0.0
+                    for item in reports
+                )
+            )
+        except (KeyError, TypeError, ValueError):
+            return False
+
+    candidate_summaries_valid = len(candidate_rows) == len(EXPECTED_CANDIDATE_STEPS)
+    for row in candidate_rows:
+        step = int(row.get("step", -1))
+        metadata = dict(row.get("checkpoint_metadata") or {})
+        expected_path = dict(discovered_candidates).get(step)
+        candidate_summaries_valid = candidate_summaries_valid and (
+            expected_path is not None
+            and Path(row.get("checkpoint", "")).resolve(strict=True)
+            == expected_path
+            and row.get("checkpoint_sha256") == current_candidate_sha256.get(step)
+            and int(metadata.get("global_step", -1)) == step
+            and int(metadata.get("ema_steps", {}).get("diffusion_ema.step", -1))
+            == step
+            and int(metadata.get("ema_steps", {}).get("conditioner_ema.step", -1))
+            == step
+            and metadata.get("embedded_training_run_contract_sha256")
+            == training_run_contract_sha256
+            and metric_summary_has_rows(row.get("clean_source_rf"), EXPECTED_ROWS)
+            and metric_summary_has_rows(
+                row.get("selection_fold_clean_source_rf"), EXPECTED_ROWS // 2
+            )
+            and metric_summary_has_rows(
+                row.get("sealed_holdout_clean_source_rf"), EXPECTED_ROWS // 2
+            )
+        )
+
+    assignments = list(value.get("validation_assignment") or [])
+    assignments_valid = (
+        len(assignments) == WORLD_SIZE
+        and sorted(int(row.get("rank", -1)) for row in assignments)
+        == list(range(WORLD_SIZE))
+        and all(
+            int(row.get("physical_gpu", -1)) == int(row.get("rank", -1)) + 3
+            and int(row.get("rows", -1)) == EXPECTED_ROWS // WORLD_SIZE
+            and int(row.get("short_rows", -1))
+            == EXPECTED_SHORT_ROWS // WORLD_SIZE
+            and int(row.get("long_rows", -1)) == EXPECTED_LONG_ROWS // WORLD_SIZE
+            and len(str(row.get("pair_ordinal_sha256") or "")) == 64
+            and len(str(row.get("donor_mapping_sha256") or "")) == 64
+            and row.get("loader", {}).get("drop_last") is False
+            for row in assignments
+        )
+    )
+
+    baseline = dict(value.get("p10_warmstart_baseline") or {})
+    baseline_losses = dict(baseline.get("losses") or {})
+    baseline_responses = dict(baseline.get("prediction_l1") or {})
+    baseline_valid = (
+        baseline.get("source_suffix_zero_invariance_pass") is True
+        and set(baseline_losses) == {"clean", "zero", "shuffled"}
+        and all(
+            metric_summary_has_rows(item, EXPECTED_ROWS)
+            for item in baseline_losses.values()
+        )
+        and baseline_losses.get("clean") == baseline_losses.get("zero")
+        and baseline_losses.get("clean") == baseline_losses.get("shuffled")
+        and set(baseline_responses) == {"zero", "shuffled"}
+        and all(
+            metric_summary_has_rows(item, EXPECTED_ROWS)
+            and float(item.get("mean", math.inf)) == 0.0
+            for item in baseline_responses.values()
+        )
+    )
+
+    selected_gate_valid = False
+    if set(promotion_gate.get("checks") or {}) == expected_gate_checks:
+        selected_gate_valid = (
+            promotion_gate.get("pass") is True
+            and all(bool(item) for item in promotion_gate["checks"].values())
+            and int(promotion_gate.get("rank_by_clean_source_rf", -1)) == 1
+            and float(promotion_gate.get("confidence", -1.0)) == CONFIDENCE
+            and promotion_gate.get("inference_fold") == "sealed_holdout_10k"
+            and int(promotion_gate.get("holdout_reuse_count", -1)) == 1
+            and paired_report_passes(
+                promotion_gate.get("zero_minus_clean_rf"), EXPECTED_ROWS // 2
+            )
+            and paired_report_passes(
+                promotion_gate.get("shuffled_minus_clean_rf"), EXPECTED_ROWS // 2
+            )
+            and paired_report_passes(
+                promotion_gate.get("p10_minus_selected_clean_rf"),
+                EXPECTED_ROWS // 2,
+            )
+            and paired_report_passes(
+                promotion_gate.get("clean_zero_prediction_l1"), EXPECTED_ROWS // 2
+            )
+            and paired_report_passes(
+                promotion_gate.get("clean_shuffled_prediction_l1"),
+                EXPECTED_ROWS // 2,
+            )
+            and set(promotion_gate.get("variant_metrics") or {})
+            == {"clean", "zero", "shuffled"}
+            and all(
+                metric_summary_has_rows(item, EXPECTED_ROWS)
+                for item in promotion_gate.get("variant_metrics", {}).values()
+            )
+            and set(promotion_gate.get("prediction_l1_metrics") or {})
+            == {"zero", "shuffled"}
+            and all(
+                metric_summary_has_rows(item, EXPECTED_ROWS)
+                for item in promotion_gate.get("prediction_l1_metrics", {}).values()
+            )
+        )
+
+    expected_candidate_paths = [path for _, path in discovered_candidates]
+    ranked_candidate = (
+        min(
+            candidate_rows,
+            key=lambda row: (
+                float(row["selection_fold_clean_source_rf"]["mean"]),
+                -int(row["step"]),
+            ),
+        )
+        if candidate_summaries_valid
+        else {}
+    )
+    expected_evaluation_contract = {
+        "rows": EXPECTED_ROWS,
+        "no_tail_drop": True,
+        "timesteps": list(DEFAULT_TIMESTEPS),
+        "noise": (
+            "fixed_per_rank_stream_seed42_identical_across_candidates_"
+            "and_source_interventions"
+        ),
+        "rf_noising": "z_t=(1-t)*target+t*noise",
+        "rf_target": "noise-target",
+        "weights": "diffusion_ema_plus_conditioner_ema",
+        "precision": "bf16_autocast_with_fp32_loss",
+        "cfg_dropout_prob": 0.0,
+        "selection_rule": [
+            "minimum_selection_10k_clean_source_rf_mse",
+            "latest_step_tiebreak",
+            "single_top_candidate_tested_once_on_sealed_holdout_10k",
+        ],
+        "paired_gate": (
+            "99pct_one_sided_lower_confidence_bound_above_zero_"
+            "on_sealed_holdout_overall_every_operation_and_both_length_buckets"
+        ),
+        "selection_bias_control": (
+            "candidate_ranking_and_promotion_inference_use_disjoint_"
+            "10k_folds_no_holdout_fallback"
+        ),
+    }
+    if not (
+        value.get("schema") == SCHEMA
+        and int(value.get("schema_version", -1)) == SCHEMA_VERSION
+        and value.get("status") == "PASS"
+        and value.get("selection_contract") == SELECTION_CONTRACT
+        and value.get("physical_gpus") == PHYSICAL_GPUS
+        and int(value.get("world_size", -1)) == WORLD_SIZE
+        and value.get("cuda_visible_devices") == VISIBLE_GPUS
+        and value.get("gpu_topology") == _gpu_topology()
+        and latest_route
+        == {
+            "editing_ar_inputs": ["source_foa_latent", "raw_edit_request"],
+            "editing_ar_target": "complete_new_sceneplan",
+            "old_sceneplan_input": False,
+            "editing_dit_frame_input": [
+                "noisy_target_64",
+                "complete_new_sceneplan_256",
+                "clean_source_foa_latent_64",
+            ],
+            "editing_dit_frame_channels": 384,
+        }
+        and Path(training_run.get("run_dir", "")).resolve() == run_dir
+        and value.get("training_run_contract")
+        == {
+            "path": str(training_run_contract_path),
+            "sha256": training_run_contract_sha256,
+            "canonical_sha256": _canonical_sha256(training_run_contract),
+        }
+        and all(training_run.get(key) == item for key, item in expected_run_audit.items())
+        and int(training_run.get("expected_max_step", -1)) == EXPECTED_MAX_STEP
+        and int(training_run.get("checkpoint_every", -1))
+        == EXPECTED_CHECKPOINT_EVERY
+        and training_run.get("checkpoint_retention")
+        == CHECKPOINT_RETENTION
+        and Path(training_run.get("last_checkpoint", "")).resolve(strict=True)
+        == discovered_last
+        and training_run.get("last_checkpoint_sha256")
+        == final_candidate_sha
+        and sha256_file(discovered_last) == final_candidate_sha
+        and current_candidate_sha256.get(EXPECTED_MAX_STEP)
+        == final_candidate_sha
+        and Path(value.get("preflight", {}).get("path", "")).resolve()
+        == preflight
+        and value.get("preflight", {}).get("sha256") == sha256_file(preflight)
+        and Path(value.get("model_config", {}).get("path", "")).resolve()
+        == model_config
+        and value.get("model_config", {}).get("sha256")
+        == sha256_file(model_config)
+        and value.get("model_config", {}).get("resolved_canonical_sha256")
+        == _canonical_sha256(load_config(model_config))
+        and value.get("validation_index") == expected_validation
+        and value.get("validation_folds") == expected_folds
+        and assignments_valid
+        and value.get("evaluation_contract") == expected_evaluation_contract
+        and value.get("candidate_steps") == list(EXPECTED_CANDIDATE_STEPS)
+        and candidate_steps == list(EXPECTED_CANDIDATE_STEPS)
+        and candidate_paths == expected_candidate_paths
+        and candidate_summaries_valid
+        and selected_step in EXPECTED_CANDIDATE_STEPS
+        and selected.parent == checkpoint_dir
+        and Path(selected_record.get("checkpoint", "")).resolve() == selected
+        and selected_record.get("checkpoint_sha256")
+        == value.get("selected_checkpoint_sha256")
+        and value.get("selected_checkpoint_sha256") == sha256_file(selected)
+        and int(ranked_candidate.get("step", -1)) == selected_step
+        and value.get("selected_clean_source_rf")
+        == selected_record.get("clean_source_rf")
+        and promotion_gate.get("variant_metrics", {}).get("clean")
+        == value.get("selected_clean_source_rf")
+        and selected_gate_valid
+        and baseline_valid
+        and value.get("rejected_ranked_candidates") == []
+        and sources == expected_sources
+    ):
+        raise RuntimeError("existing Editing DiT selection is stale or incompatible")
+    return value
+
+
+def main() -> int:
+    args = _parse_args()
+    if (
+        int(args.expected_max_step) != EXPECTED_MAX_STEP
+        or int(args.checkpoint_every) != EXPECTED_CHECKPOINT_EVERY
+        or int(args.short_batch_size) <= 0
+        or int(args.long_batch_size) <= 0
+        or int(args.num_workers) < 0
+        or int(args.seed) != 42
+        or tuple(float(value) for value in args.timesteps) != DEFAULT_TIMESTEPS
+    ):
+        raise ValueError("formal Editing DiT selection parameters changed")
+    rank, local_rank, device = _distributed()
+    gpu_topology = _rank0_audit(_gpu_topology, rank=rank, device=device)
+    torch.manual_seed(int(args.seed) + rank)
+    torch.cuda.manual_seed_all(int(args.seed) + rank)
+    torch.set_float32_matmul_precision("high")
+
+    run_dir = args.run_dir.expanduser().resolve(strict=True)
+    data_root = args.data_root.expanduser().resolve(strict=True)
+    preflight = (
+        args.preflight
+        if args.preflight is not None
+        else data_root / "contracts/full_training/PREFLIGHT.json"
+    ).expanduser().resolve(strict=True)
+    model_config_path = args.model_config.expanduser().resolve(strict=True)
+    validation_index = (
+        args.validation_index
+        if args.validation_index is not None
+        else data_root / "training_index/validation.sqlite"
+    ).expanduser().resolve(strict=True)
+    p10_checkpoint = args.p10_checkpoint.expanduser().resolve(strict=True)
+    training_run_contract_path = (run_dir / TRAIN_CONTRACT_NAME).resolve(
+        strict=True
+    )
+    output = (
+        args.output
+        if args.output is not None
+        else run_dir
+        / "evaluation/validation_20k_checkpoint_selection/SELECTED.json"
+    ).expanduser().resolve()
+    def identity_audit() -> dict[str, Any]:
+        if p10_checkpoint != CANONICAL_P10.resolve() or sha256_file(
+            p10_checkpoint
+        ) != CANONICAL_P10_SHA256:
+            raise RuntimeError("canonical P10-v11 checkpoint changed")
+        preflight_value, validation_sha = _validate_preflight(
+            preflight,
+            model_config=model_config_path,
+            validation_index=validation_index,
+            validation_sha256=args.validation_index_sha256,
+            p10_checkpoint=p10_checkpoint,
+        )
+        training_run_contract, training_run_contract_sha = (
+            validate_training_run_contract(
+                training_run_contract_path, expected_run_dir=run_dir
+            )
+        )
+        return {
+            "preflight_value": preflight_value,
+            "validation_sha": validation_sha,
+            "training_run_contract": training_run_contract,
+            "training_run_contract_sha256": training_run_contract_sha,
+        }
+
+    identity = _rank0_audit(identity_audit, rank=rank, device=device)
+    preflight_value = identity["preflight_value"]
+    validation_sha = str(identity["validation_sha"])
+    training_run_contract = dict(identity["training_run_contract"])
+    training_run_contract_sha256 = str(
+        identity["training_run_contract_sha256"]
+    )
+    existing = _rank0_audit(
+        lambda: _validate_existing_selection(
+            output,
+            run_dir=run_dir,
+            preflight=preflight,
+            model_config=model_config_path,
+            validation_index=validation_index,
+            training_run_contract=training_run_contract,
+            training_run_contract_path=training_run_contract_path,
+            training_run_contract_sha256=training_run_contract_sha256,
+        ),
+        rank=rank,
+        device=device,
+    )
+    if existing is not None:
+        if rank == 0:
+            print(
+                json.dumps(
+                    {
+                        "event": "editing_dit_checkpoint_selection_reused",
+                        "output": str(output),
+                        "selected_checkpoint": existing["selected_checkpoint"],
+                        "selected_step": existing["selected_checkpoint_step"],
+                    },
+                    sort_keys=True,
+                ),
+                flush=True,
+            )
+        dist.barrier()
+        dist.destroy_process_group()
+        return 0
+
+    def completed_run_audit() -> dict[str, Any]:
+        validation_summary, layout = _validation_layout(
+            validation_index, expected_sha256=validation_sha
+        )
+        run_audit = _audit_completed_training(
+            run_dir,
+            expected_max_step=int(args.expected_max_step),
+            checkpoint_every=int(args.checkpoint_every),
+            training_run_contract=training_run_contract,
+            training_run_contract_sha256=training_run_contract_sha256,
+        )
+        candidates, last_checkpoint = _discover_candidates(
+            run_dir,
+            expected_max_step=int(args.expected_max_step),
+            checkpoint_every=int(args.checkpoint_every),
+        )
+        return {
+            "validation_summary": validation_summary,
+            "layout": layout,
+            "run_audit": run_audit,
+            "candidates": [
+                (int(step), str(path)) for step, path in candidates
+            ],
+            "last_checkpoint": str(last_checkpoint),
+        }
+
+    completed = _rank0_audit(completed_run_audit, rank=rank, device=device)
+    validation_summary = completed["validation_summary"]
+    layout = completed["layout"]
+    fold_by_ordinal, fold_summary = _selection_holdout_folds(layout)
+    assigned, assignment_summary = _rank_ordinals(layout, rank)
+    donor_by_ordinal, donor_mapping_sha = _local_donor_mapping(layout, assigned)
+    run_audit = completed["run_audit"]
+    candidates = [
+        (int(step), Path(path).resolve(strict=True))
+        for step, path in completed["candidates"]
+    ]
+    last_checkpoint = Path(completed["last_checkpoint"]).resolve(strict=True)
+    resolved_model_config = load_config(model_config_path)
+    if _canonical_sha256(resolved_model_config) != _canonical_sha256(
+        load_config(Path(preflight_value["model_config"]))
+    ):
+        raise RuntimeError("resolved Editing model config changed")
+
+    diffusion = create_model_from_config(resolved_model_config)
+    wrapper = create_training_wrapper_from_config(resolved_model_config, diffusion)
+    if wrapper.diffusion_ema is None or wrapper.conditioner_ema is None:
+        raise RuntimeError("full Editing DiT selector requires both EMA branches")
+    prompt = diffusion.conditioner.conditioners["prompt"]
+    dataset = ScenePlanTransfusionEditingDataset(
+        validation_index,
+        tokenizer_spec=(prompt.tokenizer, 512),
+        expected_num_samples=len(assigned),
+        index_num_samples=EXPECTED_ROWS,
+        expected_index_sha256=validation_sha,
+        sample_ordinals=assigned,
+        latent_crop_length=648,
+        require_frozen=True,
+        verify_tensor_hashes_on_access=False,
+    )
+    loader, loader_summary = _make_loader(
+        dataset,
+        short_batch_size=int(args.short_batch_size),
+        long_batch_size=int(args.long_batch_size),
+        num_workers=int(args.num_workers),
+    )
+    donor_resolver = _SourceDonorResolver(
+        dataset, assigned, donor_by_ordinal
+    )
+    expected_local_ordinals = assigned
+
+    # Evaluate the canonical P10-v11 warm start on exactly the same rows/noise.
+    p10_payload = torch.load(
+        p10_checkpoint, map_location="cpu", weights_only=True, mmap=True
+    )
+    p10_report = diffusion.load_pretrained_route_state_dict(
+        p10_payload["state_dict"],
+        prefer_ema=True,
+        source_model_config=p10_payload.get("model_config"),
+        source_conditioner_ema_names=p10_payload.get(
+            "conditioner_ema_parameter_names"
+        ),
+    )
+    del p10_payload
+    if not (
+        int(p10_report.get("loaded", -1)) == 612
+        and int(p10_report.get("target_total", -1)) == 612
+        and not p10_report.get("missing")
+        and len(p10_report.get("partial_expansions", [])) == 2
+        and int(p10_report.get("transformer_loaded", -1)) == 237
+    ):
+        raise RuntimeError("canonical P10-v11 Editing warm start changed")
+    online_route = diffusion.model.to(device)
+    diffusion.conditioner.to(device)
+    baseline_raw = _evaluate_route(
+        online_route,
+        diffusion,
+        loader,
+        device=device,
+        rank=rank,
+        seed=int(args.seed),
+        timesteps=DEFAULT_TIMESTEPS,
+        source_variants=("clean", "zero", "shuffled"),
+        conditioner_context=torch.no_grad(),
+        shuffled_source_provider=donor_resolver,
+    )
+    if baseline_raw["ordinals"] != expected_local_ordinals:
+        raise RuntimeError("P10 baseline validation order changed")
+    baseline = {
+        "checkpoint": str(p10_checkpoint),
+        "checkpoint_sha256": CANONICAL_P10_SHA256,
+        "warmstart_report": p10_report,
+        "variants": {
+            name: _matrix_summary(
+                matrix,
+                operations=baseline_raw["operations"],
+                buckets=baseline_raw["buckets"],
+                timesteps=DEFAULT_TIMESTEPS,
+                device=device,
+            )
+            for name, matrix in baseline_raw["losses"].items()
+        },
+        "prediction_l1": {
+            name: _matrix_summary(
+                matrix,
+                operations=baseline_raw["operations"],
+                buckets=baseline_raw["buckets"],
+                timesteps=DEFAULT_TIMESTEPS,
+                device=device,
+            )
+            for name, matrix in baseline_raw["prediction_l1"].items()
+        },
+    }
+    baseline_invariant = (
+        torch.equal(baseline_raw["losses"]["clean"], baseline_raw["losses"]["zero"])
+        and torch.equal(
+            baseline_raw["losses"]["clean"], baseline_raw["losses"]["shuffled"]
+        )
+        and float(baseline_raw["prediction_l1"]["zero"].max()) == 0.0
+        and float(baseline_raw["prediction_l1"]["shuffled"].max()) == 0.0
+    )
+    baseline["source_suffix_zero_invariance_pass"] = baseline_invariant
+    if not baseline_invariant:
+        raise RuntimeError("P10 warm start is unexpectedly source-responsive")
+    online_route.to("cpu")
+    del online_route
+    torch.cuda.empty_cache()
+
+    ema_route = wrapper.diffusion_ema.ema_model.to(device)
+    candidate_records: list[dict[str, Any]] = []
+    candidate_local_losses: dict[int, torch.Tensor] = {}
+    candidate_sha256: dict[int, str] = {}
+    for step, checkpoint in candidates:
+        checkpoint_sha = _checkpoint_sha(checkpoint, rank=rank, device=device)
+        metadata = _load_candidate(
+            wrapper,
+            checkpoint,
+            step=step,
+            resolved_model_config=resolved_model_config,
+            training_run_contract=training_run_contract,
+            training_run_contract_path=training_run_contract_path,
+            training_run_contract_sha256=training_run_contract_sha256,
+        )
+        raw = _evaluate_route(
+            ema_route,
+            diffusion,
+            loader,
+            device=device,
+            rank=rank,
+            seed=int(args.seed),
+            timesteps=DEFAULT_TIMESTEPS,
+            source_variants=("clean",),
+            conditioner_context=wrapper.ema_conditioner_context(),
+        )
+        if raw["ordinals"] != expected_local_ordinals:
+            raise RuntimeError(f"candidate step {step} validation order changed")
+        fold_raw = {
+            fold: _subset_evaluation(raw, fold_by_ordinal, fold)
+            for fold in ("selection", "holdout")
+        }
+        summary = {
+            "full_20k": _matrix_summary(
+                raw["losses"]["clean"],
+                operations=raw["operations"],
+                buckets=raw["buckets"],
+                timesteps=DEFAULT_TIMESTEPS,
+                device=device,
+            ),
+            **{
+                fold: _matrix_summary(
+                    fold_raw[fold]["losses"]["clean"],
+                    operations=fold_raw[fold]["operations"],
+                    buckets=fold_raw[fold]["buckets"],
+                    timesteps=DEFAULT_TIMESTEPS,
+                    device=device,
+                )
+                for fold in ("selection", "holdout")
+            },
+        }
+        record = {
+            "checkpoint": str(checkpoint),
+            "checkpoint_sha256": checkpoint_sha,
+            "step": step,
+            "checkpoint_metadata": metadata,
+            "clean_source_rf": summary["full_20k"],
+            "selection_fold_clean_source_rf": summary["selection"],
+            "sealed_holdout_clean_source_rf": summary["holdout"],
+        }
+        candidate_records.append(record)
+        candidate_local_losses[step] = raw["losses"]["clean"]
+        candidate_sha256[step] = checkpoint_sha
+        if rank == 0:
+            print(
+                json.dumps(
+                    {
+                        "event": "editing_dit_candidate_complete",
+                        "step": step,
+                        "checkpoint": str(checkpoint),
+                        "selection_fold_clean_source_rf_mse": summary[
+                            "selection"
+                        ]["mean"],
+                    },
+                    sort_keys=True,
+                ),
+                flush=True,
+            )
+
+    final_candidate = candidates[-1][1]
+    if _checkpoint_sha(last_checkpoint, rank=rank, device=device) != candidate_sha256[
+        EXPECTED_MAX_STEP
+    ]:
+        raise RuntimeError("last.ckpt is not the completed 30K checkpoint")
+    last_state, last_metadata = _load_checkpoint_payload(
+        last_checkpoint,
+        step=EXPECTED_MAX_STEP,
+        resolved_model_config=resolved_model_config,
+        expected_conditioner_ema_names=list(
+            wrapper.conditioner_ema.parameter_names
+        ),
+        training_run_contract=training_run_contract,
+        training_run_contract_path=training_run_contract_path,
+        training_run_contract_sha256=training_run_contract_sha256,
+    )
+    del last_state
+    if last_metadata["global_step"] != EXPECTED_MAX_STEP:
+        raise RuntimeError("last.ckpt internal step changed")
+
+    ranked = sorted(
+        candidate_records,
+        key=lambda row: (
+            float(row["selection_fold_clean_source_rf"]["mean"]),
+            -int(row["step"]),
+        ),
+    )
+    rejected: list[dict[str, Any]] = []
+    selected_record: dict[str, Any] | None = None
+    selected_gate: dict[str, Any] | None = None
+    selected_raw: dict[str, Any] | None = None
+    # The sealed holdout is consumed exactly once.  Trying a second candidate
+    # after observing a holdout failure would invalidate the stated confidence.
+    for rank_index, record in enumerate(ranked[:1], start=1):
+        step = int(record["step"])
+        checkpoint = Path(record["checkpoint"])
+        _load_candidate(
+            wrapper,
+            checkpoint,
+            step=step,
+            resolved_model_config=resolved_model_config,
+            training_run_contract=training_run_contract,
+            training_run_contract_path=training_run_contract_path,
+            training_run_contract_sha256=training_run_contract_sha256,
+        )
+        raw = _evaluate_route(
+            ema_route,
+            diffusion,
+            loader,
+            device=device,
+            rank=rank,
+            seed=int(args.seed),
+            timesteps=DEFAULT_TIMESTEPS,
+            source_variants=("clean", "zero", "shuffled"),
+            conditioner_context=wrapper.ema_conditioner_context(),
+            shuffled_source_provider=donor_resolver,
+        )
+        if raw["ordinals"] != expected_local_ordinals or not torch.equal(
+            raw["losses"]["clean"], candidate_local_losses[step]
+        ):
+            raise RuntimeError("candidate intervention replay is not deterministic")
+        holdout = _subset_evaluation(raw, fold_by_ordinal, "holdout")
+        baseline_holdout = _subset_evaluation(
+            baseline_raw, fold_by_ordinal, "holdout"
+        )
+        zero_advantage = _paired_report(
+            holdout["losses"]["zero"] - holdout["losses"]["clean"],
+            operations=holdout["operations"],
+            buckets=holdout["buckets"],
+            device=device,
+        )
+        shuffled_advantage = _paired_report(
+            holdout["losses"]["shuffled"] - holdout["losses"]["clean"],
+            operations=holdout["operations"],
+            buckets=holdout["buckets"],
+            device=device,
+        )
+        p10_advantage = _paired_report(
+            baseline_holdout["losses"]["clean"] - holdout["losses"]["clean"],
+            operations=holdout["operations"],
+            buckets=holdout["buckets"],
+            device=device,
+        )
+        zero_response = _paired_report(
+            holdout["prediction_l1"]["zero"],
+            operations=holdout["operations"],
+            buckets=holdout["buckets"],
+            device=device,
+        )
+        shuffled_response = _paired_report(
+            holdout["prediction_l1"]["shuffled"],
+            operations=holdout["operations"],
+            buckets=holdout["buckets"],
+            device=device,
+        )
+        checks = {
+            "clean_better_than_zero_source_99pct": _paired_report_pass(
+                zero_advantage
+            ),
+            "clean_better_than_shuffled_source_99pct": _paired_report_pass(
+                shuffled_advantage
+            ),
+            "clean_better_than_p10_warmstart_99pct": _paired_report_pass(
+                p10_advantage
+            ),
+            "positive_zero_source_prediction_response_99pct": _paired_report_pass(
+                zero_response
+            ),
+            "positive_shuffled_source_prediction_response_99pct": _paired_report_pass(
+                shuffled_response
+            ),
+        }
+        gate = {
+            "rank_by_clean_source_rf": rank_index,
+            "confidence_method": (
+                "paired_per_row_mean_over_fixed_timesteps_normal_"
+                "one_sided_lower_bound"
+            ),
+            "confidence": CONFIDENCE,
+            "inference_fold": "sealed_holdout_10k",
+            "holdout_reuse_count": 1,
+            "checks": checks,
+            "zero_minus_clean_rf": zero_advantage,
+            "shuffled_minus_clean_rf": shuffled_advantage,
+            "p10_minus_selected_clean_rf": p10_advantage,
+            "clean_zero_prediction_l1": zero_response,
+            "clean_shuffled_prediction_l1": shuffled_response,
+            "variant_metrics": {
+                name: _matrix_summary(
+                    matrix,
+                    operations=raw["operations"],
+                    buckets=raw["buckets"],
+                    timesteps=DEFAULT_TIMESTEPS,
+                    device=device,
+                )
+                for name, matrix in raw["losses"].items()
+            },
+            "prediction_l1_metrics": {
+                name: _matrix_summary(
+                    matrix,
+                    operations=raw["operations"],
+                    buckets=raw["buckets"],
+                    timesteps=DEFAULT_TIMESTEPS,
+                    device=device,
+                )
+                for name, matrix in raw["prediction_l1"].items()
+            },
+        }
+        gate["pass"] = all(checks.values())
+        if gate["pass"]:
+            selected_record = record
+            selected_gate = gate
+            selected_raw = raw
+            break
+        rejected.append(
+            {
+                "step": step,
+                "checkpoint": str(checkpoint),
+                "failed_checks": [name for name, passed in checks.items() if not passed],
+                "gate": gate,
+            }
+        )
+
+    if selected_record is None or selected_gate is None or selected_raw is None:
+        raise RuntimeError("no full Editing DiT checkpoint passed promotion gates")
+    selected_checkpoint = Path(selected_record["checkpoint"]).resolve(strict=True)
+    if selected_checkpoint.parent != final_candidate.parent:
+        raise RuntimeError("selected Editing DiT checkpoint left the run directory")
+
+    assignment_dir = output.parent / "rank_assignments"
+    assignment_dir.mkdir(parents=True, exist_ok=True)
+    _atomic_json(
+        assignment_dir / f"rank-{rank}.json",
+        {
+            "schema": "sceneplan_transfusion_editing_dit_validation_assignment",
+            "schema_version": 1,
+            **assignment_summary,
+            "donor_mapping_sha256": donor_mapping_sha,
+            "loader": loader_summary,
+        },
+    )
+    dist.barrier()
+
+    if rank == 0:
+        assignment_reports = [
+            json.loads(
+                (assignment_dir / f"rank-{index}.json").read_text(encoding="utf-8")
+            )
+            for index in range(WORLD_SIZE)
+        ]
+        if (
+            sum(int(value["rows"]) for value in assignment_reports)
+            != EXPECTED_ROWS
+            or sum(int(value["short_rows"]) for value in assignment_reports)
+            != EXPECTED_SHORT_ROWS
+            or sum(int(value["long_rows"]) for value in assignment_reports)
+            != EXPECTED_LONG_ROWS
+        ):
+            raise RuntimeError("rank assignment artifacts do not cover validation")
+        selection = {
+            "schema": SCHEMA,
+            "schema_version": SCHEMA_VERSION,
+            "status": "PASS",
+            "selection_contract": SELECTION_CONTRACT,
+            "latest_route": {
+                "editing_ar_inputs": ["source_foa_latent", "raw_edit_request"],
+                "editing_ar_target": "complete_new_sceneplan",
+                "old_sceneplan_input": False,
+                "editing_dit_frame_input": [
+                    "noisy_target_64",
+                    "complete_new_sceneplan_256",
+                    "clean_source_foa_latent_64",
+                ],
+                "editing_dit_frame_channels": 384,
+            },
+            "physical_gpus": PHYSICAL_GPUS,
+            "world_size": WORLD_SIZE,
+            "cuda_visible_devices": VISIBLE_GPUS,
+            "gpu_topology": gpu_topology,
+            "training_run": {
+                "run_dir": str(run_dir),
+                **run_audit,
+                "expected_max_step": EXPECTED_MAX_STEP,
+                "checkpoint_every": EXPECTED_CHECKPOINT_EVERY,
+                "checkpoint_retention": CHECKPOINT_RETENTION,
+                "last_checkpoint": str(last_checkpoint),
+                "last_checkpoint_sha256": candidate_sha256[EXPECTED_MAX_STEP],
+            },
+            "training_run_contract": {
+                "path": str(training_run_contract_path),
+                "sha256": training_run_contract_sha256,
+                "canonical_sha256": _canonical_sha256(training_run_contract),
+            },
+            "preflight": {
+                "path": str(preflight),
+                "sha256": sha256_file(preflight),
+            },
+            "model_config": {
+                "path": str(model_config_path),
+                "sha256": sha256_file(model_config_path),
+                "resolved_canonical_sha256": _canonical_sha256(
+                    resolved_model_config
+                ),
+            },
+            "validation_index": validation_summary,
+            "validation_folds": fold_summary,
+            "validation_assignment": assignment_reports,
+            "evaluation_contract": {
+                "rows": EXPECTED_ROWS,
+                "no_tail_drop": True,
+                "timesteps": list(DEFAULT_TIMESTEPS),
+                "noise": (
+                    "fixed_per_rank_stream_seed42_identical_across_candidates_"
+                    "and_source_interventions"
+                ),
+                "rf_noising": "z_t=(1-t)*target+t*noise",
+                "rf_target": "noise-target",
+                "weights": "diffusion_ema_plus_conditioner_ema",
+                "precision": "bf16_autocast_with_fp32_loss",
+                "cfg_dropout_prob": 0.0,
+                "selection_rule": [
+                    "minimum_selection_10k_clean_source_rf_mse",
+                    "latest_step_tiebreak",
+                    "single_top_candidate_tested_once_on_sealed_holdout_10k",
+                ],
+                "paired_gate": (
+                    "99pct_one_sided_lower_confidence_bound_above_zero_"
+                    "on_sealed_holdout_overall_every_operation_and_both_"
+                    "length_buckets"
+                ),
+                "selection_bias_control": (
+                    "candidate_ranking_and_promotion_inference_use_disjoint_"
+                    "10k_folds_no_holdout_fallback"
+                ),
+            },
+            "p10_warmstart_baseline": baseline,
+            "candidate_steps": list(EXPECTED_CANDIDATE_STEPS),
+            "candidates": candidate_records,
+            "rejected_ranked_candidates": rejected,
+            "selected_checkpoint": str(selected_checkpoint),
+            "selected_checkpoint_sha256": selected_record["checkpoint_sha256"],
+            "selected_checkpoint_step": int(selected_record["step"]),
+            "selected_clean_source_rf": selected_record["clean_source_rf"],
+            "selected_promotion_gate": selected_gate,
+            "source_sha256": _source_sha256(),
+        }
+        _atomic_json(output, selection)
+        print(
+            json.dumps(
+                {
+                    "event": "editing_dit_checkpoint_selection_complete",
+                    "output": str(output),
+                    "selected_checkpoint": str(selected_checkpoint),
+                    "selected_step": int(selected_record["step"]),
+                    "selected_clean_source_rf_mse": selected_record[
+                        "clean_source_rf"
+                    ]["mean"],
+                },
+                sort_keys=True,
+            ),
+            flush=True,
+        )
+    dist.barrier()
+    dist.destroy_process_group()
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

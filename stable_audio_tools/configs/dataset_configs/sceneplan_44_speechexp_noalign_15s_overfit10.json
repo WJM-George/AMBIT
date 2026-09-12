@@ -1,0 +1,48 @@
+{
+    "_task": "Ten-row revision-6 overfit panel spanning 0--15 second ScenePlan 4+4 generation without a forced-aligner teacher.",
+    "caption_max_tokens": 512,
+    "dataset_type": "sceneplan_v2_preencoded",
+    "datasets": [
+        {
+            "id": "sceneplan_v2_speech_expansion_noalign_15s_v1_train",
+            "path": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1/training_index/train.sqlite",
+            "weight": 1.0
+        }
+    ],
+    "drop_last": false,
+    "expected_num_samples": 10,
+    "in_order": true,
+    "index_num_samples": 1600000,
+    "latent_crop_length": 648,
+    "latent_downsampling_ratio": 1024,
+    "max_item_retries": 0,
+    "max_length_sec": 15.047619047619047,
+    "persistent_workers": true,
+    "pin_memory": true,
+    "prefetch_factor": 2,
+    "random_crop": false,
+    "require_complete": true,
+    "sample_contract": {
+        "base_music_only": 1,
+        "base_sound_only": 1,
+        "base_speech_only": 1,
+        "long_direct_mixed": 2,
+        "long_speech_only": 1,
+        "sequential_mixed": 2,
+        "short_direct_mixed": 2
+    },
+    "sample_ordinals": [
+        0,
+        500000,
+        599999,
+        1137500,
+        1168750,
+        1200000,
+        1237500,
+        1268750,
+        1300000,
+        1450000
+    ],
+    "speech_timing_sidecar": null,
+    "word_level_timestamp_teacher": false
+}

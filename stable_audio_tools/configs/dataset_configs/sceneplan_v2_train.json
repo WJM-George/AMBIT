@@ -1,0 +1,24 @@
+{
+    "_task": "P10 candidate only: frozen ScenePlan-v2 train split, variable latents padded without cropping.",
+    "dataset_type": "sceneplan_v2_preencoded",
+    "random_crop": false,
+    "latent_crop_length": 432,
+    "latent_downsampling_ratio": 1024,
+    "caption_max_tokens": 512,
+    "max_length_sec": 10.031020408163266,
+    "expected_num_samples": 1100000,
+    "require_complete": true,
+    "max_item_retries": 0,
+    "pin_memory": true,
+    "persistent_workers": true,
+    "prefetch_factor": 2,
+    "in_order": true,
+    "drop_last": true,
+    "datasets": [
+        {
+            "id": "sceneplan_v2_train",
+            "path": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/training_index/train.sqlite",
+            "weight": 1.0
+        }
+    ]
+}

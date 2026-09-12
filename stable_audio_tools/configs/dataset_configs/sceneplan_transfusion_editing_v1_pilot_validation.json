@@ -1,0 +1,25 @@
+{
+    "_task": "Ten real paired edits for the aligned-source Transfusion Editing DiT data-path gate.",
+    "caption_max_tokens": 512,
+    "dataset_type": "sceneplan_transfusion_editing_preencoded",
+    "datasets": [
+        {
+            "id": "sceneplan_transfusion_editing_v1_pilot_validation",
+            "path": "/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1_pilot/training_index/validation.sqlite",
+            "weight": 1.0
+        }
+    ],
+    "drop_last": false,
+    "expected_num_samples": 10,
+    "index_num_samples": 10,
+    "index_sha256": "83b704a0cdc709fa12bc2e58ab767044bbfdcc3817605766d23006bd8f6b8680",
+    "latent_crop_length": 648,
+    "latent_downsampling_ratio": 1024,
+    "max_item_retries": 0,
+    "max_length_sec": 15.047619047619047,
+    "persistent_workers": false,
+    "pin_memory": true,
+    "random_crop": false,
+    "require_complete": true,
+    "verify_tensor_hashes_on_access": true
+}

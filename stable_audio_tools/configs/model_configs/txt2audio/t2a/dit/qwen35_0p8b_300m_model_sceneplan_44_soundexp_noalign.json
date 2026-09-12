@@ -1,0 +1,15 @@
+{
+    "extends": "qwen35_0p8b_300m_model_sceneplan_44_sao.json",
+    "_task": "Production P10 ScenePlan 4+4 DiT on the Sound-expansion revision, using the original end-to-end speech route without an external forced aligner.",
+    "_stage": "From-scratch replacement for the rejected Qwen3-ForcedAligner experiment.",
+    "_note": "Formal speech uses the exact transcript through semantic cross-attention and the ScenePlan onset/offset through framewise 4+4 event control. No word timestamps, speech timing sidecar, frame-text alignment module, or duration-teacher loss is instantiated. The independent 15% caption/structured CFG and the low-weight Sound temporal-difference objective are retained.",
+    "training": {
+        "sceneplan_sound_temporal_difference_loss": {
+            "enabled": true,
+            "scope": "sound_only",
+            "weight": 0.05,
+            "lags": [1, 2, 4],
+            "smooth_l1_beta": 0.1
+        }
+    }
+}

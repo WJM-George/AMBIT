@@ -1,0 +1,97 @@
+{
+  "scope": "Read-only real frozen TRAIN rows; original and merged __getitem__, same actual local tokenizer. Constructor contract behavior checked separately using synthetic indices. No training or GPU work.",
+  "results": [
+    {
+      "index": "/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1/training_index/train.sqlite",
+      "cases": [
+        {
+          "ordinal": 0,
+          "operation": "stationary_spatial_relocation",
+          "frames": 77
+        },
+        {
+          "ordinal": 1,
+          "operation": "event_addition",
+          "frames": 120
+        },
+        {
+          "ordinal": 2,
+          "operation": "linear_to_static",
+          "frames": 142
+        },
+        {
+          "ordinal": 3,
+          "operation": "event_addition",
+          "frames": 176
+        },
+        {
+          "ordinal": 4,
+          "operation": "stationary_spatial_relocation",
+          "frames": 68
+        },
+        {
+          "ordinal": 5,
+          "operation": "static_to_linear",
+          "frames": 280
+        },
+        {
+          "ordinal": 6,
+          "operation": "linear_to_static",
+          "frames": 145
+        },
+        {
+          "ordinal": 7,
+          "operation": "static_to_linear",
+          "frames": 122
+        }
+      ],
+      "tensor_and_metadata_exact": true
+    },
+    {
+      "index": "/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1/revisions/spatial_multi500k_20260912/training_index/train.sqlite",
+      "cases": [
+        {
+          "ordinal": 0,
+          "operation": "stationary_spatial_relocation",
+          "frames": 291
+        },
+        {
+          "ordinal": 1,
+          "operation": "multi_source_linear_to_static",
+          "frames": 432
+        },
+        {
+          "ordinal": 2,
+          "operation": "stationary_spatial_relocation",
+          "frames": 501
+        },
+        {
+          "ordinal": 3,
+          "operation": "stationary_spatial_relocation",
+          "frames": 432
+        },
+        {
+          "ordinal": 4,
+          "operation": "stationary_spatial_relocation",
+          "frames": 137
+        },
+        {
+          "ordinal": 5,
+          "operation": "stationary_spatial_relocation",
+          "frames": 432
+        },
+        {
+          "ordinal": 6,
+          "operation": "stationary_spatial_relocation",
+          "frames": 432
+        },
+        {
+          "ordinal": 7,
+          "operation": "static_to_linear",
+          "frames": 432
+        }
+      ],
+      "tensor_and_metadata_exact": true
+    }
+  ]
+}

@@ -1,0 +1,177 @@
+{
+    "_variant": "B / ds1024_z64 : HALF the time compression of the baseline (downsampling 1024 vs 2048). 2x more latent frames -> easier, higher-fidelity reconstruction of fast transients and spatial cues; cost = 2x longer latent sequence for the Stage-2 DiT. Stride change keeps conv weight shapes, so the 2ch->4ch warm-start still applies.",
+    "model_type": "autoencoder",
+    "sample_size": 176400,
+    "sample_rate": 44100,
+    "audio_channels": 4,
+    "model": {
+        "encoder": {
+            "type": "oobleck",
+            "config": {
+                "in_channels": 4,
+                "channels": 128,
+                "c_mults": [1, 2, 4, 8, 16],
+                "strides": [2, 2, 4, 8, 8],
+                "latent_dim": 128,
+                "use_snake": true
+            }
+        },
+        "decoder": {
+            "type": "oobleck",
+            "config": {
+                "out_channels": 4,
+                "channels": 128,
+                "c_mults": [1, 2, 4, 8, 16],
+                "strides": [2, 2, 4, 8, 8],
+                "latent_dim": 64,
+                "use_snake": true,
+                "final_tanh": false
+            }
+        },
+        "bottleneck": {
+            "type": "vae"
+        },
+        "latent_dim": 64,
+        "downsampling_ratio": 1024,
+        "io_channels": 4
+    },
+    "training": {
+        "learning_rate": 1.5e-4,
+        "warmup_steps": 0,
+        "use_ema": true,
+        "optimizer_configs": {
+            "autoencoder": {
+                "optimizer": {
+                    "type": "AdamW",
+                    "config": {
+                        "betas": [0.8, 0.99],
+                        "lr": 1.5e-4,
+                        "weight_decay": 1e-3
+                    }
+                },
+                "scheduler": {
+                    "type": "InverseLR",
+                    "config": {
+                        "inv_gamma": 200000,
+                        "power": 0.5,
+                        "warmup": 0.999
+                    }
+                }
+            },
+            "discriminator": {
+                "optimizer": {
+                    "type": "AdamW",
+                    "config": {
+                        "betas": [0.8, 0.99],
+                        "lr": 3e-4,
+                        "weight_decay": 1e-3
+                    }
+                },
+                "scheduler": {
+                    "type": "InverseLR",
+                    "config": {
+                        "inv_gamma": 200000,
+                        "power": 0.5,
+                        "warmup": 0.999
+                    }
+                }
+            }
+        },
+        "loss_configs": {
+            "discriminator": {
+                "type": "encodec",
+                "config": {
+                    "filters": 64,
+                    "n_ffts": [2048, 1024, 512, 256, 128],
+                    "hop_lengths": [512, 256, 128, 64, 32],
+                    "win_lengths": [2048, 1024, 512, 256, 128]
+                },
+                "weights": {
+                    "adversarial": 0.1,
+                    "feature_matching": 5.0
+                }
+            },
+            "spectral": {
+                "type": "mrstft",
+                "config": {
+                    "fft_sizes": [2048, 1024, 512, 256, 128, 64, 32],
+                    "hop_sizes": [512, 256, 128, 64, 32, 16, 8],
+                    "win_lengths": [2048, 1024, 512, 256, 128, 64, 32],
+                    "perceptual_weighting": true
+                },
+                "weights": {
+                    "mrstft": 1.0
+                }
+            },
+            "band_mel": {
+                "type": "band_weighted",
+                "config": {
+                    "n_fft": 2048,
+                    "hop_length": 512,
+                    "win_length": 2048,
+                    "power": 2.0,
+                    "log_weight": 1.0,
+                    "mag_weight": 0.1,
+                    "clamp_eps": 1e-5,
+                    "mel_scale": "slaney",
+                    "norm": "slaney",
+                    "bands": [
+                        {
+                            "name": "low_0_250",
+                            "fmin": 0,
+                            "fmax": 250,
+                            "n_mels": 8,
+                            "weight": 0.85
+                        },
+                        {
+                            "name": "low_mid_250_2000",
+                            "fmin": 250,
+                            "fmax": 2000,
+                            "n_mels": 32,
+                            "weight": 0.9
+                        },
+                        {
+                            "name": "presence_2000_8000",
+                            "fmin": 2000,
+                            "fmax": 8000,
+                            "n_mels": 48,
+                            "weight": 1.25
+                        },
+                        {
+                            "name": "brightness_8000_14000",
+                            "fmin": 8000,
+                            "fmax": 14000,
+                            "n_mels": 24,
+                            "weight": 1.0
+                        },
+                        {
+                            "name": "air_14000_22050",
+                            "fmin": 14000,
+                            "fmax": 22050,
+                            "n_mels": 24,
+                            "weight": 0.25
+                        }
+                    ]
+                },
+                "weights": {
+                    "band_mel": 0.05
+                }
+            },
+            "time": {
+                "type": "l1",
+                "weights": {
+                    "l1": 0.0
+                }
+            },
+            "bottleneck": {
+                "type": "kl",
+                "weights": {
+                    "kl": 1e-4
+                }
+            }
+        },
+        "demo": {
+            "demo_every": 2000
+        }
+    }
+}

@@ -1,0 +1,7 @@
+{
+  "extends": "sceneplan_p11_trial30k_matched_screening_v1.json",
+  "_task": "Shared sketch-first P11-v4 screening view for Direct-MSE and Flow-R1: SceneSketch semantic authority plus core15 numeric ExecutionState.",
+  "p11_contract": "sketch_first_transfusion_cot_v4",
+  "lexical_evidence_mode": "none",
+  "lexical_max_tokens": 128
+}

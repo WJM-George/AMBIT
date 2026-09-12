@@ -1,0 +1,4 @@
+{
+    "_note": "Compatibility alias. The maintained T2A DiT config lives under txt2audio/t2a/dit.",
+    "extends": "t2a/dit/qwen35_0p8b_300m.json"
+}

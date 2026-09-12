@@ -1,0 +1,16 @@
+{
+    "_comment": "Pre-encoded 4ch (FOA) latents for the Qwen Text->Spatial DiT. PLACEHOLDER PATH: pre-encoding has NOT been run yet. It depends on the refined captions produced by the data pipeline (e.g. /mnt/sdd/audio_dataset/spatial_foa/captions_stage1_refined.jsonl); once captions are finalized, run pre_encode_4ch.py with the 4ch VAE to populate this directory. Each .npy latent [C,N] must carry metadata with prompt (or text), spatial_format, and seconds_total so the qwen_text/spatial_format/number conditioners get their inputs.",
+    "_pre_encode_note": "pre_encode_4ch.py output -> path below; latent_crop_length 216 matches the DiT training crop (216 latent frames @ downsample 1024 ~= 5.0s @ 44100). Update 'path' if the encode target differs.",
+    "dataset_type": "pre_encoded",
+    "random_crop": true,
+    "latent_crop_length": 216,
+    "min_length_sec": 1.0,
+    "max_length_sec": 16.0,
+    "datasets": [
+        {
+            "id": "spatial_foa_qwen_latents",
+            "path": "/mnt/sdc/audio_latents/spatial_foa_qwen_4ch",
+            "weight": 1.0
+        }
+    ]
+}

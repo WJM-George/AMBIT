@@ -1,0 +1,9 @@
+{
+  "extends": "sceneplan_p11_pilot90.json",
+  "_task": "P11-v4 exact-batch pilot90 runtime projection for unified G/U/E learnability validation.",
+  "p11_contract": "sketch_first_transfusion_cot_v4",
+  "lexical_evidence_mode": "none",
+  "lexical_max_tokens": 128,
+  "drop_last": true,
+  "require_exact_batch_size": true
+}

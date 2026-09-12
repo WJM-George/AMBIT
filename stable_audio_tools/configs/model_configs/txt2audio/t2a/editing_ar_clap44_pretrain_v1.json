@@ -1,0 +1,15 @@
+{
+  "purpose": "AR_planning_pretraining",
+  "seed": 42,
+  "schedule": {"max_steps": 1000, "warmup_steps": 100, "save_every": 500, "validate_every": 250, "log_every": 10, "gradient_accumulation": 4, "short_batch_size": 8, "long_batch_size": 5, "validation_batches": 32, "validation_batch_size": 4, "num_workers": 4},
+  "ar_lr": 0.0001,
+  "shared_lr": 0.000002,
+  "dit_lr": 0.000002,
+  "weight_decay": 0.001,
+  "lambda_ar": 1.0,
+  "lambda_rf": 1.0,
+  "lambda_source_distillation": 0.0,
+  "scene_distillation_weight": 0.25,
+  "source_feature_dropout": 0.0,
+  "gradient_clip": 1.0
+}

@@ -1,0 +1,220 @@
+{
+  "schema": "stable_audio_tools.sceneplan_renderer_build_spec",
+  "schema_version": 2,
+  "contract_revision": 4,
+  "dataset_id": "sceneplan_renderer_v2_1p124m",
+  "seed": 20260814,
+  "audio": {
+    "render_sample_rate_hz": 44100,
+    "model_sample_rate_hz": 44100,
+    "max_duration_sec": 10.031020408163266,
+    "channels": 4,
+    "channel_layout": "WYZX_ACN_SN3D",
+    "vae_hop_samples": 1024,
+    "max_model_num_samples": 442368,
+    "max_vae_padded_num_samples": 442368,
+    "max_latent_frames_valid": 432,
+    "latent_channels": 64,
+    "latent_dtype": "float16",
+    "random_crop": false
+  },
+  "splits": {
+    "train": {
+      "scenes": 1100000,
+      "retain_rendered_foa": false,
+      "retain_source_tracks": false,
+      "joint_quotas": {
+        "speech": {"1": 175000, "2": 175000, "3": 100000, "4": 50000},
+        "no_speech": {"1": 210000, "2": 210000, "3": 120000, "4": 60000}
+      }
+    },
+    "validation": {
+      "scenes": 20000,
+      "retain_rendered_foa": true,
+      "retain_source_tracks": true,
+      "joint_quotas": {
+        "speech": {"1": 3500, "2": 3500, "3": 2000, "4": 1000},
+        "no_speech": {"1": 3500, "2": 3500, "3": 2000, "4": 1000}
+      }
+    },
+    "test": {
+      "scenes": 4000,
+      "retain_rendered_foa": true,
+      "retain_source_tracks": true,
+      "joint_quotas": {
+        "speech": {"1": 700, "2": 700, "3": 400, "4": 200},
+        "no_speech": {"1": 700, "2": 700, "3": 400, "4": 200}
+      }
+    }
+  },
+  "speech_inventory": {
+    "canonical_asset_modality": "parquet_backed_complete_dry_mono_utterance",
+    "source_root": "/mnt/sdc/speech_dataset",
+    "catalog_root": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/source_catalog/speech",
+    "allowed_sources": {
+      "libritts": {
+        "root": "/mnt/sdc/speech_dataset/mythicinfinity__libritts",
+        "raw_rows_observed": 375086,
+        "structurally_eligible_rows_observed": 320027,
+        "eligible_unique_normalized_transcripts_observed": 305560,
+        "selected": {"train": 250000, "validation": 5000, "test": 1000}
+      },
+      "hifi_tts": {
+        "root": "/mnt/sdc/speech_dataset/MikhailT__hifi-tts",
+        "raw_rows_observed": 323978,
+        "structurally_eligible_rows_observed": 319247,
+        "eligible_unique_normalized_transcripts_observed": 305696,
+        "selected": {"train": 250000, "validation": 5000, "test": 1000}
+      }
+    },
+    "excluded_sources": {
+      "spatial_librispeech": "legacy_foa_or_unverified_mono_lineage_never_a_v2_waveform_source",
+      "nvidia_hifitts_2": "metadata_only_no_local_audio",
+      "bigcomputer_kaggle_notebooks_conversations_hq": "text_and_images_only_no_audio",
+      "legacy_spatial_speech_foa_tts": "already_spatialized_derived_foa"
+    },
+    "selected_totals": {"train": 500000, "validation": 10000, "test": 2000},
+    "selected_total": 512000,
+    "structurally_eligible_unique_audio_ids_observed": 639274,
+    "conservative_eligible_unique_normalized_transcripts_observed": 607156,
+    "minimum_unassigned_reserve_after_final_qc": 50000,
+    "global_uniqueness": [
+      "dry_asset_id",
+      "source_dataset_plus_source_id",
+      "source_audio_sha256",
+      "normalized_transcript"
+    ],
+    "reuse_across_all_scenes": false,
+    "speaker_disjoint_across_splits": true,
+    "selection_before_any_scene_render": true,
+    "native_audio_policy": "complete_utterance_no_crop",
+    "long_utterance_policy": "reject",
+    "insufficient_inventory_policy": "stop_no_reuse_no_unapproved_source_family"
+  },
+  "composition": {
+    "max_sources": 4,
+    "speech_scenes_have_exactly_one_speech_source": true,
+    "no_speech_scenes_have_zero_speech_sources": true,
+    "source_count_totals": {"1": 393400, "2": 393400, "3": 224800, "4": 112400},
+    "speech_scene_total": 512000,
+    "no_speech_scene_total": 612000,
+    "speech_corpus_fraction_within_every_split_source_count_cell": {
+      "libritts": 0.5,
+      "hifi_tts": 0.5
+    },
+    "non_speech_category_patterns": {
+      "one_non_speech_slot": {"sound": 0.5, "music": 0.5},
+      "multiple_non_speech_slots": {"mixed": 0.5, "all_sound": 0.25, "all_music": 0.25},
+      "mixed_extra_slot_policy": "alternate_sound_music"
+    },
+    "within_scene_invariants": [
+      "asset_identity_unique",
+      "normalized_event_semantics_unique",
+      "persistent_source_slots",
+      "all_activity_and_tail_within_scene_duration"
+    ],
+    "duration_bins_sec": [[0.0, 2.0], [2.0, 4.0], [4.0, 6.0], [6.0, 8.0], [8.0, 10.031020408163266]],
+    "scene_motion_containing_target_fraction": 0.6,
+    "speech_motion": {"static": 0.8, "dynamic": 0.2},
+    "room_class_target_fraction": {"dry": 0.25, "moderate": 0.25, "reverberant": 0.25, "outdoor": 0.25}
+  },
+  "loudness": {
+    "speech_foreground_policy": "post_render_overlap_active_W_channel",
+    "speech_linear_weight_median": 0.6,
+    "aggregate_background_linear_weight_median": 0.4,
+    "speech_to_aggregate_background_db_median": 3.5218251811136247,
+    "speech_to_aggregate_background_db_range": [2.0, 6.0],
+    "background_budget_is_aggregate_not_per_source": true,
+    "record_per_source_gain_db_in_sceneplan": true,
+    "final_true_peak_dbfs_max": -1.0,
+    "limiter_may_not_change_relative_source_balance": true
+  },
+  "conditioning": {
+    "caption_authority": "deterministic_sceneplan_compiler",
+    "caption_input": "frozen_qwen_cross_attention",
+    "source_semantic_token_masks": 4,
+    "source_motion_activity_token_masks": 4,
+    "speaker_info_token_masks": 1,
+    "quoted_transcript_token_masks": 1,
+    "event_embeddings": 4,
+    "position_activity_embeddings": 4,
+    "source_activity_frame_masks": 4,
+    "position_activity_feature_streams": 4,
+    "position_activity_feature_dim": 8,
+    "caption_max_tokens": 256,
+    "structured_stream_fusion": "concat_four_sources_then_project",
+    "dit_input_concat_dim": 256,
+    "sceneplan_token_concat": false
+  },
+  "renderer": {
+    "backend": "pyroomacoustics_single_pass_v2",
+    "scene_source_input_modality": "canonical_dry_mono_only",
+    "reject_multichannel_or_foa_source_assets": true,
+    "spatialization_passes_per_source": 1,
+    "shared_room_and_listener_per_scene": true,
+    "foa_channel_order": "WYZX_ACN",
+    "foa_normalization": "SN3D",
+    "pyroom_native_spherical_harmonic_normalization": "N3D",
+    "n3d_to_sn3d_first_order_gain": 0.5773502691896258,
+    "dynamic_mode": "time_varying_rir_keyframes_with_audited_crossfade",
+    "direct_arrival_alignment": "remove_geometric_propagation_delay_and_record_pyroom_fractional_filter_delay",
+    "pyroom_fractional_delay_filter_samples": 81,
+    "residual_algorithmic_delay_samples": 40,
+    "speech_window_policy": "fail_if_activity_window_cannot_hold_complete_resampled_utterance",
+    "tail_policy": "allocate_declared_scene_tail_after_complete_speech_or_reject_scene",
+    "forbid_silent_source_truncation": true,
+    "forbid_foa_to_mono_to_foa": true
+  },
+  "source_views": {
+    "primary_speech_donors": "unique_complete_libritts_plus_hifi_tts_dry_mono_only",
+    "legacy_spatial_librispeech_foa": "excluded_from_v2_training",
+    "sound_music": "reuse_validated_original_dry_assets_and_rebuild_scene_targets_once"
+  },
+  "storage": {
+    "persistent_output_mount": "/mnt/sdb",
+    "dataset_root": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m",
+    "contract_root": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/contracts",
+    "source_catalog_root": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/source_catalog",
+    "split_ledger_root": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/split_ledgers",
+    "sceneplan_root": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/sceneplans",
+    "materialized_root": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/materialized",
+    "eval_foa_and_stem_root": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/materialized/renders",
+    "latent_root": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/materialized/latents",
+    "materialized_manifest_root": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/materialized/manifests",
+    "qc_root": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/qc",
+    "transient_train_foa_root": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/materialized/renders/train",
+    "checkpoint_root": "/mnt/sdb/ckpts/sceneplan_dit_v2",
+    "forbid_new_persistent_outputs_on": ["/mnt/sdc", "/mnt/sdd"],
+    "train_retention": "sceneplan_compiler_metadata_lineage_checksums_and_variable_length_latent_only",
+    "eval_retention": "final_foa_source_tracks_sceneplan_compiler_metadata_checksums_and_latent",
+    "minimum_free_fraction_after_projection": 0.2
+  },
+  "model": {
+    "renderer_initialization": "from_scratch",
+    "old_300k_checkpoint_usage": "reference_only_never_warm_start",
+    "vae": "frozen",
+    "planner": "deferred_until_P9_passes",
+    "multiturn": false
+  },
+  "quality_control": {
+    "fail_closed": true,
+    "duration_selection_priority": "select_complete_transcript_first_then_derive_duration_shorter_complete_beats_longer_incomplete",
+    "forbid_target_duration_driven_speech_cut": true,
+    "quarantine_uncertain_final_word": true,
+    "replacement_must_be_globally_unused": true,
+    "require_scene_source_is_canonical_dry_mono": true,
+    "reject_legacy_or_derived_foa_as_scene_source": true,
+    "require_exactly_one_spatialization_pass": true,
+    "require_pyroom_n3d_to_sn3d_conversion": true,
+    "require_complete_speech_before_room_tail": true,
+    "require_exact_transcript_lineage": true,
+    "require_complete_native_speech_window": true,
+    "require_explicit_num_samples": true,
+    "require_explicit_valid_latent_frames": true,
+    "require_four_channel_foa": true,
+    "require_finite_audio_and_latent": true,
+    "require_speech_asr_and_endpoint_report": true,
+    "require_activity_position_trajectory_and_source_binding_reports": true,
+    "stop_after_stage": "P9"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "extends": "qwen35_0p8b_sceneplan_p11.json",
+  "_task": "P11-v4 Flow-R1 with reliable frozen-ASR as deterministic discrete lexical authority; CLAP and FOA remain universal evidence.",
+  "model": {
+    "transfusion_cot": {
+      "lexical_evidence": {
+        "required": false,
+        "max_tokens": 128,
+        "canonical_source": "frozen_asr_input_foa_confidence_gated_v1",
+        "injection_policy": "deterministic_reliable_speech_assembler_v1"
+      }
+    }
+  }
+}

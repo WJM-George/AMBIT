@@ -1,0 +1,11 @@
+{
+    "_note": "Throughput/memory ablation: use the canonical 300M T2A DiT with per-block activation checkpointing enabled.",
+    "extends": "../qwen35_0p8b_300m.json",
+    "model": {
+        "diffusion": {
+            "config": {
+                "activation_checkpointing": true
+            }
+        }
+    }
+}

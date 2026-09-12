@@ -1,0 +1,9 @@
+{
+  "extends": "sceneplan_p11_heldout900_transfusion_cot_v4.json",
+  "_task": "P11-v4 heldout900 with input-only frozen ASR lexical evidence and the threshold frozen from train-only pilot calibration.",
+  "lexical_evidence_mode": "frozen_asr_cache_v1",
+  "lexical_cache_path": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/lexical_cache/p11_validation_heldout900_distilwhisper_v1.sqlite",
+  "lexical_encoder_revision": "distil-whisper-large-v3-ct2-fp16-local-v1",
+  "lexical_confidence_threshold": 0.85,
+  "lexical_max_tokens": 128
+}

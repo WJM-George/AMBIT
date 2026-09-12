@@ -1,0 +1,244 @@
+{
+    "_variant": "W-downmix + compact spatial residual (FOA rate allocation). Builds on the phase_scm + cep(+sisdr) winner. Same architecture (ds1024/z64) and DiT-facing latent shape; ZERO new parameters. Two coordinated, latent-safe levers close the W gap to DAC while keeping the spatial moat: (1) a self-downmix aux loss forces the leading n_w=40 latent channels to reconstruct the omni W on their own (spatial channels masked, shared decoder) -> a high-fidelity mono 'transport' subspace; (2) grouped KL gives that W-group a lower KL weight (more bits) and the spatial-group a higher KL weight (compact directional residual). Resume from the 1M cep/cep_sisdr winner, train to 1.1M, compare.",
+    "model_type": "autoencoder",
+    "sample_size": 176400,
+    "sample_rate": 44100,
+    "audio_channels": 4,
+    "model": {
+        "encoder": {
+            "type": "oobleck",
+            "config": {
+                "in_channels": 4,
+                "channels": 128,
+                "c_mults": [1, 2, 4, 8, 16],
+                "strides": [2, 2, 4, 8, 8],
+                "latent_dim": 128,
+                "use_snake": true
+            }
+        },
+        "decoder": {
+            "type": "oobleck",
+            "config": {
+                "out_channels": 4,
+                "channels": 128,
+                "c_mults": [1, 2, 4, 8, 16],
+                "strides": [2, 2, 4, 8, 8],
+                "latent_dim": 64,
+                "use_snake": true,
+                "final_tanh": false
+            }
+        },
+        "bottleneck": {
+            "type": "grouped_vae",
+            "config": {
+                "n_w": 40
+            }
+        },
+        "latent_dim": 64,
+        "downsampling_ratio": 1024,
+        "io_channels": 4
+    },
+    "training": {
+        "learning_rate": 0.00015,
+        "warmup_steps": 0,
+        "use_ema": true,
+        "optimizer_configs": {
+            "autoencoder": {
+                "optimizer": {
+                    "type": "AdamW",
+                    "config": {
+                        "betas": [0.8, 0.99],
+                        "lr": 0.00015,
+                        "weight_decay": 0.001
+                    }
+                },
+                "scheduler": {
+                    "type": "InverseLR",
+                    "config": {
+                        "inv_gamma": 200000,
+                        "power": 0.5,
+                        "warmup": 0.999
+                    }
+                }
+            },
+            "discriminator": {
+                "optimizer": {
+                    "type": "AdamW",
+                    "config": {
+                        "betas": [0.8, 0.99],
+                        "lr": 0.0003,
+                        "weight_decay": 0.001
+                    }
+                },
+                "scheduler": {
+                    "type": "InverseLR",
+                    "config": {
+                        "inv_gamma": 200000,
+                        "power": 0.5,
+                        "warmup": 0.999
+                    }
+                }
+            }
+        },
+        "loss_configs": {
+            "discriminator": {
+                "type": "encodec",
+                "config": {
+                    "filters": 64,
+                    "n_ffts": [2048, 1024, 512, 256, 128],
+                    "hop_lengths": [512, 256, 128, 64, 32],
+                    "win_lengths": [2048, 1024, 512, 256, 128]
+                },
+                "weights": {
+                    "adversarial": 0.1,
+                    "feature_matching": 5.0
+                }
+            },
+            "spectral": {
+                "type": "mrstft",
+                "config": {
+                    "fft_sizes": [2048, 1024, 512, 256, 128, 64, 32],
+                    "hop_sizes": [512, 256, 128, 64, 32, 16, 8],
+                    "win_lengths": [2048, 1024, 512, 256, 128, 64, 32],
+                    "perceptual_weighting": true,
+                    "w_cep": 0.15
+                },
+                "weights": {
+                    "mrstft": 1.0
+                }
+            },
+            "time": {
+                "type": "l1",
+                "weights": {
+                    "l1": 0.0
+                }
+            },
+            "bottleneck": {
+                "type": "kl",
+                "weights": {
+                    "kl": 0.0001,
+                    "kl_w": 0.00005,
+                    "kl_spatial": 0.0002
+                }
+            },
+            "w_downmix": {
+                "n_w": 40,
+                "crop_frames": 64,
+                "weights": {
+                    "stft": 0.3,
+                    "sisdr": 0.003
+                },
+                "schedule": {
+                    "type": "cosine",
+                    "start_step": 1000000,
+                    "end_step": 1020000,
+                    "start_weight": 0.0,
+                    "end_weight": 0.3
+                }
+            },
+            "high_frequency_overshoot": {
+                "type": "asymmetric_stft",
+                "config": {
+                    "fmin": 8000,
+                    "fmax": 22050,
+                    "n_fft": 2048,
+                    "hop_length": 512,
+                    "win_length": 2048,
+                    "margin_db": 1.0,
+                    "floor_db": -80.0,
+                    "log_excess_scale_db": 20.0,
+                    "linear_weight": 0.1
+                },
+                "weights": {
+                    "overshoot": 0.05
+                },
+                "schedule": {
+                    "type": "cosine",
+                    "start_step": 350000,
+                    "end_step": 650000,
+                    "start_weight": 0.2,
+                    "end_weight": 0.05
+                }
+            },
+            "phase_ifgd": {
+                "type": "frequency_gated_ifgd",
+                "config": {
+                    "n_ffts": [2048, 1024, 512, 256],
+                    "hop_ratio": 4,
+                    "if_fc": 2000.0,
+                    "if_beta": 2.0,
+                    "if_floor": 0.1,
+                    "gd_fc": 8000.0,
+                    "gd_beta": 2.0,
+                    "gd_floor": 0.25,
+                    "if_weight": 1.0,
+                    "gd_weight": 1.0,
+                    "cd_weight": 1.0
+                },
+                "weights": {
+                    "phase": 0.08
+                },
+                "schedule": {
+                    "type": "cosine",
+                    "start_step": 800000,
+                    "end_step": 815000,
+                    "start_weight": 0.0,
+                    "end_weight": 0.08
+                }
+            },
+            "foa_scm": {
+                "type": "foa_scm",
+                "config": {
+                    "n_ffts": [2048, 512],
+                    "hop_ratio": 4,
+                    "smooth_frames": 5,
+                    "level_weight": 1.0,
+                    "coherence_weight": 1.0,
+                    "ipd_weight": 1.0,
+                    "ipd_fc": 1500.0,
+                    "ipd_beta": 2.0,
+                    "ipd_floor": 0.1
+                },
+                "weights": {
+                    "scm": 0.015
+                },
+                "schedule": {
+                    "type": "cosine",
+                    "start_step": 800000,
+                    "end_step": 815000,
+                    "start_weight": 0.0,
+                    "end_weight": 0.015
+                }
+            },
+            "sisdr": {
+                "type": "sisdr",
+                "config": {},
+                "weights": {
+                    "sisdr": 0.003
+                },
+                "schedule": {
+                    "type": "cosine",
+                    "start_step": 900000,
+                    "end_step": 915000,
+                    "start_weight": 0.0,
+                    "end_weight": 0.003
+                }
+            }
+        },
+        "demo": {
+            "demo_every": 2000
+        }
+    },
+    "_experiment": {
+        "name": "vae_abl_wdmix_scm",
+        "purpose": "FOA rate allocation: W-downmix aux + grouped KL on top of the 1M phase_scm+cep(+sisdr) winner, to close the W reference-fidelity gap to DAC without hurting the spatial moat or latent smoothness.",
+        "resume_from": "the better of vae_abl_fidelity_cep / vae_abl_fidelity_cep_sisdr at 1.0M (unwrap NOT needed for resume; use the raw Lightning training ckpt)",
+        "resume_step": 1000000,
+        "max_steps": 1100000,
+        "checkpoint_every": 50000,
+        "num_gpus": 8,
+        "batch_size_per_gpu": 2,
+        "global_batch_size": 16,
+        "notes": "Same architecture + latent shape as the parent, so the raw training ckpt loads strictly (bottleneck swap vae->grouped_vae is parameter-free; the W-downmix aux reuses the shared decoder -> ZERO new params). New loss modules only shift losses_gen indices, reconciled by on_load_checkpoint. If decoder memory is tight from the extra aux decode, drop batch_size_per_gpu to 1 or run 4+4 GPUs."
+    }
+}

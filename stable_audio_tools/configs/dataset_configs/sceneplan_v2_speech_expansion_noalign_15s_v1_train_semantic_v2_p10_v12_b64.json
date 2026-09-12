@@ -1,0 +1,9 @@
+{
+    "extends": "sceneplan_v2_speech_expansion_noalign_15s_v1_train_semantic_v2.json",
+    "_task": "P10-v12 DiT upgrade train loader: preserve the frozen semantic-v2 rows and use a safer near-frame-balanced 64x432 / 42x648 local batch contract on six 48-GiB GPUs.",
+    "length_bucket_batching": {
+        "enabled": true,
+        "long_batch_size": 42,
+        "seed": 20260828
+    }
+}

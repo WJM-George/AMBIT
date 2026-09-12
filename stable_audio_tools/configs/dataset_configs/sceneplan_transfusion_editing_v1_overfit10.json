@@ -1,0 +1,25 @@
+{
+    "_task": "Ten real train-split pairs for Editing-DiT target overfit and source-dependence gates.",
+    "caption_max_tokens": 512,
+    "dataset_type": "sceneplan_transfusion_editing_preencoded",
+    "datasets": [
+        {
+            "id": "sceneplan_transfusion_editing_v1_overfit10",
+            "path": "/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1_pilot/training_index/train.sqlite",
+            "weight": 1.0
+        }
+    ],
+    "drop_last": false,
+    "expected_num_samples": 10,
+    "index_num_samples": 10,
+    "index_sha256": "6535b4a04b38a07ff641a876361e0dd16d4d4d4737ad27c11304d1d99c785600",
+    "latent_crop_length": 648,
+    "latent_downsampling_ratio": 1024,
+    "max_item_retries": 0,
+    "max_length_sec": 15.047619047619047,
+    "persistent_workers": false,
+    "pin_memory": true,
+    "random_crop": false,
+    "require_complete": true,
+    "verify_tensor_hashes_on_access": true
+}

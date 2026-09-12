@@ -1,0 +1,20 @@
+{
+    "extends": "qwen35_0p8b_300m_model_sceneplan_44_soundexp_noalign_15s.json",
+    "_task": "Protected 100k-to-110k semantic-caption adaptation of the production P10 ScenePlan 4+4 DiT.",
+    "_stage": "Full-state resume only. The source checkpoint effective LR is inherited continuously at step 100k, then a fresh cosine segment decays it to 5e-5 over 10k optimizer steps.",
+    "_note": "Architecture, loss terms, independent 15% caption/structured CFG, frozen 1.6M sample view, and 432/648 batching are unchanged. Only the semantic prompt compiler mixture and the explicitly reset continuation scheduler differ.",
+    "training": {
+        "optimizer_configs": {
+            "diffusion": {
+                "scheduler": {
+                    "__replace__": true,
+                    "type": "CosineAnnealingLR",
+                    "config": {
+                        "T_max": 10000,
+                        "eta_min": 0.00005
+                    }
+                }
+            }
+        }
+    }
+}

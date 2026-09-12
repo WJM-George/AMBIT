@@ -1,0 +1,140 @@
+{
+    "_task": "(T)ext -> FOA Spatial Audio / Spatial Speech waveform. The current wdmix-v2 training set is FOA-only; binaural output is not supported by this checkpoint. Does NOT generate video. Text encoder = FROZEN Qwen3.5-0.8B language model (decoder LM last hidden state).",
+    "_stage": "Stage-2a baseline: dense DiT + rectified flow on pre-encoded 4ch latents. Qwen3.5-0.8B (frozen) text(prompt) + spatial_format + seconds. Core DiT has approximately 320.7M parameters (about 321.9M including trainable conditioners).",
+    "_note": "Compact Qwen T2A variant of stable_audio_4ch_text2spatial_qwen.json. The DiT uses embed_dim=1024, depth=15, num_heads=16, and projects 768-dim Qwen/spatial conditioning tokens to 1024 before cross-attention so K/V heads match query heads. VAE, Qwen conditioner, conditioning IDs, rectified-flow objective, and pre-encoded training setup are unchanged. This config is not shape-compatible with the 1B DiT checkpoints and should be trained from scratch or distilled.",
+    "task": {
+        "type": "t2a"
+    },
+    "model_type": "diffusion_cond",
+    "sample_size": 442368,
+    "sample_rate": 44100,
+    "audio_channels": 4,
+    "model": {
+        "pretransform": {
+            "type": "autoencoder",
+            "iterate_batch": true,
+            "config": {
+                "encoder": {
+                    "type": "oobleck",
+                    "config": {
+                        "in_channels": 4,
+                        "channels": 128,
+                        "c_mults": [1, 2, 4, 8, 16],
+                        "strides": [2, 2, 4, 8, 8],
+                        "latent_dim": 128,
+                        "use_snake": true
+                    }
+                },
+                "decoder": {
+                    "type": "oobleck",
+                    "config": {
+                        "out_channels": 4,
+                        "channels": 128,
+                        "c_mults": [1, 2, 4, 8, 16],
+                        "strides": [2, 2, 4, 8, 8],
+                        "latent_dim": 64,
+                        "use_snake": true,
+                        "final_tanh": false
+                    }
+                },
+                "bottleneck": { "type": "vae" },
+                "latent_dim": 64,
+                "downsampling_ratio": 1024,
+                "io_channels": 4
+            }
+        },
+        "conditioning": {
+            "cond_dim": 768,
+            "configs": [
+                {
+                    "id": "prompt",
+                    "type": "qwen_text",
+                    "config": {
+                        "model_path": "/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B",
+                        "hidden_dim": 1024,
+                        "max_length": 128,
+                        "enable_grad": false,
+                        "project_out": false,
+                        "padding_mode": "zero",
+                        "caption_region_embedding": true,
+                        "caption_region_strategy": "speech_quote_v1",
+                        "caption_region_num_types": 3,
+                        "caption_region_scale": 1.0
+                    }
+                },
+                {
+                    "id": "spatial_format",
+                    "type": "spatial_format",
+                    "config": { "output_dim": 768 }
+                },
+                {
+                    "id": "seconds_start",
+                    "type": "number",
+                    "config": { "min_val": 0, "max_val": 512 }
+                },
+                {
+                    "id": "seconds_total",
+                    "type": "number",
+                    "config": { "min_val": 0, "max_val": 512 }
+                }
+            ]
+        },
+        "diffusion": {
+            "diffusion_objective": "rectified_flow",
+            "mask_padding_attention": true,
+            "cross_attention_cond_ids": ["prompt", "spatial_format"],
+            "global_cond_ids": ["seconds_start", "seconds_total"],
+            "type": "dit",
+            "config": {
+                "io_channels": 64,
+                "embed_dim": 1024,
+                "depth": 15,
+                "num_heads": 16,
+                "cond_token_dim": 768,
+                "global_cond_dim": 1536,
+                "project_cond_tokens": true,
+                "transformer_type": "continuous_transformer",
+                "activation_checkpointing": false
+            }
+        },
+        "io_channels": 64
+    },
+    "training": {
+        "use_ema": true,
+        "ema_beta": 0.999,
+        "ema_power": 0.75,
+        "ema_update_every": 1,
+        "ema_update_after_step": 1,
+        "wandb_watch": false,
+        "log_loss_info": false,
+        "cfg_dropout_prob": 0.1,
+        "timestep_sampler": "uniform",
+        "mask_loss_weight": 0.0,
+        "loss_normalization": "none",
+        "pre_encoded": true,
+        "optimizer_configs": {
+            "diffusion": {
+                "optimizer": {
+                    "type": "AdamW",
+                    "config": {
+                        "lr": 5e-5,
+                        "betas": [0.9, 0.999],
+                        "weight_decay": 1e-3,
+                        "fused": true
+                    }
+                },
+                "scheduler": {
+                    "type": "InverseLR",
+                    "config": {
+                        "inv_gamma": 1000000,
+                        "power": 0.5,
+                        "warmup": 0.99
+                    }
+                }
+            }
+        },
+        "demo": {
+            "enabled": false
+        }
+    }
+}

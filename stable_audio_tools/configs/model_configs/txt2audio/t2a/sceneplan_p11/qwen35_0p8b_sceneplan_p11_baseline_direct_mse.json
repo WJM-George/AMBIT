@@ -1,0 +1,20 @@
+{
+  "extends": "qwen35_0p8b_sceneplan_p11_reliable_asr_assembler_v2.json",
+  "_task": "Matched P11-v4 Direct-MSE baseline: identical sketch-first SCT graph, reliable-ASR assembler boundary, DeltaSketch control forcing, and [5,15] state, but no rectified-flow objective.",
+  "model": {
+    "transfusion_cot": {
+      "thought": {
+        "arm": "sketch_first_direct_mse_v4",
+        "continuous_objective": "direct_mse"
+      }
+    }
+  },
+  "training": {
+    "transfusion_cot_loss_weights": {
+      "flow": 0.0,
+      "solve": 1.0,
+      "locality": 0.25,
+      "owner": 1.0
+    }
+  }
+}

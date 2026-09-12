@@ -1,0 +1,25 @@
+{
+    "extends": "qwen35_0p8b_300m_model_sceneplan_44_soundexp_noalign_15s.json",
+    "_task": "Transfusion Editing DiT: aligned source FOA latent plus complete new ScenePlan and noisy target latent to edited target latent.",
+    "_stage": "Warm-start from canonical P10-v11 EMA; the trained 320-column frame-input prefix is copied exactly and only the appended 64 source-reference columns start at zero.",
+    "_source_checkpoint": "/mnt/sdc/ckpts/dit/sceneplan_dit_v11_semantic_v2_protected_resume_150k/checkpoints/epoch=48-step=150000.ckpt",
+    "_source_checkpoint_sha256": "be8c90cd1434bd71f73951531175c3674ff0f3173d5db591e2e1c476152ff59e",
+    "_frame_input_contract": "[noisy_target:64,compile_44(new_sceneplan):256,source_foa_latent:64]",
+    "model": {
+        "conditioning": {
+            "pre_encoded_keys": ["source_foa_latent"]
+        },
+        "diffusion": {
+            "input_concat_ids": ["sceneplan_44", "source_foa_latent"],
+            "config": {
+                "input_concat_dim": 320
+            }
+        }
+    },
+    "training": {
+        "sceneplan_speech_active_loss_weight": 1.0,
+        "sceneplan_sound_temporal_difference_loss": {
+            "enabled": false
+        }
+    }
+}

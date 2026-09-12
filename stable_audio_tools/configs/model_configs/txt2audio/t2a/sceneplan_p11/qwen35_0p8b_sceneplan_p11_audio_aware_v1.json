@@ -1,0 +1,108 @@
+{
+  "extends": "qwen35_0p8b_sceneplan_p11_reliable_asr_assembler_v2.json",
+  "_task": "Active P11 audio-aware G/U/E: FOA-required Editing, optional fallible old-plan prior, observed ScenePlan plus atomic patch plus deterministic revised ScenePlan.",
+  "model_type": "sceneplan_p11_audio_aware_v1",
+  "route_id": "sceneplan_p11_audio_aware_v1",
+  "model": {
+    "output_protocol": "observed_plan_atomic_patch_revised_plan_v1",
+    "editing_input_contract": "input_foa_required_old_sceneplan_optional_v1",
+    "text": {
+      "patch_max_tokens": 512,
+      "activation_checkpointing": true,
+      "discrete_decode_mode": "prefix_recompute"
+    },
+    "transfusion_cot": {
+      "contract": "sceneplan_p11_audio_aware_v1",
+      "sequence_contract": "audio_observation_then_atomic_delta_then_deterministic_revised_v1",
+      "output_contract": "observed_plan_atomic_patch_revised_plan_v1",
+      "assembler": "observed_plus_atomic_patch_only_v1",
+      "editing_audio_required": true,
+      "old_sceneplan_role": "optional_fallible_prior",
+      "target_audio_supervision": false,
+      "delta_token_contract": "audio_aware_atomic_delta_v1",
+      "delta_owner": {
+        "contract": "delta_sketch_decoder_owned_source_slot_v1",
+        "objective": "legal_source_ce_plus_hardest_negative_margin_v1",
+        "authority": "delta_sketch_owner_token_v1",
+        "context": "edit_instruction_plus_audio_observed_sceneplan_v1",
+        "inference": "grammar_constrained_argmax_v1",
+        "legal_source_inventory": "observed_or_revised_source_mask_v1",
+        "loss_normalization": "active_owner_rows_v1",
+        "margin": 2.0,
+        "margin_weight": 1.0
+      },
+      "delta_control": {
+        "contract": "operation_owned_p10_native_smooth_l1_v1",
+        "objective": "smooth_l1",
+        "beta": 1.0,
+        "retime_frame_unit": 32,
+        "row_normalization": "owned_coordinates_then_active_rows_v1"
+      },
+      "control_direction": null,
+      "active_edit_operations": [
+        "no_op",
+        "add_source",
+        "remove_source",
+        "replace_source",
+        "move_source",
+        "retime_source",
+        "room_change",
+        "change_speech_description",
+        "change_transcript"
+      ],
+      "scene_sketch_max_tokens": 512,
+      "delta_sketch_max_tokens": 512,
+      "thought": {
+        "arm": "audio_aware_flow_r1_v1",
+        "contract": "p10_numeric_scene_delta_thought_v1",
+        "backbone": "shared_qwen_causal_v1",
+        "continuous_objective": "rectified_flow",
+        "editing_continuous_objective": "direct_mse",
+        "editing_output_head": "dedicated_delta_v1",
+        "slot_count": 5,
+        "core_dim": 15,
+        "dim": 1024,
+        "inference_steps": 1,
+        "training_inference_steps": 1,
+        "inference_noise_seed": 42
+      },
+      "lexical_evidence": {
+        "required": false,
+        "max_tokens": 128,
+        "canonical_source": "frozen_asr_input_foa_confidence_gated_v1",
+        "injection_policy": null
+      },
+      "observation": {
+        "shared_with_understanding": true,
+        "discrete_authority": "scene_sketch",
+        "continuous_authority": "flow_r1_execution_state"
+      },
+      "editing": {
+        "discrete_authority": "atomic_delta_sketch",
+        "continuous_authority": "deterministic_delta_execution_state",
+        "revised_plan_decoder": false,
+        "revised_plan_authority": "deterministic_apply_patch_to_observed"
+      }
+    },
+    "executor": {
+      "editing_contract": "audio_aware_observed_patch_revised_v1",
+      "localized_editing": false,
+      "preserves_unedited_waveform": false
+    }
+  },
+  "training": {
+    "seed": 42,
+    "transfusion_cot_loss_weights": {
+      "flow": 0.25,
+      "solve": 1.0,
+      "locality": 0.25,
+      "owner": 1.0,
+      "delta_control": 0.25
+    },
+    "editing_evidence_distribution": {
+      "no_plan": 0.4,
+      "correct_plan": 0.3,
+      "corrupt_plan": 0.3
+    }
+  }
+}

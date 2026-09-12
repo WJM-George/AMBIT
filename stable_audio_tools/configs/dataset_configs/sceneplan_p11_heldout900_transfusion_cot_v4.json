@@ -1,0 +1,7 @@
+{
+  "extends": "sceneplan_p11_heldout900.json",
+  "_task": "P11-v4 heldout900 runtime projection for unified G/U/E idea gates.",
+  "p11_contract": "sketch_first_transfusion_cot_v4",
+  "lexical_evidence_mode": "none",
+  "lexical_max_tokens": 128
+}

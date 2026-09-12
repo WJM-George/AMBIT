@@ -1,0 +1,163 @@
+{
+  "source_files_verified_unchanged": 1317,
+  "staging_modified": false,
+  "original_git_preserved": true,
+  "copied_baseline_files": 1317,
+  "cpu_tests_passed": 35,
+  "stats": {
+    "staging": {
+      "files": 1164,
+      "lines": 321972,
+      "bytes": 13857844
+    },
+    "AMBIT": {
+      "files": 1166,
+      "lines": 321940,
+      "bytes": 13854672
+    }
+  },
+  "changes": [
+    {
+      "path": "README.md",
+      "action": "modified",
+      "before_sha256": "d7a0b96b781e02b01dd6b9ff02b5d4e069d9cdab7cf1a8ef91807a7ddc7d15d9",
+      "after_sha256": "2f47035a3023fd27c596318c518d8685f0e2828293fc02d46e686dff5c6f8474"
+    },
+    {
+      "path": "dataset/captioning/caption_audio.py",
+      "action": "modified",
+      "before_sha256": "b1ea6aff8afd70b561dba3f647fa3a57161d655d6bcc5156f604a88d84f74834",
+      "after_sha256": "e7b83fcf745a84edbfec1953b109abcd0708a731d07796b17a3aafa701c120b6"
+    },
+    {
+      "path": "dataset/captioning/caption_sphere360.py",
+      "action": "modified",
+      "before_sha256": "6ce2158d07612d8b037c74d7d9cda8e7ddf67d763c2407ae8e906b4f4fc51b3c",
+      "after_sha256": "3eecd760c8ed277d08c12b1bb141e76b7ff209b5a9b8dcd1a87dafdaacf6aa7b"
+    },
+    {
+      "path": "docs/CURRENT_SOURCE_AUDIT.json",
+      "action": "modified",
+      "before_sha256": "cf66c5f12832a6815879d186540b96867998c7c0ecca3ff01794db56b4da57d0",
+      "after_sha256": "d4a5f68afe594e87dbdb8f95d40446792b7a3e75320e185fc9fcfc674d6e5825"
+    },
+    {
+      "path": "research/mixed1750k_continuation30k_20260912/code/common.py",
+      "action": "modified",
+      "before_sha256": "a518b80a3e58edf5e8ddb23fac90a69fc8da95b7f2b815dbb76b65e96fc823f3",
+      "after_sha256": "647b852f485fafec4e8f51273127a252174e9ea6f54f2ec84f99d76bbabd5d28"
+    },
+    {
+      "path": "research/spatial_multi500k_20260912/code/common.py",
+      "action": "modified",
+      "before_sha256": "cd8aa260505885e75645872661bfac05d9a5c96162ef0c33a29aad1107cd4166",
+      "after_sha256": "24c5157d39f97da307873960fa7358994d47e72eabcb1a46c5f02c8974ca178e"
+    },
+    {
+      "path": "scripts/t2a/data/audit_sceneplan_manifests_v2.py",
+      "action": "modified",
+      "before_sha256": "1c99a6323facab4c2b7334261071bfc0d36cafa23f6b550baeeeec56398bc761",
+      "after_sha256": "dc26fa21835c7df0a8f962f06e6c4afe5e967fcdf5efe9710c6d4810dfabe714"
+    },
+    {
+      "path": "scripts/t2a/data/audit_sceneplan_materialized_v2.py",
+      "action": "modified",
+      "before_sha256": "461c03c67d63aa68c7dde486b9d072d69178a82325f7496c48ec1bd6750e1563",
+      "after_sha256": "0e101d68d9588f07039a9ac686c08aec5fe52ffa73a4a15eee14da39ee7bb426"
+    },
+    {
+      "path": "scripts/t2a/data/sceneplan_v2_common.py",
+      "action": "modified",
+      "before_sha256": "a922c217d1531882624a13c4411e6cce1055203fbb6f027cb8935a35c091aff0",
+      "after_sha256": "b973dd99b2d9725152aaf346cbe0b5ef722d8d3fb28f1aa9e3a08c31b267bda0"
+    },
+    {
+      "path": "scripts/t2a/eval/evaluate_dit_spatial_family.py",
+      "action": "modified",
+      "before_sha256": "86a05462b6724c88d24bba3bacb857809258b9d25beab15cdea87b8c4c6173fe",
+      "after_sha256": "42f635eb933921df17ec067533e0ec46cd0c1417ec51587a5ceb0cac16f81278"
+    },
+    {
+      "path": "scripts/t2a/eval/evaluate_sceneplan_p11_v4_challenge.py",
+      "action": "modified",
+      "before_sha256": "6d4d54865ca1dd5fcd0fc3478420c7283056e110362987fe42448d79413e93f2",
+      "after_sha256": "d4e7a230db4ed9dbffe2549a89e1b7c751d452f03d93513bdd96ebc204ab1674"
+    },
+    {
+      "path": "scripts/t2a/eval/evaluate_spatial_cot_checkpoint.py",
+      "action": "modified",
+      "before_sha256": "24886c3966753527c96249e67f8230edaf47e3ca5d7f3ce6c0b5c4c1843005cc",
+      "after_sha256": "f44a0b69e52154c92f4f4e4511ab8ab439934247c517fb07f85c81d8176d50eb"
+    },
+    {
+      "path": "scripts/t2a/eval/merge_sceneplan_p11_v4_challenge_shards.py",
+      "action": "modified",
+      "before_sha256": "7b06a0b8e4f340d11e05d862eb971355b74ce849451ff674110aca998d675b24",
+      "after_sha256": "62720469571c4630846c6a48db4e8e1c8dea96f7853a163ff9b22b9dc4272745"
+    },
+    {
+      "path": "stable_audio_tools/data/editing_memory_io.py",
+      "action": "modified",
+      "before_sha256": "7c777dfe938590491af79343951cbfb156ae25b0135ee1cf5df20f5ff542f1b5",
+      "after_sha256": "5c7f14839717b1d8036320543e1d37988b208b6a7831dad660b2a2b5fe548681"
+    },
+    {
+      "path": "stable_audio_tools/data/editing_rir_pool.py",
+      "action": "modified",
+      "before_sha256": "60ef745db339b5f400ed690d54160d62add56cc1dbef42844dc08b95cda3de6b",
+      "after_sha256": "5bf32fdca0aeca4e77d521af5ec6287c22beb68aea406cd9716ba0eab4ca84a7"
+    },
+    {
+      "path": "stable_audio_tools/data/spatial_conversation_metadata.py",
+      "action": "modified",
+      "before_sha256": "c80cbc6ec029739931d3cc17532b9120897370045d101966d8b206c6fd99e1fd",
+      "after_sha256": "cf7d82be94622597d62e8b1dc857687c0e6d5189b513858f20dad0daa7f5b193"
+    },
+    {
+      "path": "tools/export_sources.py",
+      "action": "removed",
+      "before_sha256": "41b6fd7520a36ee465be6285a3396de8b62b0131acaa9f2a0cecdbd9da4791cd",
+      "after_sha256": null
+    },
+    {
+      "path": "dataset/captioning/qwen_model.py",
+      "action": "added",
+      "after_sha256": "6970eeef390dab0785dd771b7cb92e703d3a006ab14e0759cf96f9965909a7ed"
+    },
+    {
+      "path": "docs/DUPLICATION_AUDIT.json",
+      "action": "added",
+      "after_sha256": "2777e7afa0effb13416df4290574b0a566b511890f78eef84b4602df1fa53e24"
+    },
+    {
+      "path": "docs/ENTRYPOINTS.md",
+      "action": "added",
+      "after_sha256": "b6f9fad61d9986d10da23c2ad2140881610a7fe50c62a4b52fbfe9c6fb15703f"
+    },
+    {
+      "path": "docs/INTEGRATION.md",
+      "action": "added",
+      "after_sha256": "c7c8682627b7beae1a65f2276776707b2e295798043d2a04f7a88d6539d1683e"
+    },
+    {
+      "path": "docs/INTEGRATION_BASELINE.json",
+      "action": "added",
+      "after_sha256": "bc34d03abdaab27c3cc3a9e99099d2a99a2468a0c7758cb9aa579636bc0ac0ba"
+    },
+    {
+      "path": "docs/INTEGRATION_EXTRACTION_CHECK.json",
+      "action": "added",
+      "after_sha256": "98c715ab6207998bf71ec31ae34760d2ab0c6b42dba4826d12809373fe4e680d"
+    },
+    {
+      "path": "stable_audio_tools/data/artifact_io.py",
+      "action": "added",
+      "after_sha256": "890f3ee84b348e6a2037238fb68ca6e8e6c6f649222fa24ba90df23bea8ef267"
+    },
+    {
+      "path": "tests/test_artifact_io.py",
+      "action": "added",
+      "after_sha256": "8aeb1dc5a799437935cecf3462ce5ba042d222f69beb582cf1b7c48ab05fb1d4"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+    "extends": "qwen35_0p8b_300m_model_sceneplan_44_upgrade_v12_base.json",
+    "_task": "P10-v12 MoE pilot: ScenePlan-aligned, source-boundary-aware chunk delta-MoE.",
+    "_stage": "MoE-only ablation upcycled from canonical P10-v11 Dense DiT.",
+    "_note": "The first 11 Transformer blocks and every attention branch remain Dense/native. The last four native Dense FFNs remain the shared path and receive four width-1024 zero-init delta experts with Top-2 routing over four-frame chunks.",
+    "model": {
+        "diffusion": {
+            "config": {
+                "sceneplan_chunk_moe": {
+                    "enabled": true,
+                    "layer_start": 11,
+                    "layer_count": 4,
+                    "num_experts": 4,
+                    "top_k": 2,
+                    "chunk_size": 4,
+                    "expert_inner_dim": 1024,
+                    "router_hidden_dim": 512,
+                    "max_sources": 4,
+                    "boundary_aware": true,
+                    "sparse_scale": 0.5,
+                    "load_balance_loss_weight": 0.01,
+                    "dropout": 0.0
+                }
+            }
+        }
+    }
+}

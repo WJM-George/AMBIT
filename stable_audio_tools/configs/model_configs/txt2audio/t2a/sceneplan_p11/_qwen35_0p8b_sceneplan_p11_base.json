@@ -1,0 +1,167 @@
+{
+  "_task": "Internal shared Qwen/FOA/P10 base for the canonical P11 planner and required baselines; not directly launchable.",
+  "task": {
+    "type": "t2a"
+  },
+  "model_type": "sceneplan_p11",
+  "route_id": "sceneplan_p11",
+  "sample_size": 663552,
+  "sample_rate": 44100,
+  "audio_channels": 4,
+  "model": {
+    "pretransform": {
+      "type": "autoencoder",
+      "iterate_batch": true,
+      "config": {
+        "encoder": {
+          "type": "oobleck",
+          "config": {
+            "in_channels": 4,
+            "channels": 128,
+            "c_mults": [1, 2, 4, 8, 16],
+            "strides": [2, 2, 4, 8, 8],
+            "latent_dim": 128,
+            "use_snake": true
+          }
+        },
+        "decoder": {
+          "type": "oobleck",
+          "config": {
+            "out_channels": 4,
+            "channels": 128,
+            "c_mults": [1, 2, 4, 8, 16],
+            "strides": [2, 2, 4, 8, 8],
+            "latent_dim": 64,
+            "use_snake": true,
+            "final_tanh": false
+          }
+        },
+        "bottleneck": {
+          "type": "vae"
+        },
+        "latent_dim": 64,
+        "downsampling_ratio": 1024,
+        "io_channels": 4
+      }
+    },
+    "output_protocol": "sceneplan_or_atomic_patch_v1",
+    "editing_input_contract": "sceneplan_tokens_only_v1",
+    "default_plan_duration_sec": 15.0,
+    "text": {
+      "mode": "qwen_sceneplan_planner",
+      "metadata_key": "prompt",
+      "model_path": "/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B",
+      "hidden_size": 1024,
+      "max_length": 512,
+      "plan_codec_path": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4",
+      "plan_max_tokens": 1024,
+      "patch_max_tokens": 6,
+      "plan_text_field_max_tokens": 192,
+      "sequence_length": 1024,
+      "dense_right_padding": true,
+      "initialize_plan_embeddings_from_qwen": true,
+      "lora": {
+        "rank": 16,
+        "alpha": 32,
+        "dropout": 0.05,
+        "top_layers": 8,
+        "target_modules": [
+          "q_proj",
+          "k_proj",
+          "v_proj",
+          "o_proj",
+          "in_proj_qkv",
+          "in_proj_z",
+          "out_proj",
+          "gate_proj",
+          "up_proj",
+          "down_proj"
+        ]
+      }
+    },
+    "audio_bridge": {
+      "type": "hybrid_temporal_semantic",
+      "temporal": {
+        "channels": 64,
+        "connector_depth": 3,
+        "expansion": 4,
+        "kernel_size": 7,
+        "stride": 8
+      },
+      "semantic": {
+        "type": "frozen_feature_resampler",
+        "input_dim": 512,
+        "num_queries": 8,
+        "depth": 2,
+        "heads": 8,
+        "expansion": 4,
+        "required": true,
+        "encoder_revision": "365dea6ef167def6676140ed93bbc43f84dabb28"
+      }
+    },
+    "executor": {
+      "type": "external_p10_sceneplan_dit",
+      "handoff_contract": "external_p10_sceneplan_executor_v1",
+      "editing_contract": "single_turn_sceneplan_patch_v1",
+      "localized_editing": false,
+      "preserves_unedited_waveform": false,
+      "capability_contract": "p10_sceneplan_44_capability_v1",
+      "semantic_caption_contract": "p10_semantic_caption_v2_only_20260830",
+      "semantic_caption_compiler_version": 2,
+      "semantic_caption_surface": "<speaker description> who says: <exact transcript>",
+      "transcript_state_authority": "sceneplan.source.transcript",
+      "canonical_executor_family": "sceneplan_dit_v11_semantic_v2_15s_300m",
+      "canonical_model_config": "/mnt/sdc/stable-audio-tools-workspace/stable_audio_tools/configs/model_configs/txt2audio/t2a/dit/qwen35_0p8b_300m_model_sceneplan_44_soundexp_noalign_15s_resume_cosine_40k.json",
+      "canonical_model_config_sha256": "3ebcd2b6b3c9a8b78b9160243f6509fb9eb11a32959b2eeddb86f48bb0b44827",
+      "canonical_checkpoint_step": 150000,
+      "canonical_checkpoint": "/mnt/sdc/ckpts/dit/sceneplan_dit_v11_semantic_v2_protected_resume_150k/checkpoints/epoch=48-step=150000.ckpt",
+      "canonical_checkpoint_sha256": "be8c90cd1434bd71f73951531175c3674ff0f3173d5db591e2e1c476152ff59e",
+      "p10_max_latent_frames": 648,
+      "planner_max_latent_frames": 648,
+      "planner_motion_types": ["static", "linear"],
+      "gain_policy": "constant_0db_not_conditioned",
+      "word_level_timing_supported": false
+    }
+  },
+  "training": {
+    "pre_encoded": true,
+    "use_ema": true,
+    "ema_beta": 0.999,
+    "ema_power": 0.75,
+    "ema_update_every": 1,
+    "ema_update_after_step": 1,
+    "planner_loss_group_weights": {
+      "1": 1.0,
+      "2": 1.0,
+      "3": 2.0,
+      "5": 2.0,
+      "6": 2.0,
+      "7": 1.0
+    },
+    "log_every_n_steps": 10,
+    "optimizer_configs": {
+      "p11": {
+        "optimizer": {
+          "type": "AdamW",
+          "config": {
+            "lr": 0.00005,
+            "betas": [0.9, 0.999],
+            "weight_decay": 0.001,
+            "fused": true
+          }
+        },
+        "scheduler": {
+          "type": "InverseLR",
+          "config": {
+            "inv_gamma": 1000000,
+            "power": 0.5,
+            "warmup": 0.99
+          }
+        }
+      }
+    },
+    "demo": {
+      "enabled": false
+    }
+  }
+}

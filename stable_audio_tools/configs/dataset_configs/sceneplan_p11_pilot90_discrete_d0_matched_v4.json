@@ -1,0 +1,7 @@
+{
+  "extends": "sceneplan_p11_pilot90.json",
+  "_task": "Matched D0 pilot over the same frozen 30 scenes: direct autoregressive full ScenePlan/Atomic Patch, strict local batch 8.",
+  "p11_contract": "discrete_d0_v1",
+  "drop_last": true,
+  "require_exact_batch_size": true
+}

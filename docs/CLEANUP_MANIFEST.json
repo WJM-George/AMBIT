@@ -1,0 +1,281 @@
+{
+  "scope": "AMBIT-code-staging only",
+  "code_stats": {
+    "before": {
+      "files": 1162,
+      "lines": 325728,
+      "bytes": 14007767
+    },
+    "after": {
+      "files": 1164,
+      "lines": 321972,
+      "bytes": 13857844
+    }
+  },
+  "net_code_lines_removed": 3756,
+  "retired_entry_checks": {
+    "count": 11,
+    "with_and_without_override_exit64": true,
+    "paths": [
+      "scripts/t2a/data/run_speech_expansion_noalign_15s_p0_p10.sh",
+      "scripts/t2a/train/run_sceneplan_dit_p10_44_overfit10.sh",
+      "scripts/t2a/train/run_sceneplan_dit_p10_44_8gpu.sh",
+      "scripts/t2a/train/run_sceneplan_dit_p10_44_noalign_15s_resume_preflight.sh",
+      "scripts/t2a/train/run_sceneplan_dit_p10_44_noalign_15s_benchmark.sh",
+      "scripts/t2a/train/run_sceneplan_dit_p10_44_noalign_15s_8gpu.sh",
+      "scripts/t2a/train/run_sceneplan_dit_p10_44_resume_preflight.sh",
+      "scripts/t2a/train/run_sceneplan_dit_p10_44_noalign_15s_overfit10.sh",
+      "scripts/t2a/train/run_sceneplan_dit_p10_semantic_v2_protected_resume_8gpu.sh",
+      "scripts/t2a/train/run_sceneplan_dit_p10_44_noalign_8gpu.sh",
+      "scripts/t2a/train/run_sceneplan_dit_p10_44_benchmark.sh"
+    ]
+  },
+  "validation": {
+    "existing_editing_tests_passed": 17,
+    "consolidation_tests_passed": 10,
+    "real_train_reader_exact_cases": 16,
+    "aggregation_ast_parity": true
+  },
+  "changes": [
+    {
+      "path": "README.md",
+      "action": "modified",
+      "before_sha256": "1e9a6c74e989820a440095a05bbd736dd56cfe8a95336efa11c3fdff91e18b09",
+      "after_sha256": "d7a0b96b781e02b01dd6b9ff02b5d4e069d9cdab7cf1a8ef91807a7ddc7d15d9"
+    },
+    {
+      "path": "data_download/scripts/decode_latents_4ch.py",
+      "action": "modified",
+      "before_sha256": "c2de392c612b8233b75f9224d6cbddb8ab0b59faced01a3bfe6286afa51bbcf9",
+      "after_sha256": "3facec5fc3268fbf1a239ce690b2e22a5a5cc05d8ef43f1a050cb74a3ee54091"
+    },
+    {
+      "path": "docs/CLEANUP.md",
+      "action": "added",
+      "before_sha256": null,
+      "after_sha256": "a2c9ac17206e1865505fb214f7d0d749abda3ff86686d5aaf91c04c37c2018a4"
+    },
+    {
+      "path": "docs/CLEANUP_BASELINE.json",
+      "action": "added",
+      "before_sha256": null,
+      "after_sha256": "f5685d01774acc587099ea4d734ee0794b323005c112d14442397e02b0c79e83"
+    },
+    {
+      "path": "docs/CLEANUP_READER_PARITY.json",
+      "action": "added",
+      "before_sha256": null,
+      "after_sha256": "83ad3c0701e32debfe2443185b422e2122d2935c8479ff95c2b4ddf04200a12f"
+    },
+    {
+      "path": "docs/CURRENT_SOURCE_AUDIT.json",
+      "action": "added",
+      "before_sha256": null,
+      "after_sha256": "cf66c5f12832a6815879d186540b96867998c7c0ecca3ff01794db56b4da57d0"
+    },
+    {
+      "path": "research/mixed1750k_continuation30k_20260912/code/common.py",
+      "action": "modified",
+      "before_sha256": "ffb81cd6ca4dd8b3bcba3c7f6bca5abbf99da74fc6bfef1cd61345bf1ae8e6d2",
+      "after_sha256": "a518b80a3e58edf5e8ddb23fac90a69fc8da95b7f2b815dbb76b65e96fc823f3"
+    },
+    {
+      "path": "research/mixed1750k_continuation30k_20260912/code/compound_dataset.py",
+      "action": "modified",
+      "before_sha256": "c01475c32337f081de8581bda0dfddc1a3198aa585ec9c84df28ad0c76a66a01",
+      "after_sha256": "a788ece5a5272742b3a94f2a916ea6ebb9e7d2a8af790379e93f07fc8c854127"
+    },
+    {
+      "path": "research/mixed1750k_continuation30k_20260912/code/memory_io.py",
+      "action": "modified",
+      "before_sha256": "2b9e4276221f33bc66801fcea664c9bb349e02a7487578f3fe150ee5b06c8dc2",
+      "after_sha256": "18c0f6ad4cab9a0a01c2e97c773b94ae7e42a3e52aa44996f2da4d76372501fd"
+    },
+    {
+      "path": "research/mixed1750k_continuation30k_20260912/code/rir_pool.py",
+      "action": "modified",
+      "before_sha256": "e8b637b6f8b0b6fa698a25ea9734053b8b1471d69dfd79043890515187ca8348",
+      "after_sha256": "fe256f87a29b183394227af9f2787a3a6927e54adac298bdc7e501f25fd31d2f"
+    },
+    {
+      "path": "research/spatial_multi500k_20260912/code/common.py",
+      "action": "modified",
+      "before_sha256": "c24ad32f18c172bbb04c0ec81dbc07d538a3181260851d33ed5b2d5174781abb",
+      "after_sha256": "cd8aa260505885e75645872661bfac05d9a5c96162ef0c33a29aad1107cd4166"
+    },
+    {
+      "path": "research/spatial_multi500k_20260912/code/dataset_v2.py",
+      "action": "modified",
+      "before_sha256": "c01475c32337f081de8581bda0dfddc1a3198aa585ec9c84df28ad0c76a66a01",
+      "after_sha256": "a788ece5a5272742b3a94f2a916ea6ebb9e7d2a8af790379e93f07fc8c854127"
+    },
+    {
+      "path": "research/spatial_multi500k_20260912/code/memory_io.py",
+      "action": "modified",
+      "before_sha256": "2b9e4276221f33bc66801fcea664c9bb349e02a7487578f3fe150ee5b06c8dc2",
+      "after_sha256": "18c0f6ad4cab9a0a01c2e97c773b94ae7e42a3e52aa44996f2da4d76372501fd"
+    },
+    {
+      "path": "research/spatial_multi500k_20260912/code/rir_pool.py",
+      "action": "modified",
+      "before_sha256": "e8b637b6f8b0b6fa698a25ea9734053b8b1471d69dfd79043890515187ca8348",
+      "after_sha256": "fe256f87a29b183394227af9f2787a3a6927e54adac298bdc7e501f25fd31d2f"
+    },
+    {
+      "path": "scripts/system/execute_sceneplan_v2_deletion_manifest.py",
+      "action": "removed",
+      "before_sha256": "50f06291e1c03fab279c73fa6584d7e1d799559723d6c914ad541260f84c5c0c",
+      "after_sha256": null
+    },
+    {
+      "path": "scripts/system/install_log_budget_10g.sh",
+      "action": "removed",
+      "before_sha256": "ffbe1751262d847e4de7b7ba562ffb3671780ce82253f4da9ceac42654ecc019",
+      "after_sha256": null
+    },
+    {
+      "path": "scripts/t2a/data/run_speech_expansion_noalign_15s_p0_p10.sh",
+      "action": "modified",
+      "before_sha256": "f13e16ea7c698b21ec4c3183a9eb485c4cdbc0ef56769ab108954d5741bc7cc0",
+      "after_sha256": "e050284f26d5a5991b8c41a34f390e6df84df00949c0ddd2b9decf987c588a13"
+    },
+    {
+      "path": "scripts/t2a/eval/evaluate_sceneplan_p11_v4_challenge.py",
+      "action": "modified",
+      "before_sha256": "bacb7b760dea082e89d4b24a241fd802a778eea0ad63b400fd2db54ca202ed9e",
+      "after_sha256": "6d4d54865ca1dd5fcd0fc3478420c7283056e110362987fe42448d79413e93f2"
+    },
+    {
+      "path": "scripts/t2a/eval/merge_sceneplan_p11_v4_challenge_shards.py",
+      "action": "modified",
+      "before_sha256": "f67a2b4f3235a1bd96cce898d18a70fefa871deda4e8bc85b50b90263ab2ee46",
+      "after_sha256": "7b06a0b8e4f340d11e05d862eb971355b74ce849451ff674110aca998d675b24"
+    },
+    {
+      "path": "scripts/t2a/train/RETIRED_P10_ROUTES.md",
+      "action": "modified",
+      "before_sha256": "d284c70ffc01bc968df735c19ca96c3005703785b41423957c1e1947d5535244",
+      "after_sha256": "dcd5cef6e5c222087c05a86c0be92b8e7dd559233c816d2b1d77ca9f43a18093"
+    },
+    {
+      "path": "scripts/t2a/train/_retired_p10_route_guard.sh",
+      "action": "removed",
+      "before_sha256": "249e76aacc1049bee79c36a0f0f867002c383171913a3e4616b86be3525832fc",
+      "after_sha256": null
+    },
+    {
+      "path": "scripts/t2a/train/run_sceneplan_dit_p10_44_8gpu.sh",
+      "action": "modified",
+      "before_sha256": "77648d55125779550de1195a637365fa599337c4210df4ab36983db5dce6d82e",
+      "after_sha256": "e050284f26d5a5991b8c41a34f390e6df84df00949c0ddd2b9decf987c588a13"
+    },
+    {
+      "path": "scripts/t2a/train/run_sceneplan_dit_p10_44_benchmark.sh",
+      "action": "modified",
+      "before_sha256": "6a9bea819a0f6470ab826cdf862863ba00dd58400cac96bd5227df2845459c3f",
+      "after_sha256": "e050284f26d5a5991b8c41a34f390e6df84df00949c0ddd2b9decf987c588a13"
+    },
+    {
+      "path": "scripts/t2a/train/run_sceneplan_dit_p10_44_noalign_15s_8gpu.sh",
+      "action": "modified",
+      "before_sha256": "b7729934ef0538f48aec834c66b3aa1bb3ce185d25124f286eba21894f1de625",
+      "after_sha256": "e050284f26d5a5991b8c41a34f390e6df84df00949c0ddd2b9decf987c588a13"
+    },
+    {
+      "path": "scripts/t2a/train/run_sceneplan_dit_p10_44_noalign_15s_benchmark.sh",
+      "action": "modified",
+      "before_sha256": "3e7e0e805047cb8358583f8615ed3f07eae297a13addf721eb3b5f96fbe0d28e",
+      "after_sha256": "e050284f26d5a5991b8c41a34f390e6df84df00949c0ddd2b9decf987c588a13"
+    },
+    {
+      "path": "scripts/t2a/train/run_sceneplan_dit_p10_44_noalign_15s_overfit10.sh",
+      "action": "modified",
+      "before_sha256": "762825927a4bf600908443490af1628c6ac5d129d334b55a73d877785b430239",
+      "after_sha256": "e050284f26d5a5991b8c41a34f390e6df84df00949c0ddd2b9decf987c588a13"
+    },
+    {
+      "path": "scripts/t2a/train/run_sceneplan_dit_p10_44_noalign_15s_resume_preflight.sh",
+      "action": "modified",
+      "before_sha256": "e78395800d8f2766beaaa8f3ae26814de5bf2492de1727e0f41c7db8f1633c57",
+      "after_sha256": "e050284f26d5a5991b8c41a34f390e6df84df00949c0ddd2b9decf987c588a13"
+    },
+    {
+      "path": "scripts/t2a/train/run_sceneplan_dit_p10_44_noalign_8gpu.sh",
+      "action": "modified",
+      "before_sha256": "f96bd8f3483104f03166a13975baa92f74e6496d65fa7ee78862aefcb437e8ea",
+      "after_sha256": "e050284f26d5a5991b8c41a34f390e6df84df00949c0ddd2b9decf987c588a13"
+    },
+    {
+      "path": "scripts/t2a/train/run_sceneplan_dit_p10_44_overfit10.sh",
+      "action": "modified",
+      "before_sha256": "5d59d3579a9c833992698189d0cc17d4d1544c00186b26a7ae2c0ed5fd75ae81",
+      "after_sha256": "e050284f26d5a5991b8c41a34f390e6df84df00949c0ddd2b9decf987c588a13"
+    },
+    {
+      "path": "scripts/t2a/train/run_sceneplan_dit_p10_44_resume_preflight.sh",
+      "action": "modified",
+      "before_sha256": "7210bc47f9922ce2210ad2f9857781f457f11627814bb3d8ed44d225600e0dc7",
+      "after_sha256": "e050284f26d5a5991b8c41a34f390e6df84df00949c0ddd2b9decf987c588a13"
+    },
+    {
+      "path": "scripts/t2a/train/run_sceneplan_dit_p10_semantic_v2_protected_resume_8gpu.sh",
+      "action": "modified",
+      "before_sha256": "273f89890a70003745bc0b39b37691c54c189436a56b71b68e7d24599029d0e6",
+      "after_sha256": "e050284f26d5a5991b8c41a34f390e6df84df00949c0ddd2b9decf987c588a13"
+    },
+    {
+      "path": "scripts/utils/migrate_vggsound_to_sdc.sh",
+      "action": "removed",
+      "before_sha256": "3a369ebf2021827b83bb85653bef29268fcdfff42a388a0b6c12e46c0542c5ba",
+      "after_sha256": null
+    },
+    {
+      "path": "scripts/vae/eval/decode_latents_4ch.py",
+      "action": "modified",
+      "before_sha256": "9c5b02edf72ce6cf659f6b0acc99b5ddbc6ee0227ce02dd2a515aeed2458d39a",
+      "after_sha256": "8179913d6198c55685e7c28b0664baf96dcccc702edf4d620ad21b4817da6749"
+    },
+    {
+      "path": "stable_audio_tools/data/editing_memory_io.py",
+      "action": "added",
+      "before_sha256": null,
+      "after_sha256": "7c777dfe938590491af79343951cbfb156ae25b0135ee1cf5df20f5ff542f1b5"
+    },
+    {
+      "path": "stable_audio_tools/data/editing_rir_pool.py",
+      "action": "added",
+      "before_sha256": null,
+      "after_sha256": "60ef745db339b5f400ed690d54160d62add56cc1dbef42844dc08b95cda3de6b"
+    },
+    {
+      "path": "stable_audio_tools/data/p11_challenge_metrics.py",
+      "action": "added",
+      "before_sha256": null,
+      "after_sha256": "495f708656604674b7933261c1dc0dc8ac816248d4cbaa385f9426bc9e59ff78"
+    },
+    {
+      "path": "stable_audio_tools/data/sceneplan_compound_editing_dataset.py",
+      "action": "added",
+      "before_sha256": null,
+      "after_sha256": "252b32dbaf2199b572622597aeeb66c282246c70fedeeae3ef0f94d702769e99"
+    },
+    {
+      "path": "stable_audio_tools/data/sceneplan_transfusion_editing_dataset.py",
+      "action": "modified",
+      "before_sha256": "585cf97fd37deb3ddd2abaad67fb62a40a1fd355a8c86047ab16b37d3aadf71d",
+      "after_sha256": "0f4dd0d61f9d62e8db547ec477ac8aba4803e0bc92f0ddbc771ee5a9c1d615cd"
+    },
+    {
+      "path": "tests/test_source_consolidation.py",
+      "action": "added",
+      "before_sha256": null,
+      "after_sha256": "0add1e58727a47ae3d62e3ea6d71e5a97dbc03d0a41cff009d19cc453fadfd9d"
+    },
+    {
+      "path": "tools/audit_sources.py",
+      "action": "added",
+      "before_sha256": null,
+      "after_sha256": "4b0c2ab590cc5a705f2d72efc2b7481a9bba89383dc3eb15d5116aa419848982"
+    }
+  ]
+}

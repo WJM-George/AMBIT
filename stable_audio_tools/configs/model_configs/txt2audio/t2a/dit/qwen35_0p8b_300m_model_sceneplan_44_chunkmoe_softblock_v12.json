@@ -1,0 +1,19 @@
+{
+    "extends": "qwen35_0p8b_300m_model_sceneplan_44_chunkmoe_v12.json",
+    "_task": "P10-v12 combined pilot: ScenePlan soft-block caption attention plus aligned chunk delta-MoE.",
+    "_stage": "Combined ablation upcycled from the same canonical P10-v11 Dense checkpoint as both single-module pilots.",
+    "_note": "The two additions share only the existing ScenePlan activity/source-role evidence and remain independently ablatable. Both residual effects are exactly zero at initialization.",
+    "model": {
+        "diffusion": {
+            "config": {
+                "sceneplan_soft_block_attention": {
+                    "enabled": true,
+                    "max_sources": 4,
+                    "max_bias": 4.0,
+                    "layer_start": 0,
+                    "layer_count": 15
+                }
+            }
+        }
+    }
+}

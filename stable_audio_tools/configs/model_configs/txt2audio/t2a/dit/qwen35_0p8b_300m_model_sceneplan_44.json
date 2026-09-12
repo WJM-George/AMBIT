@@ -1,0 +1,65 @@
+{
+    "extends": "qwen35_0p8b_300m.json",
+    "_task": "Semantic ScenePlan text plus direct four-event/four-trajectory controls to variable-length FOA latent.",
+    "_stage": "P10 replacement architecture trained from random initialization. No DiT, conditioner, optimizer, scheduler, or EMA checkpoint is loaded.",
+    "_note": "Qwen cross-attention receives semantic text only. Separate event and exact-speech token role ids use {-1,0,1,2,3,4}. Four framewise event-id tracks and four five-dimensional geometric trajectory tracks are concatenated directly with the noisy latent. Caption and structured conditions use independent 15% raw-unknown CFG dropout. gain_db remains in ScenePlan provenance and is not a model condition. The frozen VAE is only the offline latent codec and is not a DiT warm start.",
+    "model": {
+        "conditioning": {
+            "cond_dim": 768,
+            "configs": [
+                {
+                    "id": "prompt",
+                    "type": "qwen_text",
+                    "config": {
+                        "model_path": "/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B",
+                        "hidden_dim": 1024,
+                        "max_length": 512,
+                        "enable_grad": false,
+                        "project_out": true,
+                        "padding_mode": "zero",
+                        "caption_region_embedding": false,
+                        "source_region_embedding": false,
+                        "sceneplan_role_embedding": true,
+                        "sceneplan_max_sources": 4,
+                        "sceneplan_role_scale": 1.0,
+                        "fail_on_truncation": true
+                    }
+                },
+                {
+                    "id": "sceneplan_44",
+                    "type": "sceneplan_44",
+                    "config": {
+                        "output_dim": 256,
+                        "max_sources": 4,
+                        "trajectory_feature_dim": 5,
+                        "event_embedding_dim": 32,
+                        "trajectory_embedding_dim": 32
+                    }
+                }
+            ]
+        },
+        "diffusion": {
+            "cross_attention_cond_ids": ["prompt"],
+            "global_cond_ids": [],
+            "input_concat_ids": ["sceneplan_44"],
+            "config": {
+                "global_cond_dim": 0,
+                "input_concat_dim": 256,
+                "input_concat_cond_cfg": true,
+                "require_explicit_negative_input_concat": true,
+                "activation_checkpointing": false
+            }
+        }
+    },
+    "training": {
+        "pre_encoded": true,
+        "cfg_dropout_prob": 0.0,
+        "sceneplan_cfg_dropout": {
+            "mode": "independent",
+            "caption_unknown_prob": 0.15,
+            "structured_unknown_prob": 0.15
+        },
+        "sceneplan_speech_active_loss_weight": 3.0,
+        "demo": {"enabled": false}
+    }
+}

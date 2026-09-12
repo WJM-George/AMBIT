@@ -1,0 +1,59 @@
+{
+    "extends": "qwen35_0p8b_300m_model_sceneplan_44_soundexp_noalign_15s.json",
+    "_task": "Shared P10-v12 upgrade base: expose existing caption/source and frame/source IDs without changing the P10-v11 input-output contract.",
+    "_stage": "Model-only EMA upcycle from the canonical P10-v11 150k checkpoint. Optimizer, scheduler, and EMA state start fresh.",
+    "_source_checkpoint": "/mnt/sdc/ckpts/dit/sceneplan_dit_v11_semantic_v2_protected_resume_150k/checkpoints/epoch=48-step=150000.ckpt",
+    "_source_checkpoint_sha256": "be8c90cd1434bd71f73951531175c3674ff0f3173d5db591e2e1c476152ff59e",
+    "_note": "This base adds no acoustic branch by itself. It only makes the already materialized ScenePlan source-role auxiliaries available to the optional soft-block attention and chunk-MoE pilots; it does not use word timestamps, an aligner sidecar, or a duration loss.",
+    "model": {
+        "conditioning": {
+            "configs": [
+                {
+                    "id": "prompt",
+                    "type": "qwen_text",
+                    "config": {
+                        "model_path": "/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B",
+                        "hidden_dim": 1024,
+                        "max_length": 512,
+                        "enable_grad": false,
+                        "project_out": true,
+                        "padding_mode": "zero",
+                        "caption_region_embedding": false,
+                        "source_region_embedding": false,
+                        "sceneplan_role_embedding": true,
+                        "sceneplan_max_sources": 4,
+                        "sceneplan_role_scale": 1.0,
+                        "sceneplan_timing_aux": true,
+                        "fail_on_truncation": true
+                    }
+                },
+                {
+                    "id": "sceneplan_44",
+                    "type": "sceneplan_44",
+                    "config": {
+                        "output_dim": 256,
+                        "max_sources": 4,
+                        "trajectory_feature_dim": 5,
+                        "event_embedding_dim": 32,
+                        "trajectory_embedding_dim": 32,
+                        "sceneplan_timing_aux": true
+                    }
+                }
+            ]
+        }
+    },
+    "training": {
+        "optimizer_configs": {
+            "diffusion": {
+                "optimizer": {
+                    "config": {
+                        "lr": 0.00005
+                    }
+                }
+            }
+        },
+        "sceneplan_speech_duration_loss": {
+            "enabled": false
+        }
+    }
+}

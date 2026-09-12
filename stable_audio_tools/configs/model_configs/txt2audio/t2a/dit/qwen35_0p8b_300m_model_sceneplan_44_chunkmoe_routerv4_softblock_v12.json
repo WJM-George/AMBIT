@@ -1,0 +1,19 @@
+{
+    "extends": "qwen35_0p8b_300m_model_sceneplan_44_chunkmoe_routerv4_v12.json",
+    "_task": "P10-v12 combined pilot: router-v4 target-entropy chunk-MoE plus ScenePlan soft-block attention.",
+    "_stage": "Combined ablation warm-started only from a promoted MoE-only router-v4 checkpoint after both independent arms pass.",
+    "_note": "The promoted target-entropy MoE behavior is retained while two bounded per-layer attention gates start at exactly zero; no aligner, timestamp target, or duration loss is introduced.",
+    "model": {
+        "diffusion": {
+            "config": {
+                "sceneplan_soft_block_attention": {
+                    "enabled": true,
+                    "max_sources": 4,
+                    "max_bias": 4.0,
+                    "layer_start": 0,
+                    "layer_count": 15
+                }
+            }
+        }
+    }
+}

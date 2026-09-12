@@ -1,0 +1,34 @@
+{
+    "_task": "Frozen Sound-expansion training view with deterministic speech oversampling and no external speech timing teacher.",
+    "_note": "The underlying P9 index remains 1.1M immutable rows. The full view contributes all 1.1M rows once and the frozen speech ordinal interval [0,500000) once more, yielding a 62.5% speech-scene sampling share without copying any latent or changing validation/test.",
+    "caption_max_tokens": 512,
+    "dataset_type": "sceneplan_v2_preencoded",
+    "datasets": [
+        {
+            "id": "sceneplan_v2_sound_expansion_v1_full",
+            "path": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/sound_expansion_v1/training_index/train.sqlite",
+            "num_samples": 1100000,
+            "weight": 1.0
+        },
+        {
+            "id": "sceneplan_v2_sound_expansion_v1_speech_boost",
+            "path": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/sound_expansion_v1/training_index/train.sqlite",
+            "index_num_samples": 1100000,
+            "num_samples": 500000,
+            "ordinal_range": [0, 500000],
+            "weight": 1.0
+        }
+    ],
+    "drop_last": true,
+    "expected_num_samples": 1600000,
+    "in_order": true,
+    "latent_crop_length": 432,
+    "latent_downsampling_ratio": 1024,
+    "max_item_retries": 0,
+    "max_length_sec": 10.031020408163267,
+    "persistent_workers": true,
+    "pin_memory": true,
+    "prefetch_factor": 2,
+    "random_crop": false,
+    "require_complete": true
+}

@@ -1,0 +1,20 @@
+{
+    "extends": "qwen35_0p8b_300m_model_sceneplan_44_chunkmoe_routerv2_v12.json",
+    "_task": "P10-v12 MoE router-v3 pilot: selective and collapse-resistant ScenePlan chunk routing.",
+    "_stage": "MoE-only ablation upcycled from canonical P10-v11 Dense DiT after router-v2 collapsed by step 122.",
+    "_note": "Router-v3 fixes the detached conflict-logit regularizer, adds conditional-entropy minimization paired with global load balancing, and keeps both the ScenePlan prior and acoustic evidence active through a narrower conflict blend.",
+    "model": {
+        "diffusion": {
+            "config": {
+                "sceneplan_chunk_moe": {
+                    "load_balance_loss_weight": 0.01,
+                    "router_entropy_loss_weight": 0.01,
+                    "router_temperature": 0.7,
+                    "conflict_gate_min": 0.25,
+                    "conflict_gate_max": 0.75,
+                    "conflict_logit_l2_loss_weight": 0.01
+                }
+            }
+        }
+    }
+}

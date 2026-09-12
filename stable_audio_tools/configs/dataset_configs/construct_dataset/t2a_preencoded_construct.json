@@ -1,0 +1,15 @@
+{
+    "_comment": "Stage-2 DiT training on pre-encoded latents of the CONSTRUCTED dataset. Point 'path' at the pre_encode_4ch.py output dir for this dataset. Each latent's metadata carries prompt/text + spatial_format + seconds_total. Synth clips are 4-10s, so latent_crop_length 432 (~10s @ ds1024/44.1k, chosen VAE = ds1024_z64) keeps full clips.",
+    "dataset_type": "pre_encoded",
+    "random_crop": true,
+    "latent_crop_length": 432,
+    "min_length_sec": 1.0,
+    "max_length_sec": 16.0,
+    "datasets": [
+        {
+            "id": "construct_4ch_latents",
+            "path": "/mnt/sdc/audio_latents/construct_4ch",
+            "weight": 1.0
+        }
+    ]
+}

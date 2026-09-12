@@ -1,0 +1,98 @@
+{
+  "extends": "_qwen35_0p8b_sceneplan_p11_base.json",
+  "_task": "Inheritance-only P11-v4 Flow-R1 core; the launchable canonical leaf adds the reliable-ASR deterministic assembler boundary.",
+  "model_type": "sceneplan_p11_v4",
+  "model": {
+    "transfusion_cot": {
+      "contract": "p11_sketch_first_transfusion_cot_v4",
+      "sequence_contract": "task_evidence_then_discrete_sketch_then_continuous_thought_then_assembler_v1",
+      "scene_sketch_contract": "p10_bound_discrete_cot_v1",
+      "thought_contract": "p10_numeric_scene_delta_thought_v1",
+      "delta_token_contract": "atomic_delta_owner_direction_program_v2",
+      "output_contract": "deterministic_sceneplan_or_atomic_patch_v1",
+      "assembler": "deterministic_sketch_execution_assembler_v1",
+      "semantic_from_execution_state": false,
+      "numeric_from_scene_sketch": false,
+      "editing_render_seed_policy": "same_each_turn",
+      "sct": {
+        "enabled": true,
+        "contract": "audiochat_style_understanding_then_execution_sct_v1",
+        "total_layers": 24,
+        "understanding_layers": 16,
+        "generation_layers": 8,
+        "understanding_lora_top_layers": 8,
+        "discrete_head": "understanding_layer_16_v1",
+        "continuous_head": "generation_layer_24_v1",
+        "generation_gradient_to_understanding_lora": false,
+        "text_inference": "understanding_layers_only_v1"
+      },
+      "delta_owner": {
+        "contract": "delta_sketch_decoder_owned_source_slot_v1",
+        "objective": "legal_source_ce_plus_hardest_negative_margin_v1",
+        "authority": "delta_sketch_owner_token_v1",
+        "context": "edit_instruction_plus_current_sceneplan_v1",
+        "inference": "grammar_constrained_argmax_v1",
+        "legal_source_inventory": "input_sceneplan_source_mask_v1",
+        "loss_normalization": "active_owner_rows_v1",
+        "margin": 2.0,
+        "margin_weight": 1.0
+      },
+      "control_direction": {
+        "contract": "p10_atomic_edit_control_direction_v1",
+        "authority": "delta_sketch_operation_specific_token_v1",
+        "operations": [
+          "rotate_source",
+          "distance_source"
+        ],
+        "decode": "exact_negative_positive_lookup_v1",
+        "continuous_parallel_head": false,
+        "conditions_delta_thought": true
+      },
+      "discrete_supervision": {
+        "contract": "scene_sketch_finite_field_boundary_supervision_v1",
+        "text_end_weight": 4.0,
+        "scene_eos_weight": 2.0,
+        "understanding_inventory": {
+          "contract": "u_same_decoder_finite_inventory_aux_v1",
+          "objective": "grammar_candidate_ce_v1",
+          "authority": "scene_sketch_autoregressive_logits_v1",
+          "normalization": "weighted_mean_of_field_ce_v1",
+          "fields": ["source_count", "room", "kind"],
+          "loss_weight": 1.0,
+          "source_count_weight": 4.0,
+          "room_weight": 1.0,
+          "kind_weight": 1.0
+        }
+      },
+      "scene_sketch_max_tokens": 512,
+      "delta_sketch_max_tokens": 5,
+      "lexical_evidence": {
+        "required": false,
+        "max_tokens": 128,
+        "canonical_source": "frozen_asr_cache_pending"
+      },
+      "thought": {
+        "arm": "sketch_first_transfusion_cot_v4",
+        "contract": "p10_numeric_scene_delta_thought_v1",
+        "backbone": "shared_qwen_causal_v1",
+        "continuous_objective": "rectified_flow",
+        "editing_continuous_objective": "direct_mse",
+        "editing_output_head": "dedicated_delta_v1",
+        "slot_count": 5,
+        "core_dim": 15,
+        "dim": 1024,
+        "inference_steps": 1,
+        "training_inference_steps": 1,
+        "inference_noise_seed": 41
+      }
+    }
+  },
+  "training": {
+    "transfusion_cot_loss_weights": {
+      "flow": 0.25,
+      "solve": 1.0,
+      "locality": 0.25,
+      "owner": 1.0
+    }
+  }
+}

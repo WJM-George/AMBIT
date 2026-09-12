@@ -1,0 +1,95 @@
+{
+  "scope": "Top-level Python functions >=16 lines with identical AST, excluding tests/; semantic duplicates with different code are not exhaustively detectable.",
+  "retained_groups": [
+    {
+      "functions": [
+        {
+          "path": "scripts/t2a/experiments/ar_source_grounding_v1/allocated_runtime.py",
+          "function": "gpu_topology",
+          "lines": 17
+        },
+        {
+          "path": "scripts/t2a/train/editing_gpu_runtime.py",
+          "function": "gpu_topology",
+          "lines": 17
+        }
+      ],
+      "retained_reason": "Runtime functions resolve different selection/lock policies in their module globals; keep allocation contracts separate."
+    },
+    {
+      "functions": [
+        {
+          "path": "scripts/t2a/experiments/ar_source_grounding_v1/allocated_runtime.py",
+          "function": "gpu_lease",
+          "lines": 21
+        },
+        {
+          "path": "scripts/t2a/train/editing_gpu_runtime.py",
+          "function": "gpu_lease",
+          "lines": 21
+        }
+      ],
+      "retained_reason": "Runtime functions resolve different selection/lock policies in their module globals; keep allocation contracts separate."
+    },
+    {
+      "functions": [
+        {
+          "path": "scripts/t2a/experiments/ar_source_grounding_v1/allocated_runtime.py",
+          "function": "distributed",
+          "lines": 25
+        },
+        {
+          "path": "scripts/t2a/train/editing_gpu_runtime.py",
+          "function": "distributed",
+          "lines": 25
+        }
+      ],
+      "retained_reason": "Runtime functions resolve different selection/lock policies in their module globals; keep allocation contracts separate."
+    },
+    {
+      "functions": [
+        {
+          "path": "scripts/t2a/train/audit_p10_v12_attention_gates.py",
+          "function": "main",
+          "lines": 17
+        },
+        {
+          "path": "scripts/t2a/train/audit_p10_v12_moe_routing.py",
+          "function": "main",
+          "lines": 17
+        }
+      ],
+      "retained_reason": "Identical CLI scaffold dispatches different audit implementations."
+    },
+    {
+      "functions": [
+        {
+          "path": "scripts/t2a/test/validate_sceneplan_p11_v4_curriculum.py",
+          "function": "_base_dataset",
+          "lines": 36
+        },
+        {
+          "path": "scripts/t2a/test/validate_sceneplan_p11_v4_screening.py",
+          "function": "_base_dataset",
+          "lines": 32
+        }
+      ],
+      "retained_reason": "Validation fixtures, not duplicated production behavior."
+    },
+    {
+      "functions": [
+        {
+          "path": "stable_audio_tools/data/sceneplan_v2.py",
+          "function": "_position_words",
+          "lines": 18
+        },
+        {
+          "path": "stable_audio_tools/data/model_sceneplan.py",
+          "function": "_position_words",
+          "lines": 18
+        }
+      ],
+      "retained_reason": "Frozen renderer and model-facing contracts remain independently scoped; no cross-import of retired renderer code."
+    }
+  ]
+}

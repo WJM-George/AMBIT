@@ -1,0 +1,9 @@
+{
+  "extends": "sceneplan_p11_pilot90_transfusion_cot_v4.json",
+  "_task": "P11-v4 pilot90 with input-only frozen ASR lexical evidence gated by a train-only calibrated threshold.",
+  "lexical_evidence_mode": "frozen_asr_cache_v1",
+  "lexical_cache_path": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/lexical_cache/p11_train_pilot90_distilwhisper_v1.sqlite",
+  "lexical_encoder_revision": "distil-whisper-large-v3-ct2-fp16-local-v1",
+  "lexical_confidence_threshold": 0.85,
+  "lexical_max_tokens": 128
+}

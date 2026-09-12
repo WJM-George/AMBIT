@@ -1,0 +1,10 @@
+Classify whether the source description explicitly says that any clearly audible spoken language is present, such as conversation, narration, an announcement, or a person speaking words. Return true even when the speaking is only one component over music or other sounds.
+
+Singing and rap are music, not spoken-language background. Nonverbal vocal sounds such as laughter, coughing, breathing, cheering, and humming are also not spoken-language background.
+
+Return only true or false.
+
+Examples:
+"A calm narrator reads a passage over soft music." -> true
+"A vocalist sings over a pop instrumental." -> false
+"A rapper performs over a hip-hop beat." -> false

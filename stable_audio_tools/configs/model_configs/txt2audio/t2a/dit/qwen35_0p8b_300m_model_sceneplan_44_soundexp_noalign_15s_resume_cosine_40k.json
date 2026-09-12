@@ -1,0 +1,20 @@
+{
+    "extends": "qwen35_0p8b_300m_model_sceneplan_44_soundexp_noalign_15s.json",
+    "_task": "Protected 110k-to-150k semantic-caption-v2 continuation of the production P10 ScenePlan 4+4 DiT.",
+    "_stage": "Full-state resume only. Inherit the effective 110k LR without a jump, then decay it from 5e-5 to 1e-5 over 40k optimizer steps.",
+    "_note": "Architecture, losses, independent 15% caption/structured CFG, frozen 1.6M sample view, canonical semantic-caption v2, and 432/648 batching are unchanged. Only the explicitly reset continuation scheduler and terminal step differ.",
+    "training": {
+        "optimizer_configs": {
+            "diffusion": {
+                "scheduler": {
+                    "__replace__": true,
+                    "type": "CosineAnnealingLR",
+                    "config": {
+                        "T_max": 40000,
+                        "eta_min": 0.00001
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,33 @@
+{
+    "_task": "Frozen revision-6 ScenePlan test split, source-disjoint from train and validation.",
+    "caption_max_tokens": 512,
+    "dataset_type": "sceneplan_v2_preencoded",
+    "datasets": [
+        {
+            "id": "sceneplan_v2_speech_expansion_noalign_15s_v1_test",
+            "path": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1/training_index/test.sqlite",
+            "weight": 1.0
+        }
+    ],
+    "drop_last": true,
+    "expected_num_samples": 8000,
+    "in_order": true,
+    "latent_crop_length": 648,
+    "latent_downsampling_ratio": 1024,
+    "length_bucket_batching": {
+        "enabled": true,
+        "long_batch_size": 48,
+        "seed": 20260828
+    },
+    "max_item_retries": 0,
+    "max_length_sec": 15.047619047619047,
+    "persistent_workers": true,
+    "pin_memory": true,
+    "prefetch_factor": 4,
+    "random_crop": false,
+    "require_complete": true,
+    "semantic_caption_mode": "v2",
+    "semantic_caption_seed": 20260830,
+    "semantic_caption_v2_probability": 1.0,
+    "word_level_timestamp_teacher": false
+}

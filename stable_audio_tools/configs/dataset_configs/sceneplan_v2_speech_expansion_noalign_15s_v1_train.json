@@ -1,0 +1,29 @@
+{
+    "_task": "Frozen revision-6 ScenePlan train split with 432/648 frame buckets and no speech aligner sidecar.",
+    "caption_max_tokens": 512,
+    "dataset_type": "sceneplan_v2_preencoded",
+    "datasets": [
+        {
+            "id": "sceneplan_v2_speech_expansion_noalign_15s_v1_train",
+            "path": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1/training_index/train.sqlite",
+            "weight": 1.0
+        }
+    ],
+    "drop_last": true,
+    "expected_num_samples": 1600000,
+    "in_order": true,
+    "latent_crop_length": 648,
+    "latent_downsampling_ratio": 1024,
+    "length_bucket_batching": {
+        "enabled": true,
+        "long_batch_size": 48,
+        "seed": 20260828
+    },
+    "max_item_retries": 0,
+    "max_length_sec": 15.047619047619047,
+    "persistent_workers": true,
+    "pin_memory": true,
+    "prefetch_factor": 4,
+    "random_crop": false,
+    "require_complete": true
+}

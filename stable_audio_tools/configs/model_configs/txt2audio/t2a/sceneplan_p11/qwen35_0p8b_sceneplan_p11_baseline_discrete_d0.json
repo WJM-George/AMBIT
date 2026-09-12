@@ -1,0 +1,4 @@
+{
+  "extends": "_qwen35_0p8b_sceneplan_p11_base.json",
+  "_task": "Frozen P11-discrete-v0 matched ablation arm; no continuous SceneThought module."
+}

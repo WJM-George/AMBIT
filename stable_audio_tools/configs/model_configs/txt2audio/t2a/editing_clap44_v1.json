@@ -1,0 +1,7 @@
+{
+  "model": {"sample_rate": 44100, "vae_hop": 1024, "latent_channels": 64, "max_frames": 648, "stride": 4, "width": 384, "layers": 6, "heads": 6, "semantic_dim": 512, "scene_dim": 256, "text_dim": 1024, "dropout": 0.1},
+  "text": {"model_path": "/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B", "max_tokens": 1024, "batch_size": 32},
+  "frontend": {"config_path": "/mnt/sdc/stable-audio-tools-workspace/stable_audio_tools/configs/model_configs/autoencoders/stable_audio_4ch_vae_ds1024_z64_wdmix_scm.json", "checkpoint_path": "/mnt/sdc/ckpts/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt", "checkpoint_sha256": "0229e48729bb6cf138c277d37c598d659000cf78e0a16f498171f2f1f83e8a87"},
+  "training": {"seed": 42, "pairs_per_gpu": 32, "workers_per_gpu": 4, "max_steps": 20000, "warmup_steps": 1000, "learning_rate": 0.0003, "scene_weight": 0.25, "binding_weight": 0.1, "checkpoint_every": 2000, "log_every": 20},
+  "quality_status": "initial_configuration_requiring_validation_and_AR_ablation"
+}
