@@ -2,6 +2,7 @@
 """Build explicit Reference/VAE/checkpoint listening montages."""
 
 from __future__ import annotations
+import os
 
 import argparse
 import json
@@ -26,7 +27,7 @@ from scripts.t2a.eval.sceneplan_dit_p10_panel_common import (
 
 
 DEFAULT_EVAL_ROOT = Path(
-    "/mnt/sdb/model_archives/p10_pre_v11_20260831/sceneplan_dit_fail/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//p10_pre_v11_20260831/sceneplan_dit_fail/"
     "sceneplan_dit_v4_r8_300m/evaluation/"
     "p10_ckpt_5k_10k_15k_sceneplan44_v1"
 )

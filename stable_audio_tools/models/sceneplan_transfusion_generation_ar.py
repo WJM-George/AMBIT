@@ -8,6 +8,7 @@ continues to see the complete frozen-Qwen request context.
 """
 
 from __future__ import annotations
+import os
 
 from dataclasses import dataclass
 import hashlib
@@ -30,7 +31,7 @@ from stable_audio_tools.models.utils import load_ckpt_state_dict
 
 
 P10_V11_MODEL_CONFIG = Path(
-    "/mnt/sdc/stable-audio-tools-workspace/stable_audio_tools/configs/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/stable-audio-tools-workspace/stable_audio_tools/configs/"
     "model_configs/txt2audio/t2a/dit/"
     "qwen35_0p8b_300m_model_sceneplan_44_soundexp_noalign_15s_"
     "resume_cosine_40k.json"
@@ -42,7 +43,7 @@ P10_V11_RESOLVED_CONFIG_SHA256 = (
     "cc3e0881b1b5a87ad4dcaa9d4e2f12080d2414630eff17a84942496924236c71"
 )
 P10_V11_CHECKPOINT = Path(
-    "/mnt/sdc/ckpts/dit/sceneplan_dit_v11_semantic_v2_protected_resume_150k/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/dit/sceneplan_dit_v11_semantic_v2_protected_resume_150k/"
     "checkpoints/epoch=48-step=150000.ckpt"
 )
 P10_V11_CHECKPOINT_SHA256 = (

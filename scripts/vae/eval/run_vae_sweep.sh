@@ -10,11 +10,11 @@
 #   STEPS="200000 400000" bash scripts/vae/eval/run_vae_sweep.sh
 set -euo pipefail
 
-SAT=/home/tanhe/dataset_storage/stable-audio-tools
+SAT=./stable-audio-tools
 cd "$SAT"
 
 MODE="${MODE:-heldout}"
-CKPT_ROOT="${CKPT_ROOT:-/mnt/sdc/ckpts/vae_ds1024_z64_construct}"
+CKPT_ROOT="${CKPT_ROOT:-${AMBIT_CKPT_ROOT}/vae_ds1024_z64_construct}"
 MODEL_CFG="${MODEL_CFG:-stable_audio_tools/configs/model_configs/autoencoders/stable_audio_4ch_vae_ds1024_z64.json}"
 HELDOUT_CFG="stable_audio_tools/configs/dataset_configs/local_4ch_vae_heldout_eval_100.json"
 DIT_CFG="stable_audio_tools/configs/dataset_configs/construct_dataset/preencode_4ch_construct.json"
@@ -27,10 +27,10 @@ BUILD_SUBSET="${BUILD_SUBSET:-0}"
 PREENCODE_DIT="${PREENCODE_DIT:-0}"
 
 if [ "$MODE" = "preencode" ]; then
-  EVAL_ROOT="${EVAL_ROOT:-/mnt/sdc/eval_metric/ckpt_sweep}"
-  LATENT_ROOT="${LATENT_ROOT:-/mnt/sdc/audio_latents/vae_eval/ckpt_sweep}"
+  EVAL_ROOT="${EVAL_ROOT:-${AMBIT_CKPT_ROOT}/eval_metric/ckpt_sweep}"
+  LATENT_ROOT="${LATENT_ROOT:-${AMBIT_CKPT_ROOT}/audio_latents/vae_eval/ckpt_sweep}"
 else
-  EVAL_ROOT="${EVAL_ROOT:-/mnt/sdc/eval_metric}"
+  EVAL_ROOT="${EVAL_ROOT:-${AMBIT_CKPT_ROOT}/eval_metric}"
 fi
 
 if [ -n "${STEPS:-}" ]; then
@@ -118,7 +118,7 @@ eval_preencode() {
 preencode_dit() {
   local step="$1"
   local unwrapped="$CKPT_ROOT/unwrapped_ds1024_z64_step=${step}.ckpt"
-  local lat_dir="/mnt/sdc/audio_latents/construct_4ch_step=${step}"
+  local lat_dir="${AMBIT_CKPT_ROOT}/audio_latents/construct_4ch_step=${step}"
   [ -f "$lat_dir/details.json" ] && [ "$FORCE" != "1" ] && return 0
   CUDA_VISIBLE_DEVICES="${PREENCODE_GPU:-0,1,2,3}" uv run python pre_encode_4ch.py \
     --model-config "$MODEL_CFG" --ckpt-path "$unwrapped" \

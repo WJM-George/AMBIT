@@ -67,11 +67,11 @@ from stable_audio_tools.models.sceneplan_transfusion_generation_ar import (  # n
 
 
 DEFAULT_EVALUATION_MANIFEST = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/transfusion_shared_v1/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/transfusion_shared_v1/"
     "generation_ar/test.sqlite"
 )
 CODEC_PATH = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
     "model_sceneplan_codec_v4"
 )
 EXPECTED_MANIFEST_SHA256 = {

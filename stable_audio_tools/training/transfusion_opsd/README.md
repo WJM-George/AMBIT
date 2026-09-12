@@ -8,7 +8,7 @@ loader/adapter boundary check. The user does not require waiting for all 50k
 updates. Check actual editing/content preservation before OPSD training. Editing SFT and
 other tasks' evaluation are untouched.
 
-[Current method and evidence](/mnt/sdc/stable-audio-tools-workspace/docs/transfusion_opsd.md) · [Editing 20k milestone](/mnt/sdc/ckpts/transfusion_opsd/editing_structured_20k_opsd_pilot_v1/README.md)
+[Current method and evidence](${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace/docs/transfusion_opsd.md) · [Editing 20k milestone](${AMBIT_CKPT_ROOT}/transfusion_opsd/editing_structured_20k_opsd_pilot_v1/README.md)
 
 | Role | Current components |
 | --- | --- |
@@ -36,7 +36,7 @@ measured plan set. Content protection failed; no endpoint was stored or new
 confirmation opened. Changed-duration normal outputs have different reference
 noise geometry from C0; fixed-C0-plan comparisons remain paired. Refreshed
 executor feedback was measured but did not produce a new training round.
-[V70 findings](/mnt/sdc/ckpts/transfusion_opsd/generation_event_coupled_v70_20260911/NATIVE_JOINT_UPDATE_FINDINGS_V1.md).
+[V70 findings](${AMBIT_CKPT_ROOT}/transfusion_opsd/generation_event_coupled_v70_20260911/NATIVE_JOINT_UPDATE_FINDINGS_V1.md).
 
 V71 controls the observed Generation native-duration drift using actual finite
 behavior checks. Development CTC improves slightly; new-request Whisper improves
@@ -44,7 +44,7 @@ but independent CTC regresses slightly. Confirmation fails its declared content
 condition; no scale-up or C0 replacement. All 108 development/confirmation plans
 are unchanged, so branch interaction is zero. Keep the update fix and local
 output evidence, not the unchanged timing-teacher recipe.
-[V71 closeout](/mnt/sdc/ckpts/transfusion_opsd/generation_event_coupled_v71_20260911/UNIFIED_BRANCH_FINDINGS_V1.md).
+[V71 closeout](${AMBIT_CKPT_ROOT}/transfusion_opsd/generation_event_coupled_v71_20260911/UNIFIED_BRANCH_FINDINGS_V1.md).
 
 Editing20k produces 64 normal/teacher/control audios on eight existing training
 rows. Four speech plans have wrong transcripts; extra verified-content text
@@ -54,7 +54,7 @@ One correct sound request at two visited states verifies the common ST kernel
 reaches native token logits, slot operation and the shared Transformer with
 bitwise hard-forward parity. This paired RF gradient probe makes zero updates
 and is not a verified self-distillation teacher.
-[Unified method](/mnt/sdc/stable-audio-tools-workspace/docs/transfusion_opsd_unified.md).
+[Unified method](${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace/docs/transfusion_opsd_unified.md).
 
 The new decision derivative passes actual-state and CPU checks but has no
 proven added normal-generation benefit over detachment. The native Generation
@@ -67,7 +67,7 @@ RF-only improves execution under fixed C0 plans but its normal planning drift
 hurts the combined result. The measured AR-teacher contribution mainly avoids
 that drift. DiT repair has local lexical benefit and semantic tradeoffs. This
 does not establish that refreshed DiT taught AR to exploit a new capability.
-[Matched findings and limitations](/mnt/sdc/ckpts/transfusion_opsd/generation_event_coupled_v69_20260911/MATCHED_COMPONENT_FINDINGS_V1.md).
+[Matched findings and limitations](${AMBIT_CKPT_ROOT}/transfusion_opsd/generation_event_coupled_v69_20260911/MATCHED_COMPONENT_FINDINGS_V1.md).
 
 Current native FOA VAE-latent CLAP is pinned to additional 10k, separate from
 original 20k initialization and from the Editing joint-training 20k milestone.
@@ -76,5 +76,5 @@ only once in a joint optimizer; Qwen, CLAP and VAE observers remain frozen.
 
 Useful older teacher/bridge/retention components remain available; not all are
 active research routes. Original evidence and retirement requirements remain in
-[history](/mnt/sdc/stable-audio-tools-workspace/docs/transfusion_opsd_history.md) and
-[source retirement](/mnt/sdc/ckpts/transfusion_opsd/generation_event_coupled_v67_20260911/retirement_v1/RETIREMENT.md).
+[history](${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace/docs/transfusion_opsd_history.md) and
+[source retirement](${AMBIT_CKPT_ROOT}/transfusion_opsd/generation_event_coupled_v67_20260911/retirement_v1/RETIREMENT.md).

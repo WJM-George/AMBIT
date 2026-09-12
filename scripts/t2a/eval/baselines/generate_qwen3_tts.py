@@ -2,6 +2,7 @@
 """Generate the frozen Speech panel with Qwen3-TTS VoiceDesign."""
 
 from __future__ import annotations
+import os
 
 import argparse
 from pathlib import Path
@@ -19,7 +20,7 @@ from baseline_common import (
 
 
 DEFAULT_MODEL = Path(
-    "/mnt/sdc/ckpts/baselines/p10_60k_15row_v1/models/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/baselines/p10_60k_15row_v1/models/"
     "Qwen3-TTS-12Hz-1.7B-VoiceDesign"
 )
 

@@ -115,14 +115,14 @@ P10_RELEASE_SHA256 = (
     "4074715a06e208ced678701d2bf8ad042a6e7a1ca0903d60d13a87d5b874ea51"
 )
 TEST_MANIFEST = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/transfusion_shared_v1/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/transfusion_shared_v1/"
     "generation_ar/test.sqlite"
 )
 CODEC_PATH = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
     "model_sceneplan_codec_v4"
 )
-QWEN_PATH = Path("/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B")
+QWEN_PATH = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen/Qwen3.5-0.8B")
 
 CODEC_ARTIFACT_SHA256 = {
     "READY": "36f98e8d91be72dc7fb0f550436e610c4487300f13c89ad0b5afb2b6bc1f6aff",

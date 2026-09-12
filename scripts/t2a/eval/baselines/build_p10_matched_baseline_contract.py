@@ -14,15 +14,15 @@ from build_p10_60k_baseline_contract import BASELINES
 
 
 DEFAULT_SOURCE_EVAL = Path(
-    "/mnt/sdb/model_archives/p10_pre_v11_20260831/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//p10_pre_v11_20260831/"
     "sceneplan_dit_v7_sao_300m_from_scratch_160k/evaluation/"
     "p10_40k_60k_80k_100k_120k_140k_50x3_v1"
 )
 DEFAULT_OUTPUT_ROOT = Path(
-    "/mnt/sdc/ckpts/baselines/p10_v7_40k_140k_50x3_v1"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/baselines/p10_v7_40k_140k_50x3_v1"
 )
 REPO_LOCK = Path(
-    "/home/tanhe/dataset_storage/evaluation_benchmark/contracts/REPOS.lock.json"
+    "." + "/evaluation_benchmark/contracts/REPOS.lock.json"
 )
 
 

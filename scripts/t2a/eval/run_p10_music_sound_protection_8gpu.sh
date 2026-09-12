@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_ROOT="${REPO_ROOT:-/home/tanhe/dataset_storage/stable-audio-tools}"
+REPO_ROOT="${REPO_ROOT:-./stable-audio-tools}"
 PYTHON_BIN="${PYTHON_BIN:-${REPO_ROOT}/.venv/bin/python}"
-EVAL_ROOT="${EVAL_ROOT:-/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1/evaluation/p10_v10_music_sound_protection_fixed50}"
+EVAL_ROOT="${EVAL_ROOT:-${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1/evaluation/p10_v10_music_sound_protection_fixed50}"
 LOG_ROOT="${EVAL_ROOT}/logs"
 
 cd "${REPO_ROOT}"

@@ -19,12 +19,12 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_SOURCE = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/revisions/"
     "speech_expansion_noalign_15s_v1/evaluation/"
     "p10_v9_balanced_1200_ckpt20k_100k_v1"
 )
 DEFAULT_OUTPUT = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/revisions/"
     "speech_expansion_noalign_15s_v1/evaluation/"
     "p10_v11_balanced_1200_ckpt110k_150k_semantic_v2"
 )
@@ -37,7 +37,7 @@ CHECKPOINTS = (
     (
         110_000,
         Path(
-            "/mnt/sdc/ckpts/dit/"
+            os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/dit/"
             "sceneplan_dit_v10_semantic_v2_protected_resume_110k/"
             "checkpoints/epoch=35-step=110000.ckpt"
         ),
@@ -46,7 +46,7 @@ CHECKPOINTS = (
         (
             step,
             Path(
-                "/mnt/sdc/ckpts/dit/"
+                os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/dit/"
                 "sceneplan_dit_v11_semantic_v2_protected_resume_150k/"
                 f"checkpoints/{name}"
             ),

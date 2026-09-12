@@ -6,6 +6,7 @@ audio referenced by generation_results.jsonl.
 """
 
 from __future__ import annotations
+import os
 
 import argparse
 import csv
@@ -243,8 +244,8 @@ def agg(rows: list[dict], key: str) -> dict:
 
 def main() -> None:
     p = argparse.ArgumentParser()
-    p.add_argument("--results", default="/mnt/sdc/video_demos/generation_results.jsonl")
-    p.add_argument("--out-dir", default="/mnt/sdc/video_demos/eval")
+    p.add_argument("--results", default=os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/video_demos/generation_results.jsonl")
+    p.add_argument("--out-dir", default=os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/video_demos/eval")
     args = p.parse_args()
 
     out_dir = Path(args.out_dir)

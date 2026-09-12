@@ -7,6 +7,7 @@ selection.  Diversity is decomposed into the frozen P10 ExecutionState fields.
 """
 
 from __future__ import annotations
+import os
 
 import argparse
 import itertools
@@ -42,7 +43,7 @@ from stable_audio_tools.data.scene_sketch_v1 import (  # noqa: E402
 
 
 DEFAULT_CODEC = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
     "model_sceneplan_codec_v4"
 )
 SCHEMA = "stable_audio_tools.p11_v4_posterior_specificity"

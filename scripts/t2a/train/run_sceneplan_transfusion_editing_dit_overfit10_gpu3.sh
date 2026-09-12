@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO="${P10_REPO:-/mnt/sdc/stable-audio-tools-workspace}"
+REPO="${P10_REPO:-${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace}"
 PY="$REPO/.venv/bin/python"
 MODEL_CONFIG="${MODEL_CONFIG:-$REPO/stable_audio_tools/configs/model_configs/txt2audio/t2a/dit/qwen35_0p8b_300m_sceneplan_transfusion_editing_dit_v1.json}"
 DATASET_CONFIG="${DATASET_CONFIG:-$REPO/stable_audio_tools/configs/dataset_configs/sceneplan_transfusion_editing_v1_overfit10.json}"
-CHECKPOINT="${PRETRAINED_CKPT:-/mnt/sdc/ckpts/dit/sceneplan_dit_v11_semantic_v2_protected_resume_150k/checkpoints/epoch=48-step=150000.ckpt}"
-AUDIT="/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1_pilot/audits/train_pilot_v1.json"
+CHECKPOINT="${PRETRAINED_CKPT:-${AMBIT_CKPT_ROOT}/dit/sceneplan_dit_v11_semantic_v2_protected_resume_150k/checkpoints/epoch=48-step=150000.ckpt}"
+AUDIT="${AMBIT_DATA_ROOT}/sceneplan_transfusion_editing_v1_pilot/audits/train_pilot_v1.json"
 
 if [[ -n "${CUDA_VISIBLE_DEVICES:-}" && "$CUDA_VISIBLE_DEVICES" != "3" ]]; then
     echo "[editing-dit-overfit] CUDA_VISIBLE_DEVICES must be unset or physical GPU 3" >&2
@@ -55,7 +55,7 @@ PY
 export RUN_NAME="${RUN_NAME:-sceneplan_transfusion_editing_dit_overfit10_seed42_v1}"
 export RUN_LABEL="sceneplan-transfusion-editing-dit-overfit10"
 export RUN_CATEGORY=pilots
-export RUN_ROOT="${RUN_ROOT:-/mnt/sdb/model_archives/transfusion_editing/pilots/$RUN_NAME}"
+export RUN_ROOT="${RUN_ROOT:-${AMBIT_CKPT_ROOT}/transfusion_editing/pilots/$RUN_NAME}"
 export MODEL_CONFIG DATASET_CONFIG
 export VAL_DATASET_CONFIG=""
 export DISABLE_VALIDATION=1

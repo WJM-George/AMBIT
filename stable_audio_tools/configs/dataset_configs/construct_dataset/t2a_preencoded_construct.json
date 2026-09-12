@@ -8,7 +8,7 @@
     "datasets": [
         {
             "id": "construct_4ch_latents",
-            "path": "/mnt/sdc/audio_latents/construct_4ch",
+            "path": "${AMBIT_CKPT_ROOT}/audio_latents/construct_4ch",
             "weight": 1.0
         }
     ]

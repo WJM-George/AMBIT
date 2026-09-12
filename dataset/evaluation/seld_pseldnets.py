@@ -13,6 +13,7 @@ trained on ACN/SN3D [W, Y, Z, X], so we feed our FOA as-is, channel_order=(0,1,2
 ACCDOA convention (matches SLS GT): az>0 = left, 0 = front; el>0 = up.
 """
 from __future__ import annotations
+import os
 
 import math
 import sys
@@ -21,7 +22,7 @@ from pathlib import Path
 import numpy as np
 import torch
 
-PSELD_ROOT = Path("/mnt/sdc/seld_tools/PSELDNets")
+PSELD_ROOT = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/seld_tools/PSELDNets")
 PSELD_SRC = PSELD_ROOT / "src"
 DEFAULT_CKPT = PSELD_ROOT / "ckpts_dl" / "model" / "ACCDOA-HTSAT-0.566.ckpt"
 NUM_CLASSES = 170
@@ -151,8 +152,8 @@ def _selftest():
     from eval_vae_recon import _read_4ch
     import pyarrow.parquet as pq
 
-    sls = "/mnt/sdb/audio_dataset/datasets/spatial_librispeech/ambisonics"
-    parquet = "/mnt/sdb/audio_dataset/datasets/spatial_librispeech/metadata/metadata.parquet"
+    sls = os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/spatial_librispeech/ambisonics"
+    parquet = os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/spatial_librispeech/metadata/metadata.parquet"
     test_ids = [134, 50, 79, 90, 110, 222, 333, 444]
     gt = {}
     pf = pq.ParquetFile(parquet)

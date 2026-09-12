@@ -1,4 +1,5 @@
 """Text cleanup cannot silently change identities, numeric fields or content."""
+import os
 import copy
 from pathlib import Path
 import pytest
@@ -36,7 +37,7 @@ def test_rejects_changes_beyond_text_whitespace(change):
 
 
 def test_actual_codec_removes_only_a_generated_leading_space():
-    artifact=Path('/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4')
+    artifact=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4")
     if not artifact.is_dir():pytest.skip('requires existing project codec artifact')
     from stable_audio_tools.data.model_sceneplan_codec_v4 import ModelScenePlanCodecV4
     codec=ModelScenePlanCodecV4(artifact)

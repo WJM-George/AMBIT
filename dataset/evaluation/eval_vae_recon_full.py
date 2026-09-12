@@ -6,11 +6,12 @@ but reads reconstructions from manifest.json instead of live encode->decode.
 
 Run:
   uv run python dataset/evaluation/eval_vae_recon_full.py \
-      --recon-dir /mnt/sdc/eval_metric/ckpt_sweep/step_400000/recon \
-      --out /mnt/sdc/eval_metric/ckpt_sweep/step_400000 \
+      --recon-dir ${AMBIT_CKPT_ROOT}/eval_metric/ckpt_sweep/step_400000/recon \
+      --out ${AMBIT_CKPT_ROOT}/eval_metric/ckpt_sweep/step_400000 \
       --with-seld
 """
 from __future__ import annotations
+import os
 
 import argparse
 import csv
@@ -35,7 +36,7 @@ from compare_vae_heldout import (  # noqa: E402
 )
 from eval_vae_recon import _ang_err  # noqa: E402
 
-SLS_PARQUET = "/mnt/sdb/audio_dataset/datasets/spatial_librispeech/metadata/metadata.parquet"
+SLS_PARQUET = os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/spatial_librispeech/metadata/metadata.parquet"
 
 
 def main() -> None:

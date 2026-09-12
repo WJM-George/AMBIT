@@ -19,7 +19,7 @@ from typing import Any
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-DATASET_ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m")
+DATASET_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m")
 SOURCE_ROOT = DATASET_ROOT / "source_annotations/nonspeech_instruct_v2"
 ANNOTATION_ROOT = SOURCE_ROOT / "annotations"
 REGISTRY_ROOT = SOURCE_ROOT / "registry"

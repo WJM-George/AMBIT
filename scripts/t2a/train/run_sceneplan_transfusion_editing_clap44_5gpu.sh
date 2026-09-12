@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
-REPO="${P10_REPO:-/mnt/sdc/stable-audio-tools-workspace}"
-ROOT="${EDITING_DATA_ROOT:-/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1}"
-OUTPUT="${CLAP44_RUN_ROOT:-/mnt/sdb/model_archives/transfusion_editing/mainline/editing_clap44_v1_seed42}"
+REPO="${P10_REPO:-${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace}"
+ROOT="${EDITING_DATA_ROOT:-${AMBIT_DATA_ROOT}/sceneplan_transfusion_editing_v1}"
+OUTPUT="${CLAP44_RUN_ROOT:-${AMBIT_CKPT_ROOT}/transfusion_editing/mainline/editing_clap44_v1_seed42}"
 GPUS="${EDITING_GPUS:-${CUDA_VISIBLE_DEVICES:-}}"
 if [[ -z "$GPUS" ]]; then
     echo '[clap44] set EDITING_GPUS to the physical GPUs assigned to this job' >&2

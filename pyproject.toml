@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "stable-audio-tools"
 version = "0.0.20"
-description = "Training and inference tools for generative audio models from Stability AI"
+description = "AMBIT: executable ScenePlans for native Ambisonic generation and editing"
 requires-python = ">=3.10,<3.11"
 authors = [
     {name = "Stability AI"},

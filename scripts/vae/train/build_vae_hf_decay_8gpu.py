@@ -2,6 +2,7 @@
 """Prepare the 350k handoff run with a cosine HF overshoot schedule."""
 
 from __future__ import annotations
+import os
 
 import json
 import sys
@@ -13,8 +14,8 @@ if str(_SCRIPTS_DIR) not in sys.path:
 from _repo import repo_root
 
 REPO = repo_root()
-SOURCE_ROOT = Path("/mnt/sdc/ckpts/vae_ds1024_z64_hf_overshoot_full_1019k_8gpu")
-OUTPUT_ROOT = Path("/mnt/sdc/ckpts/vae_ds1024_z64_hf_overshoot_decay_350k_8gpu")
+SOURCE_ROOT = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/vae_ds1024_z64_hf_overshoot_full_1019k_8gpu")
+OUTPUT_ROOT = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/vae_ds1024_z64_hf_overshoot_decay_350k_8gpu")
 SOURCE_MODEL = SOURCE_ROOT / "configs/model_hf_overshoot_full.json"
 SOURCE_DATASET = SOURCE_ROOT / "configs/dataset_frozen_1018957.json"
 RUN_NAME = "vae_ds1024_z64_hf_overshoot_decay_350k_8gpu"

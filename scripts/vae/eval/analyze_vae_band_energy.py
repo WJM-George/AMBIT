@@ -42,7 +42,7 @@ DEFAULT_SEED = 20260710
 ACTIVE_POWER_THRESHOLD = 1e-12
 
 CONFIG_DIR = Path(
-    "/home/tanhe/dataset_storage/stable-audio-tools/"
+    "." + "/stable-audio-tools/"
     "stable_audio_tools/configs/dataset_configs/vae_v2_dataset"
 )
 
@@ -82,39 +82,39 @@ SOURCES = (
     Source(
         "existing_non_speech",
         "Existing non-speech FOA",
-        Path("/mnt/sdd/audio_dataset/spatial_foa/audio"),
+        Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/spatial_foa/audio"),
         139_745,
     ),
     Source(
         "expansion_non_speech",
         "Expansion non-speech FOA",
-        Path("/mnt/sdd/audio_dataset/spatial_foa_v2/audio/train"),
+        Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/spatial_foa_v2/audio/train"),
         460_255,
     ),
     Source(
         "spatial_librispeech",
         "Spatial LibriSpeech",
-        Path("/mnt/sdb/audio_dataset/datasets/spatial_librispeech/ambisonics"),
+        Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/spatial_librispeech/ambisonics"),
         218_957,
-        Path("/mnt/sdd/audio_dataset/spatial_foa/caption_jsonl/sls_train_218957.filelist.txt"),
+        Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/spatial_foa/caption_jsonl/sls_train_218957.filelist.txt"),
     ),
     Source(
         "tts_sdb",
         "TTS SDB QC-clean subset",
-        Path("/mnt/sdb/audio_dataset/datasets/spatial_speech_foa_tts_v1_part_sdb/audio"),
+        Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/spatial_speech_foa_tts_v1_part_sdb/audio"),
         125_000,
         Path(
-            "/mnt/sdb/audio_dataset/datasets/spatial_speech_foa_tts_v1_part_sdb/"
+            os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/spatial_speech_foa_tts_v1_part_sdb/"
             "manifests/vae_4ch_v2_tts_sdb_qc_clean_125000.filelist.txt"
         ),
     ),
     Source(
         "tts_sdc",
         "TTS SDC QC-clean subset",
-        Path("/mnt/sdc/speech_dataset/spatial_speech_foa_tts_v1_part_sdc/audio"),
+        Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/speech_dataset/spatial_speech_foa_tts_v1_part_sdc/audio"),
         75_000,
         Path(
-            "/mnt/sdc/speech_dataset/spatial_speech_foa_tts_v1_part_sdc/"
+            os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/speech_dataset/spatial_speech_foa_tts_v1_part_sdc/"
             "manifests/vae_4ch_v2_tts_sdc_qc_clean_75000.filelist.txt"
         ),
     ),

@@ -2,6 +2,7 @@
 """Verify the real P6 SQLite/safetensors loader and 4+4+2 fusion path."""
 
 from __future__ import annotations
+import os
 
 import argparse
 import hashlib
@@ -27,7 +28,7 @@ from stable_audio_tools.models.conditioners import (  # noqa: E402
 
 
 INDEX = DATASET_ROOT / "pilots/joint_4k/training_index/train.sqlite"
-TOKENIZER = Path("/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B")
+TOKENIZER = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen/Qwen3.5-0.8B")
 OUTPUT = DATASET_ROOT / "pilots/joint_4k/qc/loader_conditioner_smoke.json"
 
 
@@ -149,8 +150,8 @@ def main() -> int:
     tokenizer_path = args.tokenizer.expanduser().resolve(strict=True)
     output = args.output.expanduser().resolve(strict=False)
     try:
-        index.relative_to("/mnt/sdb")
-        output.relative_to("/mnt/sdb")
+        index.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
+        output.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
     except ValueError as error:
         raise ValueError("P6 loader index/report must remain on SDB") from error
 

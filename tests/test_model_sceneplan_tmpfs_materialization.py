@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import hashlib
 from pathlib import Path
 
@@ -33,13 +34,13 @@ def test_transient_tmpfs_path_is_not_exposed_in_the_manifest_result() -> None:
     public = public_render_result(
         result,
         cleanup_foa=True,
-        logical_render_root=Path("/mnt/sdb/dataset/materialized/renders"),
+        logical_render_root=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/dataset/materialized/renders"),
         split="train",
         shard=12,
         sample_id="sample",
     )
     assert public["foa_path"] == (
-        "/mnt/sdb/dataset/materialized/renders/train/work-00012/"
+        os.environ.get("AMBIT_DATA_ROOT", "data") + "/dataset/materialized/renders/train/work-00012/"
         "sample/foa_WYZX_SN3D.flac"
     )
     assert result["foa_path"].startswith("/dev/shm/")

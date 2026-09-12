@@ -51,12 +51,12 @@ from score_p10_60k_cross_system import (
 
 
 DEFAULT_ROOT = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/revisions/"
     "speech_expansion_noalign_15s_v1/evaluation/"
     "p10_v11_150k_stratified_test_3000_semantic_v2/cross_system_baselines"
 )
 DEFAULT_WHISPER = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/models/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/models/"
     "faster-distil-whisper-large-v3"
 )
 REFERENCE_ID = "ground_truth"

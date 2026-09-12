@@ -31,7 +31,7 @@ from description_contract import (
 )
 
 
-DEFAULT_MODEL = Path("/mnt/sdc/ckpts/pretrained/Qwen3-Omni-30B-A3B-Instruct")
+DEFAULT_MODEL = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen3-Omni-30B-A3B-Instruct")
 DEFAULT_MODEL_REVISION = "26291f793822fb6be9555850f06dfe95f2d7e695"
 DEFAULT_PROMPT = Path(__file__).with_name("source_description_prompt_v4.txt")
 DEFAULT_SAFETY_MAX_GENERATION_TOKENS = 256

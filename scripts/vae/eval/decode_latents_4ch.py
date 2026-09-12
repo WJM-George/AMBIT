@@ -10,8 +10,8 @@ Also writes reaper_listen/*_stereo_W.flac — W (or L/R) on stereo for headphone
 
 Run:
   stable-audio-tools/.venv/bin/python scripts/vae/eval/decode_latents_4ch.py \\
-    --latent-root /mnt/sdc/audio_latents/stage1_vae_4ch_trial \\
-    --output-dir /mnt/sdc/vae_4ch_train_result_audio
+    --latent-root ${AMBIT_CKPT_ROOT}/audio_latents/stage1_vae_4ch_trial \\
+    --output-dir ${AMBIT_CKPT_ROOT}/vae_4ch_train_result_audio
 """
 
 from __future__ import annotations

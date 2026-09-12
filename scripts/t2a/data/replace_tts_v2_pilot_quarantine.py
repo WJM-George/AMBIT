@@ -57,7 +57,7 @@ TAIL_BY_ROOM = {
 def ensure_sdb(path: Path) -> None:
     resolved = path.expanduser().resolve(strict=False)
     try:
-        resolved.relative_to("/mnt/sdb")
+        resolved.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
     except ValueError as error:
         raise ValueError(f"replacement output must remain on SDB: {resolved}") from error
 

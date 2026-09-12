@@ -38,7 +38,7 @@ LAION_CLAP_CHECKPOINT_SHA256 = (
     "fb171dd9b608aebdac3d89286cd7615c5100af4cc7dc37797c7fb8d3cc15e3a5"
 )
 DEFAULT_WHISPER_MODEL = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/models/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/models/"
     "faster-distil-whisper-large-v3"
 )
 WHISPER_EXPECTED_SMALL_FILES = {

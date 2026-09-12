@@ -6,6 +6,7 @@ They are evaluation metadata, never additional inputs to the AR model. Teacher
 plans are witnesses; their freely chosen numbers are not acceptance answers.
 """
 from __future__ import annotations
+import os
 import argparse
 from copy import deepcopy
 import hashlib
@@ -152,7 +153,7 @@ def curate(root, output):
     spec=importlib.util.spec_from_file_location('teacher_conversion',Path(__file__).with_name('plan_generation_ar_natural_seeds.py'));teacher=importlib.util.module_from_spec(spec);spec.loader.exec_module(teacher)
     import stable_audio_tools.data.sceneplan_generation_ar_natural_constraints as evaluator
     from stable_audio_tools.data.model_sceneplan_codec_v4 import ModelScenePlanCodecV4
-    codec=ModelScenePlanCodecV4('/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4')
+    codec=ModelScenePlanCodecV4(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4")
     seeds={s['id']:s for s in json.loads((root/'request_first_seeds.json').read_text())['seeds']}
     raw=json.loads((root/'TEACHER_QA_ROWS.json').read_text())['rows'];pairs=[];receipts=[]
     assert len(raw)==len(SPECS)==48

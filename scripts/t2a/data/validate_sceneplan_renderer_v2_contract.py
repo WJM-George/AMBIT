@@ -50,7 +50,7 @@ def validate_contract_snapshot(
 ) -> dict[str, Any]:
     contract_root = Path(spec["storage"]["contract_root"])
     require(
-        contract_root.is_absolute() and str(contract_root).startswith("/mnt/sdb/"),
+        contract_root.is_absolute() and str(contract_root).startswith(os.environ.get("AMBIT_DATA_ROOT", "data")),
         "contract snapshot root must be on SDB",
     )
     files: dict[str, Any] = {}
@@ -159,8 +159,8 @@ def validate_spec(spec: dict[str, Any]) -> dict[str, Any]:
     allowed = inventory["allowed_sources"]
     require(set(allowed) == {"libritts", "hifi_tts"}, "speech sources must be LibriTTS + HiFiTTS only")
     expected_roots = {
-        "libritts": "/mnt/sdc/speech_dataset/mythicinfinity__libritts",
-        "hifi_tts": "/mnt/sdc/speech_dataset/MikhailT__hifi-tts",
+        "libritts": os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/speech_dataset/mythicinfinity__libritts",
+        "hifi_tts": os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/speech_dataset/MikhailT__hifi-tts",
     }
     selected_by_split = {"train": 0, "validation": 0, "test": 0}
     selected_by_dataset: dict[str, int] = {}
@@ -240,11 +240,11 @@ def validate_spec(spec: dict[str, Any]) -> dict[str, Any]:
     require(conditioning["sceneplan_token_concat"] is False, "ScenePlan tokens must not be concatenated")
 
     storage = spec["storage"]
-    require(storage["persistent_output_mount"] == "/mnt/sdb", "persistent output mount must be SDB")
+    require(storage["persistent_output_mount"] == os.environ.get("AMBIT_DATA_ROOT", "data"), "persistent output mount must be SDB")
     for key, value in storage.items():
         if key.endswith("_root") and isinstance(value, str):
-            require(value.startswith("/mnt/sdb/"), f"storage.{key} must be on SDB")
-    require(storage["forbid_new_persistent_outputs_on"] == ["/mnt/sdc", "/mnt/sdd"], "forbidden output mounts drift")
+            require(value.startswith(os.environ.get("AMBIT_DATA_ROOT", "data")), f"storage.{key} must be on SDB")
+    require(storage["forbid_new_persistent_outputs_on"] == [os.environ.get("AMBIT_CKPT_ROOT", "checkpoints"), os.environ.get("AMBIT_DATA_ROOT", "data")], "forbidden output mounts drift")
     require(spec["quality_control"]["stop_after_stage"] == "P9", "execution stop gate must be P9")
 
     return {
@@ -303,7 +303,7 @@ def validate_speech_asset_schema(schema: dict[str, Any]) -> dict[str, Any]:
     require(properties["catalog_partition"]["const"] == "sdb", "speech catalog must be on SDB")
     require(properties["source_dataset"]["enum"] == ["libritts", "hifi_tts"], "speech asset sources drift")
     locator = properties["source_locator"]["properties"]
-    require(locator["parquet_path"]["pattern"].startswith("^/mnt/sdc/speech_dataset/"), "speech source root pattern drift")
+    require(locator["parquet_path"]["pattern"].startswith("^${AMBIT_CKPT_ROOT}/speech_dataset/"), "speech source root pattern drift")
     audio = properties["audio"]["properties"]
     require(audio["native_channels"]["const"] == 1, "speech asset must be native mono")
     require(audio["model_num_samples"]["maximum"] == 442_368, "speech maximum length drift")

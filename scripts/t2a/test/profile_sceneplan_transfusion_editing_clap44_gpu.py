@@ -36,7 +36,7 @@ from scripts.t2a.train.train_sceneplan_transfusion_editing_clap44 import rng_sta
 SCHEMA = "editing_clap44_gpu_preflight_v1"
 OPERATIONS = ("event_addition", "event_removal", "linear_to_static", "static_to_linear", "stationary_spatial_relocation")
 CELLS = tuple((op, bucket) for op in OPERATIONS for bucket in (432, 648))
-DATA_ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1")
+DATA_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_transfusion_editing_v1")
 RESOURCE_LOCK = DATA_ROOT / "materialized/locks/training-chain.lock"
 
 

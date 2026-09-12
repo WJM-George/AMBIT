@@ -22,10 +22,10 @@ from typing import Any, Iterable
 import pyarrow.parquet as pq
 
 
-DATASET_ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m")
+DATASET_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m")
 REVISION_ROOT = DATASET_ROOT / "revisions/speech_expansion_noalign_15s_v1"
 RUN_ROOT = Path(
-    "/mnt/sdc/ckpts/dit/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/dit/"
     "sceneplan_dit_v9_speechexp_noalign_15s_300m_from_scratch_100k"
 )
 DEFAULT_OUTPUT = REVISION_ROOT / (
@@ -513,7 +513,7 @@ def main() -> int:
             "architecture": "semantic_cross_attention_plus_direct_sceneplan_4+4",
             "model_config": str(model_config),
             "model_config_sha256": sha256_file(model_config),
-            "vae_checkpoint": "/mnt/sdc/ckpts/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt",
+            "vae_checkpoint": os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt",
             "weights": "EMA DiT plus EMA trainable 4+4 conditioner",
             "sampler": "euler_rectified_flow",
             "steps": 100,

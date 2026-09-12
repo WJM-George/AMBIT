@@ -2,7 +2,7 @@
     "extends": "qwen35_0p8b_300m_model_sceneplan_44_soundexp_noalign_15s.json",
     "_task": "Shared P10-v12 upgrade base: expose existing caption/source and frame/source IDs without changing the P10-v11 input-output contract.",
     "_stage": "Model-only EMA upcycle from the canonical P10-v11 150k checkpoint. Optimizer, scheduler, and EMA state start fresh.",
-    "_source_checkpoint": "/mnt/sdc/ckpts/dit/sceneplan_dit_v11_semantic_v2_protected_resume_150k/checkpoints/epoch=48-step=150000.ckpt",
+    "_source_checkpoint": "${AMBIT_CKPT_ROOT}/dit/sceneplan_dit_v11_semantic_v2_protected_resume_150k/checkpoints/epoch=48-step=150000.ckpt",
     "_source_checkpoint_sha256": "be8c90cd1434bd71f73951531175c3674ff0f3173d5db591e2e1c476152ff59e",
     "_note": "This base adds no acoustic branch by itself. It only makes the already materialized ScenePlan source-role auxiliaries available to the optional soft-block attention and chunk-MoE pilots; it does not use word timestamps, an aligner sidecar, or a duration loss.",
     "model": {
@@ -12,7 +12,7 @@
                     "id": "prompt",
                     "type": "qwen_text",
                     "config": {
-                        "model_path": "/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B",
+                        "model_path": "${AMBIT_CKPT_ROOT}/pretrained/Qwen/Qwen3.5-0.8B",
                         "hidden_dim": 1024,
                         "max_length": 512,
                         "enable_grad": false,

@@ -21,12 +21,12 @@ Output:
     media/<split>_captions.jsonl     # {"clip_id", "caption", "model", "mode"} per line (resumable)
 
 Environment (use a DEDICATED venv; Qwen3-Omni needs transformers from source):
-    uv venv /home/tanhe/dataset_storage/.venv-qwen --python 3.10
-    source /home/tanhe/dataset_storage/.venv-qwen/bin/activate
+    uv venv .venv --python 3.10
+    source .venv/bin/activate
     pip install git+https://github.com/huggingface/transformers accelerate qwen-omni-utils soundfile
     pip install -U flash-attn --no-build-isolation        # or use --attn sdpa to skip flash-attn
     # weights (~60 GB) auto-download, or pre-fetch:
-    hf download Qwen/Qwen3-Omni-30B-A3B-Instruct --local-dir /mnt/sdc/ckpts/Qwen3-Omni-30B-A3B-Instruct
+    hf download Qwen/Qwen3-Omni-30B-A3B-Instruct --local-dir ${AMBIT_CKPT_ROOT}/Qwen3-Omni-30B-A3B-Instruct
 
 Run (single instance, model sharded across all visible GPUs via device_map=auto):
     python dataset/captioning/caption_sphere360.py --split test --mode av
@@ -56,7 +56,7 @@ if __package__:
 else:
     from qwen_model import build_model
 
-DEFAULT_DATASET_ROOT = Path(os.environ.get("AUDIO_DATASET_SECONDARY_ROOT", "/mnt/sdb/audio_dataset"))
+DEFAULT_DATASET_ROOT = Path(os.environ.get("AUDIO_DATASET_SECONDARY_ROOT", os.environ.get("AMBIT_DATA_ROOT", "data")))
 DEFAULT_MEDIA_ROOT = DEFAULT_DATASET_ROOT / "datasets" / "sphere360" / "media"
 DEFAULT_MODEL = "Qwen/Qwen3-Omni-30B-A3B-Instruct"
 

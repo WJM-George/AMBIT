@@ -2,6 +2,7 @@
 """Strict structural, runtime, and split-leakage gate for P11-v4 challenge-v1."""
 
 from __future__ import annotations
+import os
 
 import argparse
 import hashlib
@@ -72,11 +73,11 @@ DEFAULT_MODEL = REPO_ROOT / (
     "qwen35_0p8b_sceneplan_p11_reliable_asr_assembler_v2.json"
 )
 DEFAULT_TRAIN_INDEX = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/revisions/"
     "speech_expansion_noalign_15s_v1/training_index/train.sqlite"
 )
 DEFAULT_TEST_INDEX = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/revisions/"
     "speech_expansion_noalign_15s_v1/training_index/test.sqlite"
 )
 

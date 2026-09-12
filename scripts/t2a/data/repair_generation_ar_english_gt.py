@@ -20,8 +20,8 @@ import numpy as np
 from transformers import AutoTokenizer
 from stable_audio_tools.data.model_sceneplan_codec_v4 import ModelScenePlanCodecV4
 
-ROOT = Path('/mnt/sdc/ckpts/transfusion_sceneplan/generation_ar/template100_rebuild_20260905_v1')
-SOURCE = Path('/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/transfusion_shared_v1/generation_ar')
+ROOT = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/transfusion_sceneplan/generation_ar/template100_rebuild_20260905_v1")
+SOURCE = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/transfusion_shared_v1/generation_ar")
 REPAIRS = {
     'wooden打击 instrument': 'wooden percussion instrument',
     'Да, сегодняшний матч.': "Yes, today's match.",
@@ -64,8 +64,8 @@ def main():
     db = sqlite3.connect(building); db.execute('PRAGMA journal_mode=OFF'); db.execute('PRAGMA synchronous=OFF')
     audit = json.loads((ROOT / 'ORIGINAL_LANGUAGE_AUDIT.json').read_text())
     assert audit['count'] == 19 and all(r['split'] == 'train' for r in audit['bad_rows'])
-    codec = ModelScenePlanCodecV4('/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4')
-    tokenizer = AutoTokenizer.from_pretrained('/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B', local_files_only=True)
+    codec = ModelScenePlanCodecV4(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4")
+    tokenizer = AutoTokenizer.from_pretrained(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen/Qwen3.5-0.8B", local_files_only=True)
     records = []
     for bad in audit['bad_rows']:
         ordinal = bad['ordinal']

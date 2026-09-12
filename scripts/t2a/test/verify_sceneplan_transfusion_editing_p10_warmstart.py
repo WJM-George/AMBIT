@@ -87,7 +87,7 @@ def main() -> int:
         "--checkpoint",
         type=Path,
         default=Path(
-            "/mnt/sdc/ckpts/dit/"
+            os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/dit/"
             "sceneplan_dit_v11_semantic_v2_protected_resume_150k/"
             "checkpoints/epoch=48-step=150000.ckpt"
         ),
@@ -97,7 +97,7 @@ def main() -> int:
         "--output",
         type=Path,
         default=Path(
-            "/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1_pilot/"
+            os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_transfusion_editing_v1_pilot/"
             "audits/p10_v11_warmstart_forward_gate.json"
         ),
     )

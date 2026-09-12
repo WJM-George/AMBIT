@@ -256,7 +256,7 @@ def _payloads(context, directory):
         "training_run_contract":identity["joint_run_contract"],"commands":{key:value for key,value in commands.items() if key.startswith("resume_")},
         "checkpoint_rule":"Resume the verified latest training state, including optimizer/scheduler/sampler/per-rank RNG. The quality-selected checkpoint may be earlier and must not replace LATEST.",
         "evaluation_rule":"Reuse only rows and phases matching the frozen contracts. Preserve failures and diagnose changed evidence; never relabel training completion as quality PASS.",
-        "resource_rule":"All resume launchers hold the existing Editing training-chain lock and use physical GPUs 3-7. A held lock means leave that task running.",
+        "resource_rule":"Resume launchers take an exclusive lock for the active editing job and use the GPUs listed in CUDA_VISIBLE_DEVICES.",
         "release_rule":"Rerun the publisher with the same pinned selection/test and output directory to finish interrupted publication. Different or changed files are refused.",
     }
     limitations = {

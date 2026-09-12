@@ -13,7 +13,7 @@ from typing import Any
 
 
 DEFAULT_BENCHMARK_ROOT = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/revisions/"
     "speech_expansion_noalign_15s_v1/evaluation/"
     "p10_v9_balanced_1200_ckpt20k_100k_v1/cross_system_baselines"
 )

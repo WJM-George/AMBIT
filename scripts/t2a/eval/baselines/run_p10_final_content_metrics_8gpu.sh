@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_ROOT="${REPO_ROOT:-/home/tanhe/dataset_storage/stable-audio-tools}"
+REPO_ROOT="${REPO_ROOT:-./stable-audio-tools}"
 PYTHON_BIN="${PYTHON_BIN:-${REPO_ROOT}/.venv/bin/python}"
 BENCHMARK_ROOT="${BENCHMARK_ROOT:?BENCHMARK_ROOT is required}"
 BENCHMARK_KIND="${BENCHMARK_KIND:?BENCHMARK_KIND is required}"
@@ -14,7 +14,7 @@ mkdir -p "${LOG_ROOT}"
 cd "${REPO_ROOT}"
 test -f "${BENCHMARK_ROOT}/BASELINE_GENERATION_COMPLETE"
 
-export HF_HOME="${HF_HOME:-/home/tanhe/dataset_storage/codex-home/.cache/huggingface}"
+export HF_HOME="${HF_HOME:-./codex-home/.cache/huggingface}"
 export HUGGINGFACE_HUB_CACHE="${HUGGINGFACE_HUB_CACHE:-${HF_HOME}/hub}"
 export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1

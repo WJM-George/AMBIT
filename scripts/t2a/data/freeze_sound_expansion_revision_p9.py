@@ -434,7 +434,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--tokenizer-root", type=Path,
-        default=Path("/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B"),
+        default=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen/Qwen3.5-0.8B"),
     )
     return parser.parse_args()
 

@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_ROOT="${REPO_ROOT:-/mnt/sdc/stable-audio-tools-workspace}"
+REPO_ROOT="${REPO_ROOT:-${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace}"
 PYTHON_BIN="${PYTHON_BIN:-${REPO_ROOT}/.venv/bin/python}"
 OUTPUT_ROOT="${OUTPUT_ROOT:-${REPO_ROOT}/artifacts/sceneplan_p11/evals/p11_v4_reference_baselines_20260903}"
 EVAL="${REPO_ROOT}/scripts/t2a/eval/evaluate_sceneplan_p11_v4_challenge.py"
 MERGE="${REPO_ROOT}/scripts/t2a/eval/merge_sceneplan_p11_v4_challenge_shards.py"
 DATASET="${REPO_ROOT}/stable_audio_tools/configs/dataset_configs/sceneplan_p11_heldout900_transfusion_cot_v4_reliable_asr_v1.json"
 CHALLENGE="${REPO_ROOT}/artifacts/sceneplan_p11/challenges/p11_v4_heldout_challenge_v1_20260901.sqlite"
-D0_CKPT="/mnt/sdc/ckpts/sceneplan_p11/p11_v4_d0_screen10k_seed42_20260902/checkpoints/epoch=2-step=10000.ckpt"
-DIRECT_CKPT="/mnt/sdc/ckpts/sceneplan_p11/p11_v4_direct_screen10k_seed42_20260902/checkpoints/epoch=2-step=10000.ckpt"
-FLOW_CKPT="/mnt/sdc/ckpts/sceneplan_p11/p11_v4_flow_r1_screen10k_seed42_20260902/checkpoints/epoch=2-step=10000.ckpt"
+D0_CKPT="${AMBIT_CKPT_ROOT}/sceneplan_p11/p11_v4_d0_screen10k_seed42_20260902/checkpoints/epoch=2-step=10000.ckpt"
+DIRECT_CKPT="${AMBIT_CKPT_ROOT}/sceneplan_p11/p11_v4_direct_screen10k_seed42_20260902/checkpoints/epoch=2-step=10000.ckpt"
+FLOW_CKPT="${AMBIT_CKPT_ROOT}/sceneplan_p11/p11_v4_flow_r1_screen10k_seed42_20260902/checkpoints/epoch=2-step=10000.ckpt"
 D0_OUTPUT="${REPO_ROOT}/artifacts/sceneplan_p11/evals/p11_v4_d0_screen10k_s42_ema_heldout300_k1_refv10_20260903.json"
 DIRECT_OUTPUT="${REPO_ROOT}/artifacts/sceneplan_p11/evals/p11_v4_direct_screen10k_s42_ema_heldout300_k1_refv10_20260903.json"
 FLOW_OUTPUT="${REPO_ROOT}/artifacts/sceneplan_p11/evals/p11_v4_flow_r1_screen10k_s42_ema_heldout300_k148_refv10_20260903.json"

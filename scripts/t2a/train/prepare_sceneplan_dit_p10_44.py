@@ -20,7 +20,7 @@ from stable_audio_tools.configuration import load_config, validate_training_conf
 
 REPO = Path(__file__).resolve().parents[3]
 DATASET_ROOT = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/sound_expansion_v1"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/revisions/sound_expansion_v1"
 )
 DEFAULT_MODEL_CONFIG = REPO / (
     "stable_audio_tools/configs/model_configs/txt2audio/t2a/dit/"
@@ -36,12 +36,12 @@ OVERFIT_DATASET_CONFIG = REPO / (
     "stable_audio_tools/configs/dataset_configs/sceneplan_44_overfit10.json"
 )
 DEFAULT_OVERFIT_GATE = Path(
-    "/mnt/sdb/model_archives/p10_pre_v11_20260831/pilots/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//p10_pre_v11_20260831/pilots/"
     "sceneplan_dit_soundexp_v1_qwenalign_overfit10_20260825/"
     "OVERFIT_GATE.json"
 )
 PRETRANSFORM_CKPT = Path(
-    "/mnt/sdc/ckpts/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
 )
 # These are the active P10 implementation surfaces.  The contract records each
 # digest so a full run cannot silently start after a code/configuration edit.
@@ -676,11 +676,11 @@ def main() -> int:
             )
 
     run_root = args.run_root.expanduser().resolve(strict=False)
-    dit_root = Path("/mnt/sdc/ckpts/dit").resolve(strict=True)
+    dit_root = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/dit").resolve(strict=True)
     try:
         run_root.relative_to(dit_root)
     except ValueError as error:
-        raise RuntimeError("run root must be below /mnt/sdc/ckpts/dit") from error
+        raise RuntimeError("run root must be below ${AMBIT_CKPT_ROOT}/dit") from error
     run_root.mkdir(parents=True, exist_ok=True)
     for child in (
         "checkpoints",

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Native CLAP44 free-AR audio calibration, followed by sealed independent test."""
 from __future__ import annotations
+import os
 
 import argparse
 import json
@@ -32,7 +33,7 @@ def parse_args():
     parser.add_argument("--joint-selection",type=Path,required=True)
     parser.add_argument("--joint-selection-sha256",required=True)
     parser.add_argument("--post-joint-gt-gate",type=Path,required=True)
-    parser.add_argument("--preflight",type=Path,default=Path("/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1/contracts/full_training/PREFLIGHT.json"))
+    parser.add_argument("--preflight",type=Path,default=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_transfusion_editing_v1/contracts/full_training/PREFLIGHT.json"))
     parser.add_argument("--output-dir",type=Path,required=True)
     parser.add_argument("--calibration",type=Path)
     parser.add_argument("--calibration-sha256")

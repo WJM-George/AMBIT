@@ -16,27 +16,27 @@ This is **synthetic** spatial audio (not YouTube FOA like Sphere360). Pair with 
 data (Sphere360, Spatial LibriSpeech) for diversity.
 
 Setup (project standard: uv, no manual venv activate):
-    cd /home/tanhe/dataset_storage/stable-audio-tools
+    cd ./stable-audio-tools
     uv sync --extra spatial
 
 Build input jsonl from AudioCaps parquet (one-time):
     uv run python dataset/synthesis/synthesize_foa_pyroom.py \\
         --export-audiocaps-jsonl \\
-        --audiocaps-root /mnt/sdd/audio_dataset/datasets/audiocaps/snapshot \\
-        --split train --out /mnt/sdc/audio_dataset_tmp/audiocaps_train.jsonl
+        --audiocaps-root ${AMBIT_DATA_ROOT}/datasets/audiocaps/snapshot \\
+        --split train --out ${AMBIT_CACHE_ROOT}/audiocaps_train.jsonl
 
 Synthesize FOA (full jsonl):
     uv run python dataset/synthesis/synthesize_foa_pyroom.py \\
-        --input /mnt/sdc/audio_dataset_tmp/audiocaps_train.jsonl \\
-        --out-dir /mnt/sdc/audio_dataset_tmp/audiocaps_foa/train \\
-        --manifest /mnt/sdc/audio_dataset_tmp/audiocaps_foa/train_manifest.jsonl \\
+        --input ${AMBIT_CACHE_ROOT}/audiocaps_train.jsonl \\
+        --out-dir ${AMBIT_CACHE_ROOT}/audiocaps_foa/train \\
+        --manifest ${AMBIT_CACHE_ROOT}/audiocaps_foa/train_manifest.jsonl \\
         --jobs 8
 
 Quick sample (~1000 clips only):
     uv run python dataset/synthesis/synthesize_foa_pyroom.py \\
-        --input /mnt/sdc/audio_dataset_tmp/audiocaps_train.jsonl \\
-        --out-dir /mnt/sdc/audio_dataset_tmp/audiocaps_foa/sample1k \\
-        --manifest /mnt/sdc/audio_dataset_tmp/audiocaps_foa/sample1k_manifest.jsonl \\
+        --input ${AMBIT_CACHE_ROOT}/audiocaps_train.jsonl \\
+        --out-dir ${AMBIT_CACHE_ROOT}/audiocaps_foa/sample1k \\
+        --manifest ${AMBIT_CACHE_ROOT}/audiocaps_foa/sample1k_manifest.jsonl \\
         --num 1000 --jobs 8
 
 Shard across machines/GPUs (CPU-bound; scale with --jobs):
@@ -81,7 +81,7 @@ FOA_DEGREE = 1
 NUM_SLOTS = 4
 DEFAULT_FS = 48000
 N3D_TO_SN3D_FIRST_ORDER_GAIN = 1.0 / np.sqrt(3.0)
-DEFAULT_PRIMARY = Path(os.environ.get("AUDIO_DATASET_PRIMARY_ROOT", "/mnt/sdd/audio_dataset"))
+DEFAULT_PRIMARY = Path(os.environ.get("AUDIO_DATASET_PRIMARY_ROOT", os.environ.get("AMBIT_DATA_ROOT", "data")))
 
 
 def pyroom_n3d_to_sn3d_foa(audio: np.ndarray) -> np.ndarray:
@@ -631,7 +631,7 @@ def main() -> None:
     cap = _resolve_num(args)
 
     if args.export_audiocaps_jsonl:
-        out_jsonl = args.out or Path(f"/mnt/sdc/audio_dataset_tmp/audiocaps_{args.split}.jsonl")
+        out_jsonl = args.out or Path(fos.environ.get("AMBIT_CACHE_ROOT", "cache/tmp") + "/audiocaps_{args.split}.jsonl")
         n = export_audiocaps_jsonl(
             args.audiocaps_root.resolve(), args.split, out_jsonl,
             wav_dir=args.wav_dir, limit=cap,

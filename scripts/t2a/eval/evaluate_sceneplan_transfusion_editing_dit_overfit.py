@@ -46,7 +46,7 @@ DEFAULT_DATASET_CONFIG = REPO_ROOT / (
     "sceneplan_transfusion_editing_v1_overfit10.json"
 )
 CANONICAL_P10 = Path(
-    "/mnt/sdc/ckpts/dit/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/dit/"
     "sceneplan_dit_v11_semantic_v2_protected_resume_150k/"
     "checkpoints/epoch=48-step=150000.ckpt"
 )

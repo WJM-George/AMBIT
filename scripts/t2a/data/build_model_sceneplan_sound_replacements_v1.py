@@ -63,12 +63,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--candidate-jsonl", type=Path, required=True)
     parser.add_argument(
         "--base-index", type=Path,
-        default=Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/sceneplans_model_v1/index.parquet"),
+        default=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/sceneplans_model_v1/index.parquet"),
     )
     parser.add_argument("--output-root", type=Path, required=True)
     parser.add_argument(
         "--tokenizer-root", type=Path,
-        default=Path("/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B"),
+        default=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen/Qwen3.5-0.8B"),
     )
     return parser.parse_args()
 
@@ -207,9 +207,9 @@ def main() -> int:
     output_root = args.output_root.expanduser().resolve()
     tokenizer_root = args.tokenizer_root.expanduser().resolve(strict=True)
     try:
-        output_root.relative_to(Path("/mnt/sdb"))
+        output_root.relative_to(Path(os.environ.get("AMBIT_DATA_ROOT", "data")))
     except ValueError as error:
-        raise ValueError("replacement ScenePlans must live on /mnt/sdb") from error
+        raise ValueError("replacement ScenePlans must live on ${AMBIT_DATA_ROOT}") from error
     if output_root.exists() and any(output_root.iterdir()):
         ready = output_root / "READY"
         if ready.is_file():

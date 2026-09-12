@@ -7,8 +7,8 @@ if [[ "$#" -ne 1 ]]; then
 fi
 
 name="$1"
-BASELINE_ROOT="${BASELINE_ROOT:-/mnt/sdc/ckpts/baselines/p10_60k_15row_v1}"
-REPO_ROOT="${REPO_ROOT:-/home/tanhe/dataset_storage/evaluation_benchmark/repos}"
+BASELINE_ROOT="${BASELINE_ROOT:-${AMBIT_CKPT_ROOT}/baselines/p10_60k_15row_v1}"
+REPO_ROOT="${REPO_ROOT:-./evaluation_benchmark/repos}"
 ENV_ROOT="${BASELINE_ROOT}/envs"
 export UV_CACHE_DIR="${BASELINE_ROOT}/uv-cache"
 mkdir -p "${ENV_ROOT}" "${UV_CACHE_DIR}"

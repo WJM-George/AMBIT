@@ -126,9 +126,9 @@ def main() -> int:
     split = str(first_rows[0]["split"])
     output_root = Path(first_metadata["target_root"]).resolve()
     try:
-        output_root.relative_to("/mnt/sdb")
+        output_root.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
     except ValueError as error:
-        raise RuntimeError("full Editing output root must remain on /mnt/sdb") from error
+        raise RuntimeError("full Editing output root must remain on ${AMBIT_DATA_ROOT}") from error
 
     model = load_vae(device)
     context = mp.get_context("spawn")

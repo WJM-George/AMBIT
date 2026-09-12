@@ -56,7 +56,7 @@ from stable_audio_tools.data.model_sceneplan import (  # noqa: E402
 )
 
 
-DATASET_ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m")
+DATASET_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m")
 REVISION_ROOT = DATASET_ROOT / "revisions/speech_expansion_noalign_15s_v1"
 DEFAULT_DONORS = REVISION_ROOT / (
     "source_annotations/speech_speaker_instruct_v1/registry/"
@@ -609,7 +609,7 @@ def main() -> int:
     ledger = args.ledger.expanduser().resolve(strict=True)
     speakers = args.speaker_registry.expanduser().resolve(strict=True)
     output = args.output_root.expanduser().resolve(strict=False)
-    if not str(output).startswith("/mnt/sdb/audio_dataset/"):
+    if not str(output).startswith(os.environ.get("AMBIT_DATA_ROOT", "data")):
         raise ValueError("revision-6 ScenePlans must remain on SDB")
     output.mkdir(parents=True, exist_ok=True)
     donors = pq.read_table(donors_path).to_pylist()
@@ -623,7 +623,7 @@ def main() -> int:
     from transformers import AutoTokenizer
 
     tokenizer = AutoTokenizer.from_pretrained(
-        "/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B",
+        os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen/Qwen3.5-0.8B",
         local_files_only=True,
     )
     index_tmp = output / "index.parquet.tmp"

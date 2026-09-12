@@ -9,7 +9,7 @@ import sqlite3
 import time
 import numpy as np
 
-DATA = Path('/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/transfusion_shared_v1/generation_ar')
+DATA = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/transfusion_shared_v1/generation_ar")
 CACHE = Path('/dev/shm/generation_ar_manifests_20260905')
 EXPECTED = {'train': 'e1921b167a09135ae3c3bdf28ecac509f7175a387cb9c0f54b5d7a3608a1799c',
             'validation': '697113f9c38f190cb7e54bf8863c3e3b78dfa77de76daeb9b1ea7c035fa6dd4c'}

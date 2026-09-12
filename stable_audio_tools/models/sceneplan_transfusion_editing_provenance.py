@@ -7,6 +7,7 @@ separate runtime dependency.
 """
 
 from __future__ import annotations
+import os
 
 from functools import lru_cache
 from pathlib import Path
@@ -16,7 +17,7 @@ from stable_audio_tools.data.sceneplan_transfusion_editing_index import sha256_f
 
 
 FROZEN_QWEN_ROOT = Path(
-    "/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen/Qwen3.5-0.8B"
 )
 FROZEN_QWEN_RUNTIME_FILES: dict[str, tuple[int, str]] = {
     "chat_template.jinja": (

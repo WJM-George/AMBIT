@@ -83,7 +83,7 @@ def main() -> int:
     p99_target = int(contract["renderer_caption_contract"]["p99_target_qwen_tokens"])
     from transformers import AutoTokenizer
     tokenizer = AutoTokenizer.from_pretrained(
-        "/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B", local_files_only=True
+        os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen/Qwen3.5-0.8B", local_files_only=True
     )
     old_index = pq.ParquetFile(old_root / "index.parquet")
     shard_files = [

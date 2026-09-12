@@ -2,6 +2,7 @@
 """Audit full-corpus augmentation selection against frozen source ordering."""
 
 from __future__ import annotations
+import os
 
 import argparse
 from collections import Counter
@@ -26,7 +27,7 @@ from scripts.t2a.data.build_sceneplan_p11_v4_full_curriculum import (  # noqa: E
 
 
 DEFAULT_MANIFEST = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
     "manifests/p11_train_4p8m_v6.sqlite"
 )
 THRESHOLDS = {

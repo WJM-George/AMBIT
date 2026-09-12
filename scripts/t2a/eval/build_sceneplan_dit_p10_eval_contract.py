@@ -8,6 +8,7 @@ per domain; larger diagnostic panels are selected deterministically and
 balanced over every room/motion stratum available to that domain.
 """
 from __future__ import annotations
+import os
 
 import argparse
 import hashlib
@@ -22,9 +23,9 @@ from typing import Any, Iterable
 import pyarrow.parquet as pq
 
 
-DATASET_ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m")
+DATASET_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m")
 RUN_ROOT = Path(
-    "/mnt/sdb/model_archives/p10_pre_v11_20260831/sceneplan_dit_fail/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//p10_pre_v11_20260831/sceneplan_dit_fail/"
     "sceneplan_dit_v4_r8_300m"
 )
 DEFAULT_OUTPUT = RUN_ROOT / "evaluation/p10_ckpt_5k_10k_15k_sceneplan44_v1"
@@ -561,7 +562,7 @@ def main() -> int:
         "sampling": {
             "architecture": "semantic_cross_attention_plus_direct_sceneplan_4+4",
             "model_config": str(model_config),
-            "vae_checkpoint": "/mnt/sdc/ckpts/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt",
+            "vae_checkpoint": os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt",
             "weights": "EMA DiT plus EMA trainable 4+4 conditioner",
             "sampler": "euler_rectified_flow",
             "steps": 100,

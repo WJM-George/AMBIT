@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """N2: 25/25/50 presentations, diverse request-first families, raw-only panels."""
+import os
 import argparse
 from collections import Counter
 from copy import deepcopy
@@ -31,8 +32,8 @@ def prepare(args):
     grammar=local_module('build_generation_ar_compositional_requests')
     rewrite=local_module('prepare_generation_ar_natural_pilot')
     annotate=local_module('curate_generation_ar_natural_pilot')
-    codec=ModelScenePlanCodecV4('/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4')
-    tokenizer=AutoTokenizer.from_pretrained('/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B',local_files_only=True)
+    codec=ModelScenePlanCodecV4(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4")
+    tokenizer=AutoTokenizer.from_pretrained(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen/Qwen3.5-0.8B",local_files_only=True)
     args.output.mkdir(parents=True,exist_ok=False);started=time.monotonic()
     def status(stage,**kw):
         value={'status':stage,'elapsed_s':time.monotonic()-started,**kw};dump(args.output/'STATUS.json',value);print(json.dumps(value),flush=True)

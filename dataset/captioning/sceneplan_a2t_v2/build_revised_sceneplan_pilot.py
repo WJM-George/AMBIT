@@ -39,14 +39,14 @@ from stable_audio_tools.data.sceneplan_v2 import (  # noqa: E402
 )
 
 
-DATASET_ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m")
+DATASET_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m")
 REGISTRY = (
     DATASET_ROOT / "audit/a2t_pilot_100/source_description_registry_100.parquet"
 )
 CATALOG = DATASET_ROOT / "source_catalog/nonspeech/nonspeech_signal_catalog.parquet"
 SPEECH_LEDGER = DATASET_ROOT / "split_ledgers/speech_v2/speech_split_ledger.parquet"
 OUTPUT_ROOT = DATASET_ROOT / "pilots/revised_sceneplan_100_registry_v1"
-TOKENIZER = Path("/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B")
+TOKENIZER = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen/Qwen3.5-0.8B")
 CAPTION_MAX_TOKENS = 512
 CAPTION_P99_TARGET = 384
 QUOTAS = {1: 18, 2: 18, 3: 10, 4: 4}
@@ -265,7 +265,7 @@ def main() -> int:
     registry_path = args.registry.expanduser().resolve(strict=True)
     output_root = args.output_root.expanduser().resolve(strict=False)
     try:
-        output_root.relative_to("/mnt/sdb")
+        output_root.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
     except ValueError as error:
         raise ValueError(f"pilot output must be on SDB: {output_root}") from error
     output_root.mkdir(parents=True, exist_ok=True)

@@ -20,14 +20,14 @@ Model: a TEXT LLM (default Qwen2.5-7B-Instruct). Pass --no-llm to emit only the
 deterministic template (no GPU needed).
 
 Env (dedicated venv recommended):
-    uv venv /home/tanhe/dataset_storage/.venv-qwen --python 3.10
+    uv venv .venv --python 3.10
     source .venv-qwen/bin/activate
     pip install "transformers>=4.44" accelerate torch
 
 Run (single GPU or CPU template-only):
     uv run python dataset/captioning/refine_caption.py \
-        --manifest /mnt/sdc/audio_dataset_tmp/spatial_foa/manifest.jsonl \
-        --out /mnt/sdc/audio_dataset_tmp/spatial_foa/captions.jsonl \
+        --manifest ${AMBIT_CACHE_ROOT}/spatial_foa/manifest.jsonl \
+        --out ${AMBIT_CACHE_ROOT}/spatial_foa/captions.jsonl \
         --batch_size 16
 
     uv run python dataset/captioning/refine_caption.py --manifest ... --out ... --no-llm

@@ -31,10 +31,10 @@ from audit_tts_v2_pilot import (  # noqa: E402
 
 
 DEFAULT_MANIFEST = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/pilots/tts_2k/pilot_manifest.jsonl"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/pilots/tts_2k/pilot_manifest.jsonl"
 )
 DEFAULT_FULL_QC = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/pilots/tts_2k/qc/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/pilots/tts_2k/qc/"
     "asr_distil_large_v3/speech_qc_manifest.jsonl"
 )
 CUT_SECONDS = (0.15, 0.35, 0.75)
@@ -122,7 +122,7 @@ def main() -> int:
     parser.add_argument("--per-cell", type=int, default=16)
     args = parser.parse_args()
     output = args.output_root.expanduser().resolve(strict=False)
-    if not str(output).startswith("/mnt/sdb/"):
+    if not str(output).startswith(os.environ.get("AMBIT_DATA_ROOT", "data")):
         raise ValueError("cutoff calibration output must be on SDB")
     output.mkdir(parents=True, exist_ok=True)
     rows = select_rows(args.manifest, args.full_qc, args.per_cell)

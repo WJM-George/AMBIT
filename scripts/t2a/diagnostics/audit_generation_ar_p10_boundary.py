@@ -39,8 +39,8 @@ def initialize(snapshot, normalizer):
     spec = importlib.util.spec_from_file_location('p10_audit_normalizer', normalizer)
     module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
     from stable_audio_tools.data.sceneplan_p11_single_turn import finalize_sceneplan_for_p10, P11Task
-    CODEC = ModelScenePlanCodecV4('/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4')
-    TOKENIZER = AutoTokenizer.from_pretrained('/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B', local_files_only=True)
+    CODEC = ModelScenePlanCodecV4(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4")
+    TOKENIZER = AutoTokenizer.from_pretrained(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen/Qwen3.5-0.8B", local_files_only=True)
     NORMALIZE = module.normalize_generated_sceneplan; FINALIZE = finalize_sceneplan_for_p10; TASK = P11Task.GENERATION
 
 

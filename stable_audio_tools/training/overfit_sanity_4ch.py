@@ -23,9 +23,9 @@ Run (from repo root, inside the env):
   python -m stable_audio_tools.training.overfit_sanity_4ch \
       --config stable_audio_tools/configs/model_configs/autoencoders/stable_audio_4ch_vae.json \
       --pretrained-ckpt /path/to/stable_audio_open_model.safetensors \
-      --sls-root /mnt/sdb/audio_dataset/datasets/spatial_librispeech \
-      --mrsdrama-root /mnt/sdd/audio_dataset/datasets/mrsdrama/snapshot \
-      --steps 1000 --batch-size 4 --out-dir /mnt/sdc/vae_4ch_sanity_out
+      --sls-root ${AMBIT_DATA_ROOT}/datasets/spatial_librispeech \
+      --mrsdrama-root ${AMBIT_DATA_ROOT}/datasets/mrsdrama/snapshot \
+      --steps 1000 --batch-size 4 --out-dir ${AMBIT_CKPT_ROOT}/vae_4ch_sanity_out
 
   Checkpoints are written under out-dir/step_XXXXXX/ (e.g. step_000250/, step_001000/).
   Each folder holds {clip}_in.wav and {clip}_rec.wav for that step.
@@ -144,7 +144,7 @@ def run_overfit_sanity(args):
 
 
 def _step_subdir(out_dir: str, step: int) -> str:
-    """e.g. /mnt/sdc/vae_4ch_sanity_out/step_000250"""
+    """e.g. ${AMBIT_CKPT_ROOT}/vae_4ch_sanity_out/step_000250"""
     return os.path.join(out_dir, f"step_{step:06d}")
 
 

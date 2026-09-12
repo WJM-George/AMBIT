@@ -51,10 +51,10 @@ from stable_audio_tools.models.sceneplan_transfusion_generation_ar import (  # n
 
 
 DATA_ROOT = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/transfusion_shared_v1/generation_ar"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/transfusion_shared_v1/generation_ar"
 )
 CODEC_PATH = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
     "model_sceneplan_codec_v4"
 )
 EXPECTED_QWEN_TEXT_BACKBONE_PARAMETER_COUNT = 752_393_024

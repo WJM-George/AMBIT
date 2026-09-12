@@ -1,7 +1,7 @@
 # Experiment summaries
 
 This directory is for concise, reproducible experiment handoffs. Raw checkpoints,
-W&B runs, generated audio, and large metric tables belong on `/mnt/sdc`, not in
+W&B runs, generated audio, and large metric tables belong on `${AMBIT_CKPT_ROOT}`, not in
 the repository or root filesystem.
 
 Each summary should record:

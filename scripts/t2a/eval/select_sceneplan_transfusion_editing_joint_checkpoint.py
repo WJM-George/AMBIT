@@ -153,13 +153,13 @@ CANDIDATE_STEPS = tuple(range(CHECKPOINT_EVERY, EXPECTED_MAX_STEP + 1, CHECKPOIN
 CONFIDENCE = 0.99
 FREE_ROWS = 500
 FREE_PER_CELL = 50
-DEFAULT_ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1")
+DEFAULT_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_transfusion_editing_v1")
 DEFAULT_RUN = Path(
-    "/mnt/sdb/model_archives/transfusion_editing/mainline/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//transfusion_editing/mainline/"
     "sceneplan_transfusion_editing_ar_joint_m2d_full_seed42_v3"
 )
 DEFAULT_DIT_RUN = Path(
-    "/mnt/sdb/model_archives/transfusion_editing/mainline/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//transfusion_editing/mainline/"
     "sceneplan_transfusion_editing_dit_full_seed42_v1"
 )
 DEFAULT_MODEL_CONFIG = REPO_ROOT / (
@@ -167,7 +167,7 @@ DEFAULT_MODEL_CONFIG = REPO_ROOT / (
     "qwen35_0p8b_300m_sceneplan_transfusion_editing_dit_full_v1.json"
 )
 DEFAULT_CODEC = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
     "model_sceneplan_codec_v4"
 )
 

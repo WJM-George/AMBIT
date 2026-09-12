@@ -8,7 +8,7 @@ BUILDER="$REPO/scripts/t2a/data/build_sceneplan_p11_v4_full_curriculum.py"
 VALIDATOR="$REPO/scripts/t2a/test/validate_sceneplan_p11_v4_full_curriculum.py"
 BALANCE_AUDITOR="$REPO/scripts/t2a/test/audit_sceneplan_p11_v4_full_augmentation_balance.py"
 
-ROOT="/mnt/sdb/audio_dataset/sceneplan_v2_1p124m"
+ROOT="${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m"
 P11_ROOT="$ROOT/p11_single_turn_15s_v2"
 MANIFEST="${P11_MANIFEST:-$P11_ROOT/manifests/p11_train_4p8m_v6.sqlite}"
 INDEX="${P11_INDEX:-$ROOT/revisions/speech_expansion_noalign_15s_v1/training_index/train.sqlite}"

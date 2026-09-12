@@ -51,7 +51,7 @@ from sceneplan_v2_renderer import (  # noqa: E402
 SEED = 20260814
 LEDGER = DATASET_ROOT / "split_ledgers/speech_v2/speech_split_ledger.parquet"
 DEFAULT_OUTPUT = DATASET_ROOT / "pilots/tts_2k"
-VAE_CHECKPOINT = Path("/mnt/sdc/ckpts/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt")
+VAE_CHECKPOINT = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt")
 DURATION_BINS = ((0.0, 2.0), (2.0, 4.0), (4.0, 6.0), (6.0, 8.0), (8.0, MAX_MODEL_SAMPLES / MODEL_SAMPLE_RATE + 1e-9))
 ROOM_CLASSES = ("dry", "moderate", "reverberant", "outdoor")
 MOTIONS = ("static", "dynamic")
@@ -60,7 +60,7 @@ MOTIONS = ("static", "dynamic")
 def ensure_sdb(path: Path) -> None:
     resolved = path.expanduser().resolve(strict=False)
     try:
-        resolved.relative_to("/mnt/sdb")
+        resolved.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
     except ValueError as error:
         raise ValueError(f"revision-4 output must be on SDB: {resolved}") from error
 

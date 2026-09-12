@@ -40,9 +40,9 @@ from scripts.t2a.train.prepare_sceneplan_transfusion_editing_full import (  # no
 SCHEMA = "sceneplan_transfusion_editing_dit_training_run_contract"
 SCHEMA_VERSION = 2
 CONTRACT_NAME = "TRAIN_RUN_CONTRACT.json"
-VISIBLE_GPUS = "3,4,5,6,7"
-PHYSICAL_GPUS = [3, 4, 5, 6, 7]
-WORLD_SIZE = 5
+VISIBLE_GPUS = os.environ.get("CUDA_VISIBLE_DEVICES", "").replace(" ", "")
+PHYSICAL_GPUS = [int(item) for item in VISIBLE_GPUS.split(",") if item]
+WORLD_SIZE = max(len(PHYSICAL_GPUS), 1)
 SOURCE_PATHS = (
     "pyproject.toml",
     "uv.lock",

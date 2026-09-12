@@ -22,7 +22,7 @@ import pyarrow.dataset as ds
 import pyarrow.parquet as pq
 
 
-DATASET_ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m")
+DATASET_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m")
 DEFAULT_SCENEPLAN_ROOT = DATASET_ROOT / "sceneplans"
 DEFAULT_CATALOG = DATASET_ROOT / "source_catalog/nonspeech/nonspeech_signal_catalog.parquet"
 DEFAULT_OUTPUT = DATASET_ROOT / "source_annotations/nonspeech_instruct_v2"
@@ -250,7 +250,7 @@ def main() -> int:
     catalog_path = args.catalog.expanduser().resolve(strict=True)
     output_root = args.output_root.expanduser().resolve(strict=False)
     try:
-        output_root.relative_to("/mnt/sdb")
+        output_root.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
     except ValueError as error:
         raise ValueError(f"source annotation universe must persist on SDB: {output_root}") from error
     output_root.mkdir(parents=True, exist_ok=True)

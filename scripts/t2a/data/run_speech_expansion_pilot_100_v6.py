@@ -37,13 +37,13 @@ from stable_audio_tools.models.conditioners import (  # noqa: E402
 )
 
 
-DATASET_ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m")
+DATASET_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m")
 REVISION_ROOT = DATASET_ROOT / "revisions/speech_expansion_noalign_15s_v1"
 PILOT_ROOT = REVISION_ROOT / "pilot_100"
 SCENEPLANS = PILOT_ROOT / "sceneplans"
 MATERIALIZED = PILOT_ROOT / "materialized"
 INDEX_ROOT = PILOT_ROOT / "training_index"
-TOKENIZER_ROOT = Path("/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B")
+TOKENIZER_ROOT = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen/Qwen3.5-0.8B")
 DONOR_REGISTRY = REVISION_ROOT / (
     "source_annotations/speech_speaker_instruct_v1/registry/"
     "final_speech_donors_with_speakers.parquet"

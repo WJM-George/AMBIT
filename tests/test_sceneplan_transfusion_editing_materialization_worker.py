@@ -1,3 +1,4 @@
+import os
 import concurrent.futures
 import json
 import sys
@@ -27,7 +28,7 @@ def test_render_overlap_preserves_order_and_failed_shards_are_not_published(
     monkeypatch.setattr(sys, "argv", argv)
     metadata = {"editing_ar_input_contract": worker.EDITING_AR_INPUT_CONTRACT,
                 "editing_ar_old_sceneplan_input": "false",
-                "target_root": "/mnt/sdb/codex-worker-test-no-files-written"}
+                "target_root": os.environ.get("AMBIT_DATA_ROOT", "data") + "/codex-worker-test-no-files-written"}
     monkeypatch.setattr(worker, "_load_rows", lambda path, shard: (
         metadata,
         [{"split": "train", "pair_id": f"{shard}:{row}", "shard": shard}

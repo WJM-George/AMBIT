@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Generate a deterministic sound/music/speech listening panel with dense DiT."""
 from __future__ import annotations
+import os
 
 import argparse
 import json
@@ -30,12 +31,12 @@ DEFAULT_CONFIG = REPO_ROOT / (
     "qwen35_0p8b_300m.json"
 )
 DEFAULT_CHECKPOINT = Path(
-    "/mnt/sdb/model_archives/p10_pre_v11_20260831/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//p10_pre_v11_20260831/"
     "t2a_dit_qwen35_0p8b_300m_wdmix_v2_300k/"
     "checkpoints/epoch=75-step=300000.ckpt"
 )
 DEFAULT_VAE = Path(
-    "/mnt/sdc/ckpts/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
 )
 PROMPTS = (
     ("sound", "01_campfire", "From 0.0 to 7.0 seconds, a close dry campfire crackles with distinct wooden pops. From 7.0 seconds to the end, complete silence. No speech and no music."),

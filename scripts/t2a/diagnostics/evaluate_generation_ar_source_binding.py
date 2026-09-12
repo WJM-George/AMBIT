@@ -22,8 +22,8 @@ import zlib
 
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[2]
-DIAGNOSIS = Path('/mnt/sdc/ckpts/transfusion_sceneplan/generation_ar/validation_diagnosis_20260905_v1')
-PROTOTYPE = Path('/mnt/sdc/ckpts/transfusion_sceneplan/generation_ar/source_snapshots/generation_ar_attention_adaptation_20260905_v2')
+DIAGNOSIS = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/transfusion_sceneplan/generation_ar/validation_diagnosis_20260905_v1")
+PROTOTYPE = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/transfusion_sceneplan/generation_ar/source_snapshots/generation_ar_attention_adaptation_20260905_v2")
 MODES = {'baseline': (0., False), 'count': (0., True), 'count_bias1': (1., True), 'count_bias2': (2., True)}
 
 
@@ -60,12 +60,12 @@ def prepare(args):
                  REPO / 'stable_audio_tools/inference/sceneplan_generation_ar_vectorized.py',
                  REPO / 'stable_audio_tools/inference/sceneplan_generation_ar_precision.py']:
         shutil.copy2(path, sources / path.name)
-    benchmark_path = Path('/home/tanhe/dataset_storage/reports/generation_ar_vectorized_benchmark_20260905.json')
+    benchmark_path = Path("." + "/reports/generation_ar_vectorized_benchmark_20260905.json")
     benchmark = json.loads(benchmark_path.read_text())
     assert benchmark['status'] == 'PASS' and all(r['exact_tokens'] for r in benchmark['measurements'])
     assert benchmark['checkpoint_sha256'] == sha(args.checkpoint)
     assert benchmark['generator_sha256'] == sha(sources / 'sceneplan_generation_ar_vectorized.py')
-    precision_proof = Path('/home/tanhe/dataset_storage/reports/generation_ar_fp32_sdpa_cache_gate_20260905.json')
+    precision_proof = Path("." + "/reports/generation_ar_fp32_sdpa_cache_gate_20260905.json")
     precision_gate = json.loads(precision_proof.read_text())
     assert precision_gate['status'] == 'FP32_SDPA_GATE_PASS'
     assert precision_gate['precision_source_sha256'] == sha(sources / 'sceneplan_generation_ar_precision.py')
@@ -101,7 +101,7 @@ def prepare(args):
         'decoder_parity_proof': str(benchmark_path), 'decoder_parity_proof_sha256': sha(benchmark_path),
         'precision': 'FP32 AR including math SDPA self attention; BF16 request encoder; TF32 disabled; native P10 caller precision untouched',
         'precision_gate_proof': str(precision_proof), 'precision_gate_proof_sha256': sha(precision_proof),
-        'previous_failed_experiment': '/mnt/sdc/ckpts/transfusion_sceneplan/generation_ar/source_binding_decode_20260905_v1',
+        'previous_failed_experiment': os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/transfusion_sceneplan/generation_ar/source_binding_decode_20260905_v1",
         'previous_failure': 'BF16 cache/full differences failed .25 cap, and source bias changed 2/89 legal decisions. FP32 with native Flash also silently cast to FP16. V2 changes AR precision rather than relaxing semantic or field acceptance.',
         'v3_fix': 'Return None when the source penalty is entirely zero, preserving native attention dispatch for single-source requests and global-only queries. V2 lost 3/64 single-source medium passes with an all-zero additive mask.',
         'hypotheses': ['Explicit request labels can prevent missing/extra sources without reference-plan information.',
@@ -114,7 +114,7 @@ def prepare(args):
                      'bound_cached_max_abs_cap': .001, 'bound_extra_cached_error_cap': .001,
                      'extra_legal_greedy_disagreement_cap': 0., 'require_both_legal_equal': True},
     }
-    previous = Path('/mnt/sdc/ckpts/transfusion_sceneplan/generation_ar/source_binding_decode_fp32_20260905_v2')
+    previous = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/transfusion_sceneplan/generation_ar/source_binding_decode_fp32_20260905_v2")
     contract['reused_modes'] = {mode: {'summary': str(previous / mode / 'SUMMARY.json'),
                                      'summary_sha256': sha(previous / mode / 'SUMMARY.json'),
                                      'predictions': str(previous / mode / 'predictions.sqlite'),

@@ -70,8 +70,8 @@ def main() -> int:
     qc_root = args.qc_root.expanduser().resolve(strict=True)
     audit_root = args.audit_root.expanduser().resolve(strict=False)
     try:
-        ledger_path.relative_to("/mnt/sdb")
-        audit_root.relative_to("/mnt/sdb")
+        ledger_path.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
+        audit_root.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
     except ValueError as error:
         raise ValueError("speech ledger and audit outputs must remain on SDB") from error
     qc_summary = json.loads((qc_root / "summary.json").read_text(encoding="utf-8"))

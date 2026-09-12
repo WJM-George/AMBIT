@@ -21,7 +21,7 @@ if str(REPO_ROOT) not in sys.path:
 from scripts.t2a.data.sceneplan_v2_common import atomic_write_json  # noqa: E402
 
 
-DATASET_ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m")
+DATASET_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m")
 REVISION_ROOT = DATASET_ROOT / "revisions/speech_expansion_noalign_15s_v1"
 DEFAULT_SCENEPLANS = REVISION_ROOT / "sceneplans_model_v2_delta"
 DEFAULT_OUTPUT = REVISION_ROOT / "materialized_delta"
@@ -168,7 +168,7 @@ def main() -> int:
                     int(json.loads(path.read_text(encoding="utf-8"))["rows"])
                     for path in done
                 )
-                storage = os.statvfs("/mnt/sdb")
+                storage = os.statvfs(os.environ.get("AMBIT_DATA_ROOT", "data"))
                 free_fraction = storage.f_bavail / storage.f_blocks
                 if free_fraction < 0.20:
                     raise RuntimeError(

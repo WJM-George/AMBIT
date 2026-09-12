@@ -7,7 +7,7 @@ set -euo pipefail
 # because prefix-recompute autoregression is latency-bound and one 0.8B model
 # uses only a small fraction of a 48-GiB GPU.  EMA weights and canonical
 # prefix-recompute decoding are enforced again by the merger.
-REPO="${P11_REPO:-/mnt/sdc/stable-audio-tools-workspace}"
+REPO="${P11_REPO:-${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace}"
 PY="${P11_PYTHON:-$REPO/.venv/bin/python}"
 CHECKPOINT="${1:?usage: $0 CHECKPOINT OUTPUT_DIR}"
 OUTPUT_DIR="${2:?usage: $0 CHECKPOINT OUTPUT_DIR}"

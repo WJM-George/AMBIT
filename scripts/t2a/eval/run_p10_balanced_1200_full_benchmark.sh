@@ -4,9 +4,9 @@ set -euo pipefail
 # Persistent end-to-end benchmark continuation for the frozen balanced panel.
 # The checkpoint sweep is launched separately; this script waits for its
 # completion marker and then performs every remaining stage in contract order.
-REPO_ROOT="${REPO_ROOT:-/home/tanhe/dataset_storage/stable-audio-tools}"
+REPO_ROOT="${REPO_ROOT:-./stable-audio-tools}"
 PYTHON_BIN="${PYTHON_BIN:-${REPO_ROOT}/.venv/bin/python}"
-EVAL_ROOT="${EVAL_ROOT:-/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1/evaluation/p10_v9_balanced_1200_ckpt20k_100k_v1}"
+EVAL_ROOT="${EVAL_ROOT:-${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1/evaluation/p10_v9_balanced_1200_ckpt20k_100k_v1}"
 BENCHMARK_ROOT="${BENCHMARK_ROOT:-${EVAL_ROOT}/cross_system_baselines}"
 LOG_ROOT="${EVAL_ROOT}/logs/full_benchmark"
 INFERENCE_SESSION="${INFERENCE_SESSION:-p10_v9_balanced1200_eval}"

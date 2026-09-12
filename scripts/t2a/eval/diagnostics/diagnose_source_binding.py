@@ -10,6 +10,7 @@ can be attributed to the source-slot-resolved frame adapter, including its
 explicit source-semantic x geometry branch when configured.
 """
 from __future__ import annotations
+import os
 
 import argparse
 import json
@@ -131,13 +132,13 @@ def main() -> int:
     parser.add_argument(
         "--latent-root",
         type=Path,
-        default=Path("/mnt/sdb/audio_dataset/spatial_cot_v1/latents/validation"),
+        default=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/spatial_cot_v1/latents/validation"),
     )
     parser.add_argument("--caption-overlay-root", type=Path)
     parser.add_argument(
         "--codec-root",
         type=Path,
-        default=Path("/mnt/sdb/audio_dataset/spatial_cot_v1/codec"),
+        default=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/spatial_cot_v1/codec"),
     )
     parser.add_argument("--family-rank", type=int, required=True)
     parser.add_argument("--source-a", default="source_0")

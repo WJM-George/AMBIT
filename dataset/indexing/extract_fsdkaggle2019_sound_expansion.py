@@ -212,16 +212,16 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--archive-root", type=Path,
-        default=Path("/mnt/sdd/audio_dataset/datasets/fsdkaggle2019/archives"),
+        default=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/fsdkaggle2019/archives"),
     )
     parser.add_argument("--output-root", type=Path, required=True)
     parser.add_argument(
         "--base-signal-catalog", type=Path,
-        default=Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/source_catalog/nonspeech/nonspeech_signal_catalog.parquet"),
+        default=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/source_catalog/nonspeech/nonspeech_signal_catalog.parquet"),
     )
     parser.add_argument(
         "--external-manifest-root", type=Path,
-        default=Path("/mnt/sdb/audio_dataset/evaluation_benchmark/p10_evaluation_benchmark_v1/manifests"),
+        default=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/evaluation_benchmark/p10_evaluation_benchmark_v1/manifests"),
     )
     parser.add_argument("--jobs", type=int, default=min(48, os.cpu_count() or 1))
     return parser.parse_args()
@@ -234,9 +234,9 @@ def main() -> int:
     if args.jobs <= 0:
         raise ValueError("--jobs must be positive")
     try:
-        output_root.relative_to(Path("/mnt/sdb"))
+        output_root.relative_to(Path(os.environ.get("AMBIT_DATA_ROOT", "data")))
     except ValueError as error:
-        raise ValueError("Sound expansion outputs must live on /mnt/sdb") from error
+        raise ValueError("Sound expansion outputs must live on ${AMBIT_DATA_ROOT}") from error
     output_root.mkdir(parents=True, exist_ok=True)
     completed_summary = output_root / "SUMMARY.json"
     if completed_summary.is_file() and (output_root / "qc_passed.jsonl").is_file():

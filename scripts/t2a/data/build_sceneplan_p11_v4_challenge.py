@@ -60,15 +60,15 @@ from stable_audio_tools.data.sceneplan_p11_v4_dataset import (  # noqa: E402
 
 
 DEFAULT_MANIFEST = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
     "manifests/p11_validation_heldout900_v6.sqlite"
 )
 DEFAULT_INDEX = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/revisions/"
     "speech_expansion_noalign_15s_v1/training_index/validation.sqlite"
 )
 DEFAULT_CODEC = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
     "model_sceneplan_codec_v4"
 )
 DEFAULT_OUTPUT = REPO_ROOT / (
@@ -76,7 +76,7 @@ DEFAULT_OUTPUT = REPO_ROOT / (
     "p11_v4_heldout_challenge_v1_20260901.sqlite"
 )
 P10_CHECKPOINT = Path(
-    "/mnt/sdc/ckpts/dit/sceneplan_dit_v11_semantic_v2_protected_resume_150k/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/dit/sceneplan_dit_v11_semantic_v2_protected_resume_150k/"
     "checkpoints/epoch=48-step=150000.ckpt"
 )
 P10_CHECKPOINT_SHA256 = (

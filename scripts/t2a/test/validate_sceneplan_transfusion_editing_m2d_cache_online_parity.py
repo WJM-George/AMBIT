@@ -62,7 +62,7 @@ DEFAULT_VAE_CONFIG = REPO_ROOT / (
     "stable_audio_4ch_vae_ds1024_z64_wdmix_scm.json"
 )
 DEFAULT_VAE_CHECKPOINT = Path(
-    "/mnt/sdc/ckpts/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
 )
 BATCH_SIZES = (1, 2, 4)
 

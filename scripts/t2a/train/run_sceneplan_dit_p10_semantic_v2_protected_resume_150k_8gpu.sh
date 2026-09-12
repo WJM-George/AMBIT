@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO="${P10_REPO:-/home/tanhe/dataset_storage/stable-audio-tools}"
-REVISION_ROOT="${REVISION_ROOT:-/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1}"
+REPO="${P10_REPO:-./stable-audio-tools}"
+REVISION_ROOT="${REVISION_ROOT:-${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1}"
 FREEZE="$REVISION_ROOT/contracts/freeze_manifest.json"
 PREFLIGHT="$REVISION_ROOT/P10_PREFLIGHT_GATE.json"
-SOURCE_GATE="/mnt/sdb/model_archives/p10_pre_v11_20260831/sceneplan_dit_v10_semantic_v2_protected_resume_110k/evaluation/P10_110K_POSTTRAIN_GATE.json"
-SOURCE_CKPT="${SOURCE_CKPT:-/mnt/sdb/model_archives/p10_pre_v11_20260831/sceneplan_dit_v10_semantic_v2_protected_resume_110k/checkpoints/epoch=35-step=110000.ckpt}"
+SOURCE_GATE="${AMBIT_CKPT_ROOT}/p10_pre_v11_20260831/sceneplan_dit_v10_semantic_v2_protected_resume_110k/evaluation/P10_110K_POSTTRAIN_GATE.json"
+SOURCE_CKPT="${SOURCE_CKPT:-${AMBIT_CKPT_ROOT}/p10_pre_v11_20260831/sceneplan_dit_v10_semantic_v2_protected_resume_110k/checkpoints/epoch=35-step=110000.ckpt}"
 SOURCE_CKPT_SHA256="${SOURCE_CKPT_SHA256:-8becc5533a204f1be2cc5813d25e7572cea9327dc179b5be3659dec9ac270f43}"
 
 BASE_MODEL_CONFIG="$REPO/stable_audio_tools/configs/model_configs/txt2audio/t2a/dit/qwen35_0p8b_300m_model_sceneplan_44_soundexp_noalign_15s.json"
@@ -233,7 +233,7 @@ PY
 
 export RUN_NAME="${RUN_NAME:-sceneplan_dit_v11_semantic_v2_protected_resume_150k}"
 export RUN_LABEL="${RUN_LABEL:-sceneplan-44-semantic-v2-protected-resume-150k}"
-export RUN_ROOT="${RUN_ROOT:-/mnt/sdc/ckpts/dit/$RUN_NAME}"
+export RUN_ROOT="${RUN_ROOT:-${AMBIT_CKPT_ROOT}/dit/$RUN_NAME}"
 export RUN_CATEGORY="mainline"
 export MODEL_CONFIG DATASET_CONFIG VAL_DATASET_CONFIG
 
@@ -288,7 +288,7 @@ export TRAINING_GATE_GRADIENT_EVERY="${TRAINING_GATE_GRADIENT_EVERY:-50}"
 export MIN_FREE_DISK_GIB="${MIN_FREE_DISK_GIB:-100}"
 export MIN_ROOT_FREE_GIB="${MIN_ROOT_FREE_GIB:-20}"
 export TEMP_DIR="${TEMP_DIR:-/dev/shm/sceneplan_v11_semantic_v2}"
-export TRITON_CACHE_DIR="${TRITON_CACHE_DIR:-/mnt/sdc/ckpts/dit/triton-cache/sceneplan_qwen35_fla052_cc170}"
+export TRITON_CACHE_DIR="${TRITON_CACHE_DIR:-${AMBIT_CKPT_ROOT}/dit/triton-cache/sceneplan_qwen35_fla052_cc170}"
 
 if [[ "${PREFLIGHT_ONLY:-0}" == "1" ]]; then
     echo "[sceneplan-44-semantic-v2-150k] continuation preflight PASS"

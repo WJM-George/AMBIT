@@ -4,7 +4,7 @@ set -euo pipefail
 # Active P11 launcher.  The audio-aware G/U/E contract is the only mainline
 # candidate; the old v4 arms remain explicit experiment baselines and are
 # never selected by default.  Every profile keeps batch/GPU=8 and seed=42.
-REPO="${P11_REPO:-/mnt/sdc/stable-audio-tools-workspace}"
+REPO="${P11_REPO:-${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace}"
 PY="${P11_PYTHON:-$REPO/.venv/bin/python}"
 PROFILE="${1:-preflight}"
 RUN_NAME="${RUN_NAME:?set a unique RUN_NAME}"
@@ -50,7 +50,7 @@ PILOT_DATASET="$REPO/stable_audio_tools/configs/dataset_configs/$P11_PILOT_FILE"
 SCREENING_DATASET="$REPO/stable_audio_tools/configs/dataset_configs/$P11_SCREENING_FILE"
 SCALE_V4_DATASET="$REPO/stable_audio_tools/configs/dataset_configs/sceneplan_p11_train269568_pair_aware_transfusion_cot_v4_reliable_asr_seed42.json"
 SCALE_D0_DATASET="$REPO/stable_audio_tools/configs/dataset_configs/sceneplan_p11_train269568_pair_aware_discrete_d0_seed42.json"
-SCALE_CURRICULUM="/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/p11_v4_curriculum/p11_train_269568_ddp8_rank_balanced_batch8_seed42_v2.sqlite"
+SCALE_CURRICULUM="${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/p11_single_turn_15s_v2/p11_v4_curriculum/p11_train_269568_ddp8_rank_balanced_batch8_seed42_v2.sqlite"
 
 case "$PROFILE" in
     overfit)
@@ -205,7 +205,7 @@ if [[ "$PROFILE" == "overfit" && "$P11_GRAPH_FAMILY" == "audio_aware" ]]; then
 fi
 OVERFIT_BATCHES="${OVERFIT_BATCHES:-$OVERFIT_BATCHES_DEFAULT}"
 TRAINING_SEED="${P11_SEED:-42}"
-RUN_ROOT="${RUN_ROOT:-/mnt/sdc/ckpts/sceneplan_p11/$RUN_NAME}"
+RUN_ROOT="${RUN_ROOT:-${AMBIT_CKPT_ROOT}/sceneplan_p11/$RUN_NAME}"
 CKPT_PATH="${CKPT_PATH:-}"
 PRETRAINED_CKPT_PATH="${PRETRAINED_CKPT_PATH:-}"
 PRETRAINED_ROUTE_WEIGHTS="${PRETRAINED_ROUTE_WEIGHTS:-ema}"
@@ -317,9 +317,9 @@ if (( MAX_STEPS <= BENCHMARK_WARMUP_BATCHES )); then
     exit 2
 fi
 case "$RUN_ROOT" in
-    /mnt/sdc/ckpts/sceneplan_p11/*) ;;
+    ${AMBIT_CKPT_ROOT}/sceneplan_p11/*) ;;
     *)
-        echo "[p11] RUN_ROOT must stay under /mnt/sdc/ckpts/sceneplan_p11" >&2
+        echo "[p11] RUN_ROOT must stay under ${AMBIT_CKPT_ROOT}/sceneplan_p11" >&2
         exit 2
         ;;
 esac
@@ -414,8 +414,8 @@ if (( MAX_STEPS <= INITIAL_GLOBAL_STEP + BENCHMARK_WARMUP_BATCHES )); then
 fi
 
 CHECKPOINT_DIR="$RUN_ROOT/checkpoints"
-KERNEL_CACHE="${P11_KERNEL_CACHE:-/mnt/sdc/ckpts/sceneplan_p11/kernel_cache}"
-TEMP_PARENT="${P11_TEMP_PARENT:-/mnt/sdc/p11_tmp}"
+KERNEL_CACHE="${P11_KERNEL_CACHE:-${AMBIT_CKPT_ROOT}/sceneplan_p11/kernel_cache}"
+TEMP_PARENT="${P11_TEMP_PARENT:-${AMBIT_CKPT_ROOT}/p11_tmp}"
 mkdir -p "$CHECKPOINT_DIR" "$TEMP_PARENT" "$KERNEL_CACHE/torchinductor" "$KERNEL_CACHE/triton"
 if [[ -n "${TEMP_DIR:-}" ]]; then
     mkdir -p "$TEMP_DIR"

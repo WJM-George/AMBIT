@@ -92,7 +92,7 @@ CURRENT_M2D_SHARED_JOINT_PARAMETER_ACCOUNTING = {
     "shared_transformer_counted_once": True,
 }
 DEFAULT_UTILIZATION_AUDIT = Path(
-    "/mnt/sdb/model_archives/transfusion_editing/benchmarks/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//transfusion_editing/benchmarks/"
     "EDITING_DIT_UTILIZATION_SELECTION_20260904.json"
 )
 EXPECTED_CODEC_V4_FINGERPRINT = (
@@ -101,13 +101,13 @@ EXPECTED_CODEC_V4_FINGERPRINT = (
 CANONICAL_P10_SHA256 = (
     "be8c90cd1434bd71f73951531175c3674ff0f3173d5db591e2e1c476152ff59e"
 )
-DEFAULT_ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1")
+DEFAULT_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_transfusion_editing_v1")
 DEFAULT_MODEL_CONFIG = REPO_ROOT / (
     "stable_audio_tools/configs/model_configs/txt2audio/t2a/dit/"
     "qwen35_0p8b_300m_sceneplan_transfusion_editing_dit_full_v1.json"
 )
 DEFAULT_P10 = Path(
-    "/mnt/sdc/ckpts/dit/sceneplan_dit_v11_semantic_v2_protected_resume_150k/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/dit/sceneplan_dit_v11_semantic_v2_protected_resume_150k/"
     "checkpoints/epoch=48-step=150000.ckpt"
 )
 CURRENT_SHARED_CONTRACT = REPO_ROOT / (

@@ -47,20 +47,20 @@ def parse_args() -> argparse.Namespace:
         "--fleurs-root",
         type=Path,
         default=Path(
-            "/mnt/sdb/audio_dataset/evaluation_benchmark/"
+            os.environ.get("AMBIT_DATA_ROOT", "data") + "/evaluation_benchmark/"
             "fleurs_en_us_test_70bb2e84"
         ),
     )
     parser.add_argument(
         "--sceneplan-root",
         type=Path,
-        default=Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m"),
+        default=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m"),
     )
     parser.add_argument(
         "--output-root",
         type=Path,
         default=Path(
-            "/mnt/sdb/audio_dataset/evaluation_benchmark/"
+            os.environ.get("AMBIT_DATA_ROOT", "data") + "/evaluation_benchmark/"
             "p10_evaluation_benchmark_v1"
         ),
     )

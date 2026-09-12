@@ -14,14 +14,15 @@ Test set (categories evaluated with the metric set each deserves):
   * sound  (default 5)   : AudioCaps FOA (non-music)        -> traditional recon
 DNSMOS (no-reference) is reported for every category.
 
-Outputs (--out, default /mnt/sdc/eval_metric/codec_compare):
+Outputs (--out, default ${AMBIT_CKPT_ROOT}/eval_metric/codec_compare):
   compare_codecs_per_file.csv, compare_codecs_summary.json, compare_codecs_summary.md
 
 Run (CPU-safe; all training GPUs may be busy):
-  cd /home/tanhe/dataset_storage/stable-audio-tools
+  cd ./stable-audio-tools
   uv run python dataset/evaluation/compare_codecs.py --device cpu
 """
 from __future__ import annotations
+import os
 
 import argparse
 import csv
@@ -51,11 +52,11 @@ import speech_metrics as sm  # noqa: E402
 REF_SR = 44100  # comparison reference SR = our VAE sample rate
 
 # ---- default data locations (overridable) ---------------------------------
-SLS_DIR = "/mnt/sdb/audio_dataset/datasets/spatial_librispeech/ambisonics"
+SLS_DIR = os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/spatial_librispeech/ambisonics"
 SLS_TRAIN_SEED = "spatial_librispeech"
 SLS_TRAIN_MAX = 60255
-AUDIOCAPS_JSONL = "/mnt/sdc/audio_dataset_tmp/audiocaps_train.jsonl"
-AUDIOCAPS_FOA = "/mnt/sdc/audio_dataset_tmp/audiocaps_foa/train"
+AUDIOCAPS_JSONL = os.environ.get("AMBIT_CACHE_ROOT", "cache/tmp") + "/audiocaps_train.jsonl"
+AUDIOCAPS_FOA = os.environ.get("AMBIT_CACHE_ROOT", "cache/tmp") + "/audiocaps_foa/train"
 MUSIC_KW = ("music", "song", "guitar", "piano", "violin", "drum", "melody",
             "singing", "orchestra", "trumpet", "flute", "instrument", "choir",
             "harmonica", "accordion", "cello", "saxophone", "banjo")
@@ -64,7 +65,7 @@ MUSIC_KW = ("music", "song", "guitar", "piano", "violin", "drum", "melody",
 # --vae-arm NAME CONFIG CKPT. Each arm reconstructs full 4ch and we take W.
 # Ckpts must be EMA-unwrapped (clean encoder.*/decoder.* keys) — raw Lightning
 # training ckpts do not load via load_4ch_vae (prefix mismatch → random init).
-_ABL_ROOT = "/mnt/sdc/ckpts"
+_ABL_ROOT = os.environ.get("AMBIT_CKPT_ROOT", "checkpoints")
 DEFAULT_VAE_ARMS = [
     [
         "base_overshoot_900k",
@@ -328,7 +329,7 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--vae-config", default="stable_audio_tools/configs/model_configs/autoencoders/stable_audio_4ch_vae_ds1024_z64.json",
                     help="config for the optional --include-800k reference arm")
-    ap.add_argument("--vae-ckpt", default="/mnt/sdc/ckpts/compareVAE_ckpt/unwrapped_ds1024_z64_800k.ckpt",
+    ap.add_argument("--vae-ckpt", default=os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/compareVAE_ckpt/unwrapped_ds1024_z64_800k.ckpt",
                     help="ckpt for the optional --include-800k reference arm")
     ap.add_argument("--vae-arm", nargs=3, action="append", metavar=("NAME", "CONFIG", "CKPT"),
                     help="Add an 'ours' VAE arm. Repeatable. Defaults to the two 900k arms.")
@@ -340,10 +341,10 @@ def main() -> None:
                          "Repeatable. Excluded from the spatial table.")
     ap.add_argument("--include-800k", action="store_true",
                     help="Also include the unwrapped 800k VAE (--vae-config/--vae-ckpt) as a reference arm.")
-    ap.add_argument("--dac-ckpt", default="/mnt/sdc/ckpts/compareVAE_ckpt/dac_44khz.pth")
+    ap.add_argument("--dac-ckpt", default=os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/compareVAE_ckpt/dac_44khz.pth")
     ap.add_argument("--encodec-bw", type=float, default=6.0)
     ap.add_argument("--wt-config", default=str(_WT_REPO / "configs/wavtokenizer_smalldata_frame40_3s_nq1_code4096_dim512_kmeans200_attn.yaml"))
-    ap.add_argument("--wt-ckpt", default="/mnt/sdc/ckpts/compareVAE_ckpt/wavtokenizer_large_unify_600_24k.ckpt")
+    ap.add_argument("--wt-ckpt", default=os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/compareVAE_ckpt/wavtokenizer_large_unify_600_24k.ckpt")
     ap.add_argument("--dnsmos-dir", default=sm.DNSMOS_DIR_DEFAULT)
     ap.add_argument("--speech-num", type=int, default=10)
     ap.add_argument("--music-num", type=int, default=5)
@@ -353,7 +354,7 @@ def main() -> None:
     ap.add_argument("--sls-dir", default=SLS_DIR)
     ap.add_argument("--max-seconds", type=float, default=10.0)
     ap.add_argument("--seed", type=int, default=1234)
-    ap.add_argument("--out", type=Path, default=Path("/mnt/sdc/eval_metric/codec_compare"))
+    ap.add_argument("--out", type=Path, default=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/eval_metric/codec_compare"))
     ap.add_argument("--device", default="cpu")
     ap.add_argument("--stats", choices=["median", "meanstd"], default="median",
                     help="table statistic; 'meanstd' for the expanded (hundreds-of-clips) report")

@@ -30,13 +30,13 @@ from scripts.t2a.eval.baselines.build_p10_v11_stratified_3000_baseline_contract 
 
 
 SOURCE_EVAL = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/revisions/"
     "speech_expansion_noalign_15s_v1/evaluation/"
     "p10_v11_150k_full_test_8000_semantic_v2"
 )
 OUTPUT_ROOT = SOURCE_EVAL / "cross_system_baselines_final_8k"
 REUSE_ROOT = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/revisions/"
     "speech_expansion_noalign_15s_v1/evaluation/"
     "p10_v11_150k_stratified_test_3000_semantic_v2/cross_system_baselines"
 )

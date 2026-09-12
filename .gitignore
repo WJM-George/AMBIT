@@ -4,6 +4,8 @@ __pycache__/
 .env
 .env.*
 !.env.example
+data/
+cache/
 .ssh/
 .codex/
 node_modules/

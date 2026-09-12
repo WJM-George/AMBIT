@@ -37,7 +37,7 @@ from scripts.t2a.eval.sceneplan_dit_p10_panel_common import (
 
 
 DEFAULT_WHISPER = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/models/faster-distil-whisper-large-v3"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/models/faster-distil-whisper-large-v3"
 )
 
 

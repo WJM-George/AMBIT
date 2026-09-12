@@ -278,7 +278,7 @@ def main() -> int:
     parser.add_argument(
         "--output-dir",
         type=Path,
-        default=Path("/mnt/sdc/sat_gates/spatial_cot/ddp_benchmark"),
+        default=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/sat_gates/spatial_cot/ddp_benchmark"),
     )
     parser.add_argument("--tag")
     parser.add_argument("--dry-run", action="store_true")

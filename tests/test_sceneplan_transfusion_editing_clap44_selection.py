@@ -1,4 +1,5 @@
 """CPU evidence tests; these fixtures are not trained-model quality results."""
+import os
 import copy
 import importlib.util
 import json
@@ -124,7 +125,7 @@ def test_unpublished_checkpoint_with_stale_optimizer_progress_is_not_recovered(o
 
 def test_real_codec_directory_identity_covers_config_and_vocabulary(tmp_path):
     from stable_audio_tools.data.model_sceneplan_codec_v4 import ModelScenePlanCodecV4
-    real = Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4")
+    real = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4")
     if not real.is_dir(): pytest.skip("local frozen codec unavailable")
     for name in ("READY","codec.json","sentencepiece.model"):
         shutil.copyfile(real/name,tmp_path/name)
@@ -253,7 +254,7 @@ def test_free_plan_scores_rebind_to_actual_index_truth(tmp_path):
     from stable_audio_tools.data.model_sceneplan_codec_v4 import ModelScenePlanCodecV4
     from stable_audio_tools.data.sceneplan_transfusion_editing import sha256_json
     from stable_audio_tools.data.sceneplan_transfusion_editing_plan import canonicalize_editing_plan
-    codec_dir = Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4")
+    codec_dir = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4")
     if not codec_dir.is_dir(): pytest.skip("local codec unavailable")
     codec = ModelScenePlanCodecV4(codec_dir)
     plan = {"sample_id":"target_0","duration_sec":1.,"room":{"type":"moderate"},
@@ -286,7 +287,7 @@ def test_complete_synthetic_selection_replays_all_evidence_without_holdout_fallb
     from stable_audio_tools.data.sceneplan_transfusion_editing import sha256_json
     from stable_audio_tools.data.sceneplan_transfusion_editing_plan import canonicalize_editing_plan
     from stable_audio_tools.training.sceneplan_transfusion_editing_clap44_selection import CANDIDATE_STEPS
-    codec_dir = Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4")
+    codec_dir = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4")
     if not codec_dir.is_dir(): pytest.skip("local codec unavailable")
     codec = ModelScenePlanCodecV4(codec_dir)
     layout = [(i,432 if i<15000 else 648,OPERATIONS[i%5]) for i in range(20000)]

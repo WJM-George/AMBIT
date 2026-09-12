@@ -1,21 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO="${P10_REPO:-/mnt/sdc/stable-audio-tools-workspace}"
-ROOT="${EDITING_DATA_ROOT:-/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1}"
+REPO="${P10_REPO:-${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace}"
+ROOT="${EDITING_DATA_ROOT:-${AMBIT_DATA_ROOT}/sceneplan_transfusion_editing_v1}"
 MODEL_CONFIG="${MODEL_CONFIG:-$REPO/stable_audio_tools/configs/model_configs/txt2audio/t2a/dit/qwen35_0p8b_300m_sceneplan_transfusion_editing_dit_full_v1.json}"
-CHECKPOINT="${PRETRAINED_CKPT:-/mnt/sdc/ckpts/dit/sceneplan_dit_v11_semantic_v2_protected_resume_150k/checkpoints/epoch=48-step=150000.ckpt}"
+CHECKPOINT="${PRETRAINED_CKPT:-${AMBIT_CKPT_ROOT}/dit/sceneplan_dit_v11_semantic_v2_protected_resume_150k/checkpoints/epoch=48-step=150000.ckpt}"
 SOURCE_SPLIT="${SOURCE_SPLIT:-validation}"
 BATCH_SIZE="${BATCH_SIZE:-72}"
 LONG_BATCH_SIZE="${LONG_BATCH_SIZE:-48}"
 NUM_WORKERS="${NUM_WORKERS:-12}"
 
-if [[ -n "${CUDA_VISIBLE_DEVICES:-}" && "${CUDA_VISIBLE_DEVICES// /}" != "3,4,5,6,7" ]]; then
-    echo "[editing-dit-utilization] only physical GPUs 3,4,5,6,7 are allowed" >&2
+if [[ -z "${CUDA_VISIBLE_DEVICES:-}" ]]; then
+    echo "[ambit] set CUDA_VISIBLE_DEVICES to the GPUs for this job" >&2
     exit 2
 fi
 export CUDA_DEVICE_ORDER=PCI_BUS_ID
-export CUDA_VISIBLE_DEVICES=3,4,5,6,7
 
 "$REPO/.venv/bin/python" \
     "$REPO/scripts/t2a/train/prepare_sceneplan_transfusion_editing_utilization_probe.py" \
@@ -45,7 +44,7 @@ PY
 export RUN_NAME="${RUN_NAME:-sceneplan_transfusion_editing_dit_b${BATCH_SIZE}_l${LONG_BATCH_SIZE}_5gpu_probe}"
 export RUN_LABEL="sceneplan-transfusion-editing-dit-utilization"
 export RUN_CATEGORY=benchmarks
-export RUN_ROOT="${RUN_ROOT:-/mnt/sdb/model_archives/transfusion_editing/benchmarks/$RUN_NAME}"
+export RUN_ROOT="${RUN_ROOT:-${AMBIT_CKPT_ROOT}/transfusion_editing/benchmarks/$RUN_NAME}"
 export MODEL_CONFIG DATASET_CONFIG
 export VAL_DATASET_CONFIG=""
 export DISABLE_VALIDATION=1

@@ -74,13 +74,13 @@ from stable_audio_tools.models.utils import (  # noqa: E402
 )
 
 
-ALLOWED_PHYSICAL_GPUS = {3, 4, 5, 6, 7}
+ALLOWED_PHYSICAL_GPUS = set(range(16))
 DEFAULT_VAE_CONFIG = REPO_ROOT / (
     "stable_audio_tools/configs/model_configs/autoencoders/"
     "stable_audio_4ch_vae_ds1024_z64_wdmix_scm.json"
 )
 DEFAULT_VAE_CHECKPOINT = Path(
-    "/mnt/sdc/ckpts/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
 )
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)

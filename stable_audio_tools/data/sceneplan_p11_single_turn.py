@@ -22,6 +22,7 @@ scene, so this state-preserving protocol does not claim waveform preservation.
 """
 
 from __future__ import annotations
+import os
 
 import copy
 import json
@@ -59,7 +60,7 @@ P10_SEMANTIC_CAPTION_SURFACE = (
 P10_TRANSCRIPT_STATE_AUTHORITY = "sceneplan.source.transcript"
 P10_CANONICAL_EXECUTOR_FAMILY = "sceneplan_dit_v11_semantic_v2_15s_300m"
 P10_CANONICAL_MODEL_CONFIG = (
-    "/mnt/sdc/stable-audio-tools-workspace/stable_audio_tools/configs/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/stable-audio-tools-workspace/stable_audio_tools/configs/"
     "model_configs/txt2audio/t2a/dit/"
     "qwen35_0p8b_300m_model_sceneplan_44_soundexp_noalign_15s_"
     "resume_cosine_40k.json"
@@ -69,7 +70,7 @@ P10_CANONICAL_MODEL_CONFIG_SHA256 = (
 )
 P10_CANONICAL_CHECKPOINT_STEP = 150_000
 P10_CANONICAL_CHECKPOINT = (
-    "/mnt/sdc/ckpts/dit/sceneplan_dit_v11_semantic_v2_protected_resume_150k/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/dit/sceneplan_dit_v11_semantic_v2_protected_resume_150k/"
     "checkpoints/epoch=48-step=150000.ckpt"
 )
 P10_CANONICAL_CHECKPOINT_SHA256 = (

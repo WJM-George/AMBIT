@@ -126,12 +126,12 @@ DEFAULT_MODEL_CONFIG = REPO_ROOT / (
     "qwen35_0p8b_300m_sceneplan_transfusion_editing_dit_full_v1.json"
 )
 DEFAULT_CODEC = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
     "model_sceneplan_codec_v4"
 )
 LATEST_AR_INPUT_CONTRACT = "source_foa_latent_plus_raw_edit_request_v2"
-FULL_VISIBLE_GPUS = "3,4,5,6,7"
-FULL_WORLD_SIZE = 5
+FULL_VISIBLE_GPUS = os.environ.get("CUDA_VISIBLE_DEVICES", "").replace(" ", "")
+FULL_WORLD_SIZE = max(len([item for item in FULL_VISIBLE_GPUS.split(",") if item]), 1)
 FORMAL_M2D_AR_SPECIFIC_TRAINABLE_PARAMETERS = 10_034_176
 FORMAL_M2D_JOINT_UNIQUE_TRAINABLE_PARAMETERS = 329_348_480
 DIT_SELECTION_SCHEMA = "sceneplan_transfusion_editing_dit_checkpoint_selection"

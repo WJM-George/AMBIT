@@ -59,9 +59,9 @@ def main() -> int:
     if args.expected_rows <= 0:
         raise ValueError("--expected-rows must be positive")
     try:
-        output_root.relative_to(Path("/mnt/sdb"))
+        output_root.relative_to(Path(os.environ.get("AMBIT_DATA_ROOT", "data")))
     except ValueError as error:
-        raise ValueError("delta A2T artifacts must persist on /mnt/sdb") from error
+        raise ValueError("delta A2T artifacts must persist on ${AMBIT_DATA_ROOT}") from error
     if output_root.exists() and any(output_root.iterdir()):
         raise FileExistsError(f"refusing to overwrite non-empty output: {output_root}")
     output_root.mkdir(parents=True, exist_ok=True)

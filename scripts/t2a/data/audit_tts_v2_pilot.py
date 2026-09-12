@@ -34,15 +34,15 @@ MODEL_SAMPLE_RATE = 44_100
 MAX_MODEL_SAMPLES = 442_368
 ASR_SAMPLE_RATE = 16_000
 DEFAULT_MODEL = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/models/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/models/"
     "faster-distil-whisper-large-v3"
 )
 DEFAULT_WORK_ROOT = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/pilots/tts_2k/qc/asr"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/pilots/tts_2k/qc/asr"
 )
 DEFAULT_MANIFESTS = (
     Path(
-        "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/pilots/tts_2k/"
+        os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/pilots/tts_2k/"
         "pilot_manifest.jsonl"
     ),
 )

@@ -17,7 +17,7 @@
     "datasets": [
         {
             "id": "sceneplan_v2_test",
-            "path": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/training_index/test.sqlite",
+            "path": "${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/training_index/test.sqlite",
             "weight": 1.0
         }
     ]

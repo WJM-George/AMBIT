@@ -6,19 +6,17 @@ set -euo pipefail
 # Every stage remains independently fail-closed; this wrapper only makes the
 # already-published boundaries safely re-entrant after an external stop.
 
-REPO="${P10_REPO:-/mnt/sdc/stable-audio-tools-workspace}"
-ROOT="${EDITING_DATA_ROOT:-/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1}"
+REPO="${P10_REPO:-${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace}"
+ROOT="${EDITING_DATA_ROOT:-${AMBIT_DATA_ROOT}/sceneplan_transfusion_editing_v1}"
 PAIR_INDEX="$ROOT/pair_index/train.sqlite"
 TRAIN_INDEX="$ROOT/training_index/train.sqlite"
 TRAIN_MARKER="$TRAIN_INDEX.frozen.json"
 
-if [[ -n "${CUDA_VISIBLE_DEVICES:-}" \
-   && "${CUDA_VISIBLE_DEVICES// /}" != "3,4,5,6,7" ]]; then
-  echo "[editing-full-chain] only physical GPUs 3,4,5,6,7 are allowed" >&2
-  exit 2
+if [[ -z "${CUDA_VISIBLE_DEVICES:-}" ]]; then
+    echo "[editing-full-chain] set CUDA_VISIBLE_DEVICES to the GPUs for this job" >&2
+    exit 2
 fi
 export CUDA_DEVICE_ORDER=PCI_BUS_ID
-export CUDA_VISIBLE_DEVICES=3,4,5,6,7
 cd "$REPO"
 
 for required in \

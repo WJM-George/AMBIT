@@ -13,14 +13,14 @@ Setup (deps are in the `spatial` extra; modern timm works because we call the mo
 builder directly instead of timm.create_model):
     uv sync --extra train --extra spatial      # installs timm + decord
     # weights (HF OpenGVLab/VideoMAE2), already fetched for ViT-B:
-    #   /mnt/sdc/ckpts/videomae/distill/vit_b_k710_dl_from_giant.pth   (feat_dim 768)
+    #   ${AMBIT_CKPT_ROOT}/videomae/distill/vit_b_k710_dl_from_giant.pth   (feat_dim 768)
     # for max quality (heavier, feat_dim 1408):
-    #   hf download OpenGVLab/VideoMAE2 mae-g/vit_g_hybrid_pt_1200e_k710_ft.pth --local-dir /mnt/sdc/ckpts/videomae
+    #   hf download OpenGVLab/VideoMAE2 mae-g/vit_g_hybrid_pt_1200e_k710_ft.pth --local-dir ${AMBIT_CKPT_ROOT}/videomae
 
 Run (sharded across GPUs; ViT-B defaults below):
     uv run python dataset/features/extract_videomae_features.py \
-        --video-dir /mnt/sdb/audio_dataset/datasets/sphere360/media/test \
-        --out-dir   /mnt/sdc/audio_dataset_tmp/sphere360_videomae/test
+        --video-dir ${AMBIT_DATA_ROOT}/datasets/sphere360/media/test \
+        --out-dir   ${AMBIT_CACHE_ROOT}/sphere360_videomae/test
     # ViT-g: --model vit_giant_patch14_224 --ckpt-path .../mae-g/vit_g_hybrid_pt_1200e_k710_ft.pth
 """
 from __future__ import annotations
@@ -34,7 +34,7 @@ from pathlib import Path
 
 import numpy as np
 
-DEFAULT_REPO = "/home/tanhe/dataset_storage/VideoMAEv2"
+DEFAULT_REPO = "." + "/VideoMAEv2"
 VIDEO_EXTS = (".webm", ".mp4", ".mkv", ".mov", ".avi")
 # vit_giant_patch14_224 -> 1408, vit_large -> 1024, vit_base -> 768
 FEAT_DIM = {"vit_giant_patch14_224": 1408, "vit_huge_patch16_224": 1280,
@@ -181,7 +181,7 @@ def main() -> None:
     ap.add_argument("--out-dir", required=True)
     ap.add_argument("--repo", default=DEFAULT_REPO)
     ap.add_argument("--model", default="vit_base_patch16_224", choices=list(FEAT_DIM))
-    ap.add_argument("--ckpt-path", default="/mnt/sdc/ckpts/videomae/distill/vit_b_k710_dl_from_giant.pth")
+    ap.add_argument("--ckpt-path", default=os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/videomae/distill/vit_b_k710_dl_from_giant.pth")
     ap.add_argument("--num-frames", type=int, default=16, help="frames per VideoMAE window")
     ap.add_argument("--stride", type=int, default=16, help="hop between windows (16=non-overlap)")
     ap.add_argument("--fps", type=float, default=8.0, help="sample fps before VideoMAE windowing")

@@ -2,6 +2,7 @@
 """Exhaustively audit the revision-6 500k ScenePlan delta before P8."""
 
 from __future__ import annotations
+import os
 
 import argparse
 from collections import Counter
@@ -30,7 +31,7 @@ from stable_audio_tools.data.model_sceneplan import (  # noqa: E402
 )
 
 
-DATASET_ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m")
+DATASET_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m")
 REVISION_ROOT = DATASET_ROOT / "revisions/speech_expansion_noalign_15s_v1"
 DEFAULT_SCENEPLANS = REVISION_ROOT / "sceneplans_model_v2_delta"
 DEFAULT_DONORS = REVISION_ROOT / (

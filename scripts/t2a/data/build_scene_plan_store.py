@@ -38,33 +38,33 @@ from stable_audio_tools.data.t2a_artifacts import (  # noqa: E402
 
 SCHEMA = "stable_audio_tools.spatial_scene_plan"
 SCHEMA_VERSION = "1.1"
-DEFAULT_REQUIRED_MOUNTS = ("/mnt/sdb", "/mnt/sdc", "/mnt/sdd")
+DEFAULT_REQUIRED_MOUNTS = (os.environ.get("AMBIT_DATA_ROOT", "data"), os.environ.get("AMBIT_CKPT_ROOT", "checkpoints"), os.environ.get("AMBIT_DATA_ROOT", "data"))
 
 SOURCE_SPECS = (
     {
         "dataset_id": "spatial_foa_existing",
         "kind": "synthetic_old",
-        "manifest": "/mnt/sdd/audio_dataset/spatial_foa/captions.jsonl",
+        "manifest": os.environ.get("AMBIT_DATA_ROOT", "data") + "/spatial_foa/captions.jsonl",
     },
     {
         "dataset_id": "spatial_foa_v2_expansion",
         "kind": "synthetic_v2",
-        "manifest": "/mnt/sdd/audio_dataset/spatial_foa_v2/manifest_train_expansion.jsonl",
+        "manifest": os.environ.get("AMBIT_DATA_ROOT", "data") + "/spatial_foa_v2/manifest_train_expansion.jsonl",
     },
     {
         "dataset_id": "spatial_librispeech",
         "kind": "sls",
-        "manifest": "/mnt/sdd/audio_dataset/spatial_foa/caption_jsonl/sls_train_218957.jsonl",
+        "manifest": os.environ.get("AMBIT_DATA_ROOT", "data") + "/spatial_foa/caption_jsonl/sls_train_218957.jsonl",
     },
     {
         "dataset_id": "spatial_speech_tts_sdb",
         "kind": "tts",
         "manifest": (
-            "/mnt/sdb/audio_dataset/datasets/spatial_speech_foa_tts_v1_part_sdb/"
+            os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/spatial_speech_foa_tts_v1_part_sdb/"
             "manifests/render_manifest_qc_clean.jsonl"
         ),
         "source_plan_manifest": (
-            "/mnt/sdb/audio_dataset/datasets/spatial_speech_foa_tts_v1_part_sdb/"
+            os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/spatial_speech_foa_tts_v1_part_sdb/"
             "manifests/source_plan_sdb.jsonl"
         ),
     },
@@ -72,11 +72,11 @@ SOURCE_SPECS = (
         "dataset_id": "spatial_speech_tts_sdc",
         "kind": "tts",
         "manifest": (
-            "/mnt/sdc/speech_dataset/spatial_speech_foa_tts_v1_part_sdc/"
+            os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/speech_dataset/spatial_speech_foa_tts_v1_part_sdc/"
             "manifests/render_manifest_qc_clean.jsonl"
         ),
         "source_plan_manifest": (
-            "/mnt/sdc/speech_dataset/spatial_speech_foa_tts_v1_part_sdc/"
+            os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/speech_dataset/spatial_speech_foa_tts_v1_part_sdc/"
             "manifests/source_plan_sdc.jsonl"
         ),
     },

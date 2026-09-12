@@ -21,11 +21,11 @@ Each clip writes:
 Resumable (skip done ids), shardable (--num-shards/--shard), CPU-parallel (--jobs).
 
 Run:
-    cd /home/tanhe/dataset_storage/stable-audio-tools
+    cd ./stable-audio-tools
     uv run python dataset/synthesis/build_spatial_dataset.py \
-        --sources-dir /mnt/sdd/audio_dataset/spatial_sources \
-        --out-dir /mnt/sdd/audio_dataset/spatial_foa/audio \
-        --manifest /mnt/sdd/audio_dataset/spatial_foa/manifest.jsonl \
+        --sources-dir ${AMBIT_DATA_ROOT}/spatial_sources \
+        --out-dir ${AMBIT_DATA_ROOT}/spatial_foa/audio \
+        --manifest ${AMBIT_DATA_ROOT}/spatial_foa/manifest.jsonl \
         --audio 80000 --music 60000 --speech 60000 \
         --jobs 24
 

@@ -24,7 +24,7 @@ import pyarrow.parquet as pq
 from description_contract import compact_whitespace, validate_source_description
 
 
-DATASET_ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m")
+DATASET_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m")
 DEFAULT_SOURCE_ROOT = DATASET_ROOT / "source_annotations/nonspeech_instruct_v2"
 DEFAULT_UNIVERSE = DEFAULT_SOURCE_ROOT / "source_universe.parquet"
 DEFAULT_INPUT = DEFAULT_SOURCE_ROOT / "instruct_input.jsonl"

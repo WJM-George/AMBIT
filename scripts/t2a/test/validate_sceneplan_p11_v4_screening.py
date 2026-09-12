@@ -2,6 +2,7 @@
 """Strict gate for the canonical P11-v4 matched 10k-scene screening data."""
 
 from __future__ import annotations
+import os
 
 import argparse
 from collections import Counter
@@ -60,7 +61,7 @@ from stable_audio_tools.data.sceneplan_p11_dataset import (  # noqa: E402
 )
 
 
-ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2")
+ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2")
 DEFAULT_CURRICULUM = (
     ROOT / "p11_v4_curriculum/p11_train_trial30k_matched_screening_v1.sqlite"
 )
@@ -81,7 +82,7 @@ DEFAULT_OUTPUT = REPO_ROOT / (
 )
 ORDERING_CONTRACT = "p11_v4_matched_triplet_interleaved_batch8_v1"
 P10_CHECKPOINT = Path(
-    "/mnt/sdc/ckpts/dit/sceneplan_dit_v11_semantic_v2_protected_resume_150k/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/dit/sceneplan_dit_v11_semantic_v2_protected_resume_150k/"
     "checkpoints/epoch=48-step=150000.ckpt"
 )
 P10_CHECKPOINT_SHA256 = (

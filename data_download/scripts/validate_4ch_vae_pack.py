@@ -12,6 +12,7 @@ stereo W-channel folder that plays in Reaper/headphones.
 """
 
 from __future__ import annotations
+import os
 
 import argparse
 import csv
@@ -136,8 +137,8 @@ def channel_metrics(source: torch.Tensor, recon: torch.Tensor) -> dict[str, floa
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--latent-root", type=Path, default=Path("/mnt/sdc/audio_latents/stage1_vae_4ch_trial"))
-    parser.add_argument("--output-dir", type=Path, default=Path("/mnt/sdc/vae_4ch_validation_pack_step50000"))
+    parser.add_argument("--latent-root", type=Path, default=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/audio_latents/stage1_vae_4ch_trial"))
+    parser.add_argument("--output-dir", type=Path, default=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/vae_4ch_validation_pack_step50000"))
     parser.add_argument("--num-samples", type=int, default=20)
     parser.add_argument("--seed", type=int, default=1234)
     parser.add_argument("--glob-ranks", default="*")

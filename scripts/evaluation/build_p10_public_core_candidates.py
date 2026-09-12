@@ -155,57 +155,57 @@ def parse_args() -> argparse.Namespace:
         "--output-root",
         type=Path,
         default=Path(
-            "/mnt/sdb/audio_dataset/evaluation_benchmark/"
+            os.environ.get("AMBIT_DATA_ROOT", "data") + "/evaluation_benchmark/"
             "p10_evaluation_benchmark_v1"
         ),
     )
     parser.add_argument(
         "--sceneplan-root",
         type=Path,
-        default=Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m"),
+        default=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m"),
     )
     parser.add_argument(
         "--audiocaps-root",
         type=Path,
         default=Path(
-            "/mnt/sdb/audio_dataset/evaluation_benchmark/"
+            os.environ.get("AMBIT_DATA_ROOT", "data") + "/evaluation_benchmark/"
             "audiocaps_test_b29b3243/raw_parquet/test"
         ),
     )
     parser.add_argument(
         "--audiocaps-full-root",
         type=Path,
-        default=Path("/mnt/sdd/audio_dataset/datasets/audiocaps/snapshot/data"),
+        default=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/audiocaps/snapshot/data"),
     )
     parser.add_argument(
         "--vggsound-csv",
         type=Path,
         default=Path(
-            "/mnt/sdc/audio_dataset/datasets/vggsound/snapshot/vggsound.csv"
+            os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/audio_dataset/datasets/vggsound/snapshot/vggsound.csv"
         ),
     )
     parser.add_argument(
         "--vggsound-audio-root",
         type=Path,
-        default=Path("/mnt/sdc/audio_dataset/datasets/vggsound/extracted/audio"),
+        default=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/audio_dataset/datasets/vggsound/extracted/audio"),
     )
     parser.add_argument(
         "--fsd50k-root",
         type=Path,
-        default=Path("/mnt/sdd/audio_dataset/datasets/FSD50k"),
+        default=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/FSD50k"),
     )
     parser.add_argument(
         "--musiccaps-csv",
         type=Path,
         default=Path(
-            "/mnt/sdd/audio_dataset/datasets/musiccaps/snapshot/"
+            os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/musiccaps/snapshot/"
             "musiccaps-public.csv"
         ),
     )
     parser.add_argument(
         "--musiccaps-audio-root",
         type=Path,
-        default=Path("/mnt/sdd/audio_dataset/datasets/musiccaps/audio"),
+        default=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/musiccaps/audio"),
     )
     parser.add_argument("--hash-workers", type=int, default=32)
     return parser.parse_args()

@@ -17,16 +17,17 @@ scenes, so path-based matching is mandatory).
 
 Run (CPU only, fast):
     uv run python dataset/indexing/build_spatial_prompts.py sls \
-        --parquet /mnt/sdb/audio_dataset/datasets/spatial_librispeech/metadata/metadata.parquet \
-        --out /mnt/sdb/audio_dataset/datasets/spatial_librispeech/sls_prompts.jsonl
+        --parquet ${AMBIT_DATA_ROOT}/datasets/spatial_librispeech/metadata/metadata.parquet \
+        --out ${AMBIT_DATA_ROOT}/datasets/spatial_librispeech/sls_prompts.jsonl
 
     uv run python dataset/indexing/build_spatial_prompts.py mrsdrama \
-        --root /mnt/sdd/audio_dataset/datasets/mrsdrama/snapshot \
-        --out /mnt/sdd/audio_dataset/datasets/mrsdrama/mrsdrama_prompts.jsonl
+        --root ${AMBIT_DATA_ROOT}/datasets/mrsdrama/snapshot \
+        --out ${AMBIT_DATA_ROOT}/datasets/mrsdrama/mrsdrama_prompts.jsonl
 
 Then point the dataset entries in local_4ch_preencode.json at these files via "captions".
 """
 from __future__ import annotations
+import os
 
 import argparse
 import json
@@ -160,14 +161,14 @@ def main() -> None:
     sub = p.add_subparsers(dest="cmd", required=True)
 
     ps = sub.add_parser("sls", help="Build SLS prompts from metadata.parquet")
-    ps.add_argument("--parquet", default="/mnt/sdb/audio_dataset/datasets/spatial_librispeech/metadata/metadata.parquet")
-    ps.add_argument("--out", default="/mnt/sdb/audio_dataset/datasets/spatial_librispeech/sls_prompts.jsonl")
+    ps.add_argument("--parquet", default=os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/spatial_librispeech/metadata/metadata.parquet")
+    ps.add_argument("--out", default=os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/spatial_librispeech/sls_prompts.jsonl")
     ps.add_argument("--no-text", action="store_true", help="Omit the spoken-words transcription.")
     ps.set_defaults(func=build_sls)
 
     pm = sub.add_parser("mrsdrama", help="Build MRSDrama prompts from per-scene data.json")
-    pm.add_argument("--root", default="/mnt/sdd/audio_dataset/datasets/mrsdrama/snapshot")
-    pm.add_argument("--out", default="/mnt/sdd/audio_dataset/datasets/mrsdrama/mrsdrama_prompts.jsonl")
+    pm.add_argument("--root", default=os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/mrsdrama/snapshot")
+    pm.add_argument("--out", default=os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/mrsdrama/mrsdrama_prompts.jsonl")
     pm.add_argument("--include-text", action="store_true",
                     help="Append the (Chinese) raw_txt as spoken words. Off by default (T5 is English-centric).")
     pm.set_defaults(func=build_mrsdrama)

@@ -32,7 +32,7 @@ import tempfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
-DEFAULT_DATASET_ROOT = Path(os.environ.get("AUDIO_DATASET_SECONDARY_ROOT", "/mnt/sdb/audio_dataset"))
+DEFAULT_DATASET_ROOT = Path(os.environ.get("AUDIO_DATASET_SECONDARY_ROOT", os.environ.get("AMBIT_DATA_ROOT", "data")))
 DEFAULT_MEDIA_ROOT = DEFAULT_DATASET_ROOT / "datasets" / "sphere360" / "media"
 TIME_INTERVAL = 10.0   # seconds each Sphere360 clip should contain
 TOLERANCE     = 0.5    # skip files already within this margin of TIME_INTERVAL

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import math
 from pathlib import Path
 
@@ -18,7 +19,7 @@ from stable_audio_tools.models.sceneplan_conditioning import ScenePlan442Conditi
 from scripts.t2a.data.build_sceneplan_manifests_v2 import speech_source
 
 
-QWEN_TOKENIZER = Path("/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B")
+QWEN_TOKENIZER = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen/Qwen3.5-0.8B")
 
 
 def _interval(start: int, stop: int) -> dict:

@@ -29,7 +29,7 @@ import pyarrow.parquet as pq
 import soundfile as sf
 
 
-REPO_ROOT = Path("/home/tanhe/dataset_storage/stable-audio-tools")
+REPO_ROOT = Path("." + "/stable-audio-tools")
 SYNTH_DIR = REPO_ROOT / "dataset/synthesis"
 if str(SYNTH_DIR) not in sys.path:
     sys.path.insert(0, str(SYNTH_DIR))
@@ -45,8 +45,8 @@ from synthesize_foa_pyroom import (  # noqa: E402
 
 
 DATASET_ROOTS = {
-    "libritts": Path("/mnt/sdc/speech_dataset/mythicinfinity__libritts"),
-    "hifi_tts": Path("/mnt/sdc/speech_dataset/MikhailT__hifi-tts"),
+    "libritts": Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/speech_dataset/mythicinfinity__libritts"),
+    "hifi_tts": Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/speech_dataset/MikhailT__hifi-tts"),
 }
 
 SOURCE_INDEX: dict[tuple[str, str], dict[str, Any]] | None = None
@@ -428,7 +428,7 @@ def main() -> None:
     ap.add_argument("--plan", type=Path, action="append", required=True)
     ap.add_argument("--manifest", type=Path, required=True)
     ap.add_argument("--caption-out", type=Path, required=True)
-    ap.add_argument("--work-dir", type=Path, default=Path("/mnt/sdc/speech_dataset/spatial_speech_foa_tts_v1_work"))
+    ap.add_argument("--work-dir", type=Path, default=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/speech_dataset/spatial_speech_foa_tts_v1_work"))
     ap.add_argument("--output-root", type=Path, default=None,
                     help="Optional root that overrides each row's planned foa_path; intended for smoke tests.")
     ap.add_argument("--source-index", type=Path, default=None,

@@ -36,7 +36,6 @@ def raw_items(path):
 
 
 def main(args):
-    assert os.environ.get('CUDA_VISIBLE_DEVICES') in ('0', '1', '2')
     os.environ.setdefault('CUBLAS_WORKSPACE_CONFIG', ':4096:8')
     args.output.mkdir(parents=True, exist_ok=True); lock = (args.output / 'LOCK').open('a'); fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
     items = raw_items(args.requests)
@@ -89,7 +88,7 @@ def main(args):
         'generation_ar_with_learned_qualitative_execution_v1' if has_execution_head else 'generation_ar_with_learned_literal_copy_v1')
     assert state['copy_pointer_contract']['copy_module_sha256'] == identity['copy_module_sha256']
     assert state['copy_pointer_contract']['base_checkpoint_sha256'] == state['parent_ar_checkpoint_sha256']
-    codec = ModelScenePlanCodecV4('/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4')
+    codec = ModelScenePlanCodecV4(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4")
     base, p10 = load_p10v11_generation_ar(pad_id=codec.pad_id, verify_sha256=True, activation_checkpointing=False)
     assert p10.as_dict() == state['run_contract']['p10_load'] and codec.fingerprint == state['run_contract']['codec_fingerprint']
     base.load_trainable_state_dict(state['ar_adapter']); model = AdaptedGenerationAR(base, codec, rank=8, alpha=8., binding_strength=0.)

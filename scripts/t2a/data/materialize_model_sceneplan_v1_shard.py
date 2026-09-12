@@ -579,7 +579,7 @@ def main() -> int:
     model_path = args.model_sceneplan_shard.expanduser().resolve(strict=True)
     output_root = args.output_root.expanduser().resolve(strict=False)
     try:
-        output_root.relative_to("/mnt/sdb")
+        output_root.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
     except ValueError as error:
         raise ValueError(f"materialized outputs must be on SDB: {output_root}") from error
     if args.supplement_mode and args.revision_mode:

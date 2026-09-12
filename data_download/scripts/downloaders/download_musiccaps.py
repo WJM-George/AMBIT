@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Download MusicCaps metadata (csv, ~3 MB) to /mnt/sdd/audio_dataset/datasets/musiccaps/.
+"""Download MusicCaps metadata (csv, ~3 MB) to ${AMBIT_DATA_ROOT}/datasets/musiccaps/.
 
-    cd /home/tanhe/dataset_storage && uv sync
+    cd . && uv sync
     uv run python scripts/downloaders/download_musiccaps.py
 """
 from pathlib import Path

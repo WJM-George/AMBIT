@@ -17,10 +17,10 @@ import subprocess
 import sys
 import time
 
-REPO=Path('/mnt/sdc/stable-audio-tools-workspace')
-D0=Path('/mnt/sdc/ckpts/transfusion_sceneplan/generation_ar/validation_diagnosis_20260905_v1')
-R1=Path('/mnt/sdc/ckpts/transfusion_sceneplan/generation_ar/sampling_repair_1ep_20260905_v1')
-PYTHON='/mnt/sdc/stable-audio-tools-workspace/.venv/bin/python3'
+REPO=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/stable-audio-tools-workspace")
+D0=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/transfusion_sceneplan/generation_ar/validation_diagnosis_20260905_v1")
+R1=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/transfusion_sceneplan/generation_ar/sampling_repair_1ep_20260905_v1")
+PYTHON=os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/stable-audio-tools-workspace/.venv/bin/python3"
 sys.path.insert(0,str(REPO/'scripts/t2a/diagnostics'))
 import run_generation_ar_validation_comparison as baseline
 

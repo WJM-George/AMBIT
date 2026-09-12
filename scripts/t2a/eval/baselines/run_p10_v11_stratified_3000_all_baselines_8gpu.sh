@@ -3,10 +3,10 @@ set -euo pipefail
 
 # Two balanced phases keep all eight GPUs busy while every runnable public
 # baseline is regenerated on the frozen P10 v11 stratified 3k test contract.
-REPO_ROOT="${REPO_ROOT:-/home/tanhe/dataset_storage/stable-audio-tools}"
-UPSTREAM_ROOT="${UPSTREAM_ROOT:-/home/tanhe/dataset_storage/evaluation_benchmark/repos}"
-ASSET_ROOT="${ASSET_ROOT:-/mnt/sdc/ckpts/baselines/p10_60k_15row_v1}"
-EVAL_ROOT="${EVAL_ROOT:-/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1/evaluation/p10_v11_150k_stratified_test_3000_semantic_v2}"
+REPO_ROOT="${REPO_ROOT:-./stable-audio-tools}"
+UPSTREAM_ROOT="${UPSTREAM_ROOT:-./evaluation_benchmark/repos}"
+ASSET_ROOT="${ASSET_ROOT:-${AMBIT_CKPT_ROOT}/baselines/p10_60k_15row_v1}"
+EVAL_ROOT="${EVAL_ROOT:-${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1/evaluation/p10_v11_150k_stratified_test_3000_semantic_v2}"
 BENCHMARK_ROOT="${BENCHMARK_ROOT:-${EVAL_ROOT}/cross_system_baselines}"
 MANIFEST="${MANIFEST:-${BENCHMARK_ROOT}/generation_requests.jsonl}"
 ADAPTER_ROOT="${REPO_ROOT}/scripts/t2a/eval/baselines"

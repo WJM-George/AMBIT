@@ -227,7 +227,7 @@ def parse_args() -> argparse.Namespace:
         "--selection",
         type=Path,
         default=Path(
-            "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/supplements/"
+            os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/supplements/"
             "vggsound_sound_delta_v1/source_selection/"
             "pilot_extraction_selection.jsonl"
         ),
@@ -235,13 +235,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--snapshot",
         type=Path,
-        default=Path("/mnt/sdc/audio_dataset/datasets/vggsound/snapshot"),
+        default=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/audio_dataset/datasets/vggsound/snapshot"),
     )
     parser.add_argument(
         "--output-root",
         type=Path,
         default=Path(
-            "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/supplements/"
+            os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/supplements/"
             "vggsound_sound_delta_v1/extraction_pilot_20k"
         ),
     )
@@ -249,7 +249,7 @@ def parse_args() -> argparse.Namespace:
         "--base-signal-catalog",
         type=Path,
         default=Path(
-            "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/source_catalog/"
+            os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/source_catalog/"
             "nonspeech/nonspeech_signal_catalog.parquet"
         ),
     )
@@ -257,7 +257,7 @@ def parse_args() -> argparse.Namespace:
         "--external-manifest-root",
         type=Path,
         default=Path(
-            "/mnt/sdb/audio_dataset/evaluation_benchmark/"
+            os.environ.get("AMBIT_DATA_ROOT", "data") + "/evaluation_benchmark/"
             "p10_evaluation_benchmark_v1/manifests"
         ),
     )
@@ -286,9 +286,9 @@ def main() -> int:
     if args.target_rows < 0 or args.jobs <= 0 or args.qc_jobs <= 0:
         raise ValueError("target rows must be non-negative and worker counts positive")
     try:
-        output_root.relative_to(Path("/mnt/sdb"))
+        output_root.relative_to(Path(os.environ.get("AMBIT_DATA_ROOT", "data")))
     except ValueError as error:
-        raise ValueError("delta extraction must live on /mnt/sdb") from error
+        raise ValueError("delta extraction must live on ${AMBIT_DATA_ROOT}") from error
 
     selection = read_jsonl(selection_path)
     if len({row["stem"] for row in selection}) != len(selection):

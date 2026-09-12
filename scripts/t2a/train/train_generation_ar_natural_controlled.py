@@ -60,7 +60,7 @@ def run(args):
             assert len(choices)==per_count
             batch.extend({'index':i,'mode':'request_first' if parents[i]['route']=='request_to_plan' else 'five_view','view':max(range(len(parents[i]['natural_requests'])),key=lambda v:len(parents[i]['natural_requests'][v]))} for i in choices)
         schedule=[batch]*3
-    codec=ModelScenePlanCodecV4('/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4')
+    codec=ModelScenePlanCodecV4(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4")
     state=torch.load(args.checkpoint,map_location='cpu',weights_only=False)
     base,p10=load_p10v11_generation_ar(pad_id=codec.pad_id,verify_sha256=True,activation_checkpointing=False)
     assert p10.as_dict()==state['run_contract']['p10_load'] and codec.fingerprint==state['run_contract']['codec_fingerprint']

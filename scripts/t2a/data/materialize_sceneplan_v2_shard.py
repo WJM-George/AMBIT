@@ -61,7 +61,7 @@ VAE_CONFIG = REPO_ROOT / (
     "stable_audio_tools/configs/model_configs/autoencoders/"
     "stable_audio_4ch_vae_ds1024_z64_wdmix_scm.json"
 )
-VAE_CHECKPOINT = Path("/mnt/sdc/ckpts/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt")
+VAE_CHECKPOINT = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt")
 TRUE_PEAK_CEILING = 10.0 ** (-1.0 / 20.0)
 REVISION6_MAX_MODEL_SAMPLES = 648 * 1024
 
@@ -698,7 +698,7 @@ def main() -> int:
     sceneplan_shard = args.sceneplan_shard.expanduser().resolve(strict=True)
     output_root = args.output_root.expanduser().resolve(strict=False)
     try:
-        output_root.relative_to("/mnt/sdb")
+        output_root.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
     except ValueError as error:
         raise ValueError(f"materialized outputs must be on SDB: {output_root}") from error
     output_root.mkdir(parents=True, exist_ok=True)

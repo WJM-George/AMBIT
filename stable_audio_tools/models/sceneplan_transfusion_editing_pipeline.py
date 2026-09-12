@@ -1,6 +1,7 @@
 """End-to-end audio-reference Transfusion Editing inference pipeline."""
 
 from __future__ import annotations
+import os
 
 import copy
 from collections import defaultdict
@@ -88,7 +89,7 @@ FROZEN_VAE_CONFIG = Path(__file__).resolve().parents[1] / (
     "stable_audio_4ch_vae_ds1024_z64_wdmix_scm.json"
 )
 FROZEN_VAE_CHECKPOINT = Path(
-    "/mnt/sdc/ckpts/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
 )
 FROZEN_VAE_CONFIG_SHA256 = (
     "0f0373c9b32deb3d9ea875a3a0f98a898fa1d3a3aa0d82f6cade6dc2ab97b179"

@@ -1,4 +1,5 @@
 """CPU gate/recovery tests with synthetic evidence, never model quality claims."""
+import os
 from argparse import Namespace
 from copy import deepcopy
 import json
@@ -220,7 +221,7 @@ def test_generated_plan_scores_are_rebound_to_frozen_truth_and_actual_tokens(tmp
     from stable_audio_tools.data.sceneplan_transfusion_editing import sha256_json
     from stable_audio_tools.data.sceneplan_transfusion_editing_plan import canonicalize_editing_plan
     from stable_audio_tools.models.sceneplan_transfusion_editing_pipeline import _align_decoded_sceneplan_to_audio_duration
-    codec_path = Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4")
+    codec_path = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4")
     if not codec_path.is_dir(): pytest.skip("local codec unavailable")
     codec = ModelScenePlanCodecV4(codec_path)
     truth = {"sample_id":"target_0","duration_sec":1.,"room":{"type":"moderate"},

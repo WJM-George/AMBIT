@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Full 20k native CLAP44 AR/RF selection, with one sealed holdout candidate."""
 from __future__ import annotations
+import os
 
 import argparse
 import gc
@@ -44,7 +45,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--run-dir",type=Path,required=True)
     parser.add_argument("--output-dir",type=Path)
-    parser.add_argument("--preflight",type=Path,default=Path("/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1/contracts/full_training/PREFLIGHT.json"))
+    parser.add_argument("--preflight",type=Path,default=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_transfusion_editing_v1/contracts/full_training/PREFLIGHT.json"))
     parser.add_argument("--short-ar-batch-size",type=int,default=8)
     parser.add_argument("--long-ar-batch-size",type=int,default=5)
     parser.add_argument("--short-rf-batch-size",type=int,default=72)

@@ -469,7 +469,7 @@ def create_4ch_dataloader_from_config(
 # ---------------------------------------------------------------------------
 
 def list_spatial_librispeech(root: str, limit: Optional[int] = None) -> List[Tuple[str, str]]:
-    """FOA ambisonics flac. e.g. root=/mnt/sdb/audio_dataset/datasets/spatial_librispeech"""
+    """FOA ambisonics flac. e.g. root=${AMBIT_DATA_ROOT}/datasets/spatial_librispeech"""
     files = sorted(glob.glob(os.path.join(root, "ambisonics", "*.flac")))
     if limit is not None:
         files = files[:limit]
@@ -477,7 +477,7 @@ def list_spatial_librispeech(root: str, limit: Optional[int] = None) -> List[Tup
 
 
 def list_mrsdrama(root: str, limit: Optional[int] = None) -> List[Tuple[str, str]]:
-    """Binaural drama wav segments. e.g. root=/mnt/sdd/audio_dataset/datasets/mrsdrama/snapshot"""
+    """Binaural drama wav segments. e.g. root=${AMBIT_DATA_ROOT}/datasets/mrsdrama/snapshot"""
     files = sorted(glob.glob(os.path.join(root, "**", "wav", "*.wav"), recursive=True))
     if limit is not None:
         files = files[:limit]

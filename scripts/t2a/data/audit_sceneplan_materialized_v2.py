@@ -150,7 +150,7 @@ def main() -> int:
         )
     ).expanduser().resolve(strict=False)
     try:
-        output.relative_to("/mnt/sdb")
+        output.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
     except ValueError as error:
         raise ValueError(f"audit output must be on SDB: {output}") from error
     config = json.loads(args.config.expanduser().resolve(strict=True).read_text(encoding="utf-8"))
@@ -440,7 +440,7 @@ def main() -> int:
         "invalid observed FOA bytes/sec",
     )
     storage: dict[str, Any]
-    stat = os.statvfs("/mnt/sdb")
+    stat = os.statvfs(os.environ.get("AMBIT_DATA_ROOT", "data"))
     total_bytes = stat.f_blocks * stat.f_frsize
     free_bytes = stat.f_bavail * stat.f_frsize
     if args.mode == "pilot":

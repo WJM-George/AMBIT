@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Download AudioSet wav snapshot (~2.4 TB) to /mnt/sdb/audio_dataset/datasets/audioset/.
+"""Download AudioSet wav snapshot (~2.4 TB) to ${AMBIT_DATA_ROOT}/datasets/audioset/.
 
-    cd /home/tanhe/dataset_storage && uv sync
+    cd . && uv sync
     uv run python scripts/downloaders/download_audioset.py --max-workers 8
 """
 from pathlib import Path

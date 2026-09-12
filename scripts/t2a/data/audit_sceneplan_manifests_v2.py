@@ -2,6 +2,7 @@
 """Fail-closed P6/P7 audit of frozen ScenePlan-v2 manifest shards."""
 
 from __future__ import annotations
+import os
 
 import argparse
 import hashlib
@@ -51,7 +52,7 @@ SPEECH_LEDGER = DATASET_ROOT / "split_ledgers/speech_v2/speech_split_ledger.parq
 SIGNAL_CATALOG = (
     DATASET_ROOT / "source_catalog/nonspeech/nonspeech_signal_catalog.parquet"
 )
-TOKENIZER = Path("/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B")
+TOKENIZER = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen/Qwen3.5-0.8B")
 CONDITIONING_AMENDMENT = (
     REPO_ROOT
     / "docs/sceneplan_v2/sceneplan_conditioning_amendment_v2_512.json"
@@ -276,7 +277,7 @@ def main() -> int:
         )
     ).expanduser().resolve(strict=False)
     try:
-        output.relative_to("/mnt/sdb")
+        output.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
     except ValueError as error:
         raise ValueError(f"audit output must be on SDB: {output}") from error
     config = json.loads(args.config.expanduser().resolve(strict=True).read_text(encoding="utf-8"))

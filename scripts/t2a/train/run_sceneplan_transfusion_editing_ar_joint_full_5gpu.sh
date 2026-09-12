@@ -6,17 +6,17 @@ set -euo pipefail
 echo '[editing-ar-joint-full] The M2D route is retired. CLAP44 validation and AR integration must precede the new joint run.' >&2
 exit 2
 
-REPO="${P10_REPO:-/mnt/sdc/stable-audio-tools-workspace}"
-ROOT="${EDITING_DATA_ROOT:-/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1}"
+REPO="${P10_REPO:-${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace}"
+ROOT="${EDITING_DATA_ROOT:-${AMBIT_DATA_ROOT}/sceneplan_transfusion_editing_v1}"
 PREFLIGHT="$ROOT/contracts/full_training/PREFLIGHT.json"
 TRAIN_INDEX="$ROOT/training_index/train.sqlite"
 VALIDATION_INDEX="$ROOT/training_index/validation.sqlite"
 MODEL_CONFIG="${MODEL_CONFIG:-$REPO/stable_audio_tools/configs/model_configs/txt2audio/t2a/dit/qwen35_0p8b_300m_sceneplan_transfusion_editing_dit_full_v1.json}"
-BASE_DIT_RUN="${BASE_DIT_RUN:-/mnt/sdb/model_archives/transfusion_editing/mainline/sceneplan_transfusion_editing_dit_full_seed42_v1}"
+BASE_DIT_RUN="${BASE_DIT_RUN:-${AMBIT_CKPT_ROOT}/transfusion_editing/mainline/sceneplan_transfusion_editing_dit_full_seed42_v1}"
 DIT_CHECKPOINT_SELECTION="${DIT_CHECKPOINT_SELECTION:-$BASE_DIT_RUN/evaluation/validation_20k_checkpoint_selection/SELECTED.json}"
 DIT_GT_AUDIO_GATE="${DIT_GT_AUDIO_GATE:-$BASE_DIT_RUN/evaluation/validation_1k_gt_audio/GATE.json}"
 REQUESTED_BASE_DIT_CHECKPOINT="${BASE_DIT_CHECKPOINT:-}"
-RUN_DIR="${RUN_DIR:-/mnt/sdb/model_archives/transfusion_editing/mainline/sceneplan_transfusion_editing_ar_joint_m2d_full_seed42_v3}"
+RUN_DIR="${RUN_DIR:-${AMBIT_CKPT_ROOT}/transfusion_editing/mainline/sceneplan_transfusion_editing_ar_joint_m2d_full_seed42_v3}"
 SOURCE_SEMANTIC_MODE="${SOURCE_SEMANTIC_MODE:-m2d_audio_caption_aux}"
 TRAIN_M2D_CACHE="${TRAIN_M2D_CACHE:-$ROOT/semantic_cache/m2d_clap_v2/train_full/m2d-clap-train-1000000.sqlite}"
 VALIDATION_M2D_CACHE="${VALIDATION_M2D_CACHE:-$ROOT/semantic_cache/m2d_clap_v2/validation_full/m2d-clap-validation-20000.sqlite}"
@@ -49,12 +49,11 @@ if [[ "${M2D_NONCOMMERCIAL_EVALUATION_ACK:-}" != "1" ]]; then
     exit 2
 fi
 
-if [[ -n "${CUDA_VISIBLE_DEVICES:-}" && "${CUDA_VISIBLE_DEVICES// /}" != "3,4,5,6,7" ]]; then
-    echo "[editing-ar-joint-full] only physical GPUs 3,4,5,6,7 are allowed" >&2
+if [[ -z "${CUDA_VISIBLE_DEVICES:-}" ]]; then
+    echo "[ambit] set CUDA_VISIBLE_DEVICES to the GPUs for this job" >&2
     exit 2
 fi
 export CUDA_DEVICE_ORDER=PCI_BUS_ID
-export CUDA_VISIBLE_DEVICES=3,4,5,6,7
 
 # A direct Joint recovery must mutually exclude the wider DiT-to-Joint chain.
 # When invoked by the DiT launcher, verify and reuse its inherited descriptor;

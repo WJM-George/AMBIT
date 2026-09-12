@@ -253,7 +253,7 @@ def main(args):
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--source', type=Path, required=True); p.add_argument('--output', type=Path, required=True)
-    p.add_argument('--tokenizer', type=Path, default=Path('/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B'))
+    p.add_argument('--tokenizer', type=Path, default=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen/Qwen3.5-0.8B"))
     p.add_argument('--workers', type=int, default=8); p.add_argument('--chunk-rows', type=int, default=20000)
     args = p.parse_args()
     assert args.workers in range(1, 17) and args.chunk_rows > 0 and args.chunk_rows % 100 == 0

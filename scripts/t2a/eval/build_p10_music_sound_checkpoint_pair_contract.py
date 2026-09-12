@@ -19,18 +19,18 @@ from scripts.t2a.eval.sceneplan_dit_p10_panel_common import sha256_file
 
 
 REVISION_ROOT = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/"
     "revisions/speech_expansion_noalign_15s_v1"
 )
 DEFAULT_SOURCE = REVISION_ROOT / "evaluation/p10_v10_music_sound_protection_fixed50"
 DEFAULT_OUTPUT = REVISION_ROOT / "evaluation/p10_v10_music_sound_protection_105k_110k_fixed50"
 DEFAULT_105K = Path(
-    "/mnt/sdb/model_archives/p10_pre_v11_20260831/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//p10_pre_v11_20260831/"
     "sceneplan_dit_v10_semantic_v2_protected_resume_110k/"
     "checkpoints/epoch=33-step=105000.ckpt"
 )
 DEFAULT_110K = Path(
-    "/mnt/sdb/model_archives/p10_pre_v11_20260831/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//p10_pre_v11_20260831/"
     "sceneplan_dit_v10_semantic_v2_protected_resume_110k/"
     "checkpoints/epoch=35-step=110000.ckpt"
 )

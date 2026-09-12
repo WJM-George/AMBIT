@@ -16,7 +16,7 @@ from collections import defaultdict
 import numpy as np
 from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
 
-EXP_ROOT = "/mnt/sdc/ckpts/vae_exp"
+EXP_ROOT = os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/vae_exp"
 KEY = "train/mrstft_loss"          # primary reconstruction-quality metric
 EXTRA = [
     "train/loss",

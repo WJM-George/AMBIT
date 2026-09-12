@@ -25,7 +25,7 @@ from scripts.t2a.data.build_model_sceneplan_training_index_v1 import (  # noqa: 
 )
 
 
-DATASET_ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m")
+DATASET_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m")
 REVISION_ROOT = DATASET_ROOT / "revisions/speech_expansion_noalign_15s_v1"
 BASE_INDEX = DATASET_ROOT / "revisions/sound_expansion_v1/training_index"
 DEFAULT_MATERIALIZED = REVISION_ROOT / "materialized_delta"
@@ -305,7 +305,7 @@ def main() -> int:
         base_root,
         output,
     ):
-        if not str(path).startswith("/mnt/sdb/audio_dataset/"):
+        if not str(path).startswith(os.environ.get("AMBIT_DATA_ROOT", "data")):
             raise ValueError(f"training-index artifact must remain on SDB: {path}")
 
     delta = build_split(

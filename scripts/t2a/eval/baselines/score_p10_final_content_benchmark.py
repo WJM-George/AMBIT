@@ -57,7 +57,7 @@ from scripts.t2a.eval.baselines.score_p10_v11_stratified_3000_public_baselines i
 
 
 DEFAULT_WHISPER = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/models/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/models/"
     "faster-distil-whisper-large-v3"
 )
 REFERENCE_ID = "ground_truth"

@@ -2,12 +2,12 @@
   "_task": "Active P11 audio-aware seed-42 pilot: 30 latest-P10 scenes expanded into G/U/E manifest-v8 rows with multi-scale P10-frame retiming.",
   "dataset_type": "sceneplan_p11_single_turn",
   "p11_contract": "audio_aware_sketch_first_transfusion_cot_v2",
-  "manifest_path": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_audio_aware_edit_v2/manifests/p11_train_pilot90_v8_seed42.sqlite",
-  "codec_path": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4",
+  "manifest_path": "${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/p11_audio_aware_edit_v2/manifests/p11_train_pilot90_v8_seed42.sqlite",
+  "codec_path": "${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4",
   "p10_semantic_caption_contract": "p10_semantic_caption_v2_only_20260830",
   "p10_semantic_caption_compiler_version": 2,
   "transcript_state_authority": "sceneplan.source.transcript",
-  "semantic_cache_path": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_audio_aware_edit_v2/semantic_cache/p11_train_pilot90_clap_htsat_fused_v2.sqlite",
+  "semantic_cache_path": "${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/p11_audio_aware_edit_v2/semantic_cache/p11_train_pilot90_clap_htsat_fused_v2.sqlite",
   "semantic_dim": 512,
   "semantic_encoder_revision": "365dea6ef167def6676140ed93bbc43f84dabb28",
   "semantic_representation": "windowed_clap_pooler_output",
@@ -31,7 +31,7 @@
   "datasets": [
     {
       "id": "sceneplan_v2_speech_expansion_noalign_15s_v1_train",
-      "path": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1/training_index/train.sqlite",
+      "path": "${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1/training_index/train.sqlite",
       "weight": 1.0
     }
   ]

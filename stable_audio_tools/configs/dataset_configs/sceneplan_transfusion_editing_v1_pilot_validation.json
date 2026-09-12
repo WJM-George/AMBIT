@@ -5,7 +5,7 @@
     "datasets": [
         {
             "id": "sceneplan_transfusion_editing_v1_pilot_validation",
-            "path": "/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1_pilot/training_index/validation.sqlite",
+            "path": "${AMBIT_DATA_ROOT}/sceneplan_transfusion_editing_v1_pilot/training_index/validation.sqlite",
             "weight": 1.0
         }
     ],

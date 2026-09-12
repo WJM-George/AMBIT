@@ -16,11 +16,11 @@ import sys
 import time
 import zlib
 
-R3=Path('/mnt/sdc/ckpts/transfusion_sceneplan/generation_ar/attention_adaptation_quarter_epoch_20260905_v1')
-R1=Path('/mnt/sdc/ckpts/transfusion_sceneplan/generation_ar/sampling_repair_1ep_20260905_v1/training')
-SNAPSHOT=Path('/mnt/sdc/ckpts/transfusion_sceneplan/generation_ar/source_snapshots/generation_ar_attention_adaptation_20260905_v2')
-D0=Path('/mnt/sdc/ckpts/transfusion_sceneplan/generation_ar/validation_diagnosis_20260905_v1')
-REPO=Path('/mnt/sdc/stable-audio-tools-workspace')
+R3=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/transfusion_sceneplan/generation_ar/attention_adaptation_quarter_epoch_20260905_v1")
+R1=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/transfusion_sceneplan/generation_ar/sampling_repair_1ep_20260905_v1/training")
+SNAPSHOT=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/transfusion_sceneplan/generation_ar/source_snapshots/generation_ar_attention_adaptation_20260905_v2")
+D0=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/transfusion_sceneplan/generation_ar/validation_diagnosis_20260905_v1")
+REPO=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/stable-audio-tools-workspace")
 PYTHON=REPO/'.venv/bin/python3'
 
 

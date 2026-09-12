@@ -43,7 +43,7 @@ from stable_audio_tools.models.conditioners import (  # noqa: E402
 )
 
 
-DATASET_ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m")
+DATASET_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m")
 REVISION_ROOT = DATASET_ROOT / "revisions/speech_expansion_noalign_15s_v1"
 INDEX_ROOT = REVISION_ROOT / "training_index"
 EXPECTED = {"train": 1_600_000, "validation": 32_000, "test": 8_000}
@@ -56,7 +56,7 @@ MODEL_CONFIG = REPO_ROOT / (
     "stable_audio_tools/configs/model_configs/txt2audio/t2a/dit/"
     "qwen35_0p8b_300m_model_sceneplan_44_soundexp_noalign_15s.json"
 )
-TOKENIZER_ROOT = Path("/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B")
+TOKENIZER_ROOT = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen/Qwen3.5-0.8B")
 OVERFIT_ORDINALS = [
     0,
     500_000,

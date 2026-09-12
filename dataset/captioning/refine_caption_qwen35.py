@@ -32,34 +32,34 @@ Qwen3.5 thinks by default; this script disables thinking (instruct mode) and use
 the recommended sampling params for short caption generation.
 
 Env (``.venv-qwen`` is already OK: Py3.10 + transformers 5.10 dev + Qwen3_5ForCausalLM):
-    source /home/tanhe/dataset_storage/.venv-qwen/bin/activate
+    source .venv/bin/activate
 
-First run — download weights (~56 GB, once) to /mnt/sdc/ckpts (not ~/.cache):
-    hf download Qwen/Qwen3.5-27B --local-dir /mnt/sdc/ckpts/Qwen/Qwen3.5-27B
+First run — download weights (~56 GB, once) to ${AMBIT_CKPT_ROOT} (not ~/.cache):
+    hf download Qwen/Qwen3.5-27B --local-dir ${AMBIT_CKPT_ROOT}/Qwen/Qwen3.5-27B
 
 Preflight (no GPU load):
     python dataset/captioning/refine_caption_qwen35.py --preflight
 
 Run (pick *idle* GPUs via CUDA_VISIBLE_DEVICES; 27B bf16 needs ~2×48GB):
-    cd /home/tanhe/dataset_storage/stable-audio-tools
+    cd ./stable-audio-tools
     CUDA_VISIBLE_DEVICES=6,7 uv run python dataset/captioning/refine_caption_qwen35.py \\
-        --manifest /mnt/sdc/audio_dataset_tmp/spatial_foa/manifest.jsonl \\
-        --out /mnt/sdc/audio_dataset_tmp/spatial_foa/captions_qwen35.jsonl \\
+        --manifest ${AMBIT_CACHE_ROOT}/spatial_foa/manifest.jsonl \\
+        --out ${AMBIT_CACHE_ROOT}/spatial_foa/captions_qwen35.jsonl \\
         --batch_size 4
 
     uv run python dataset/captioning/refine_caption_qwen35.py --manifest ... --out ... --no-llm
 
 Stage 6 → Stage 7 (when GPU free):
     # CUDA_VISIBLE_DEVICES=6,7 uv run python dataset/captioning/refine_caption_qwen35.py \\
-    #     --manifest /mnt/sdd/audio_dataset/spatial_foa/manifest.jsonl \\
-    #     --draft-captions /mnt/sdd/audio_dataset/spatial_foa/captions_stage6.jsonl \\
+    #     --manifest ${AMBIT_DATA_ROOT}/spatial_foa/manifest.jsonl \\
+    #     --draft-captions ${AMBIT_DATA_ROOT}/spatial_foa/captions_stage6.jsonl \\
     #     --stage 7 \\
-    #     --out /mnt/sdd/audio_dataset/spatial_foa/captions_stage7.jsonl
+    #     --out ${AMBIT_DATA_ROOT}/spatial_foa/captions_stage7.jsonl
 
     # Template-only smoke test (no GPU):
     # uv run python dataset/captioning/refine_caption_qwen35.py \\
-    #     --manifest /mnt/sdd/audio_dataset/spatial_foa/manifest.jsonl \\
-    #     --draft-captions /mnt/sdd/audio_dataset/spatial_foa/captions_stage6.jsonl \\
+    #     --manifest ${AMBIT_DATA_ROOT}/spatial_foa/manifest.jsonl \\
+    #     --draft-captions ${AMBIT_DATA_ROOT}/spatial_foa/captions_stage6.jsonl \\
     #     --stage 7 --template-only
 
 Alternative (vLLM, higher throughput; run on idle GPUs):
@@ -80,7 +80,7 @@ from pathlib import Path
 
 # Qwen3.5-27B — text-only caption refinement.
 # Stage-1: natural template-following captions; later stages can use richer prompts.
-QWEN_MODEL_PATH = os.environ.get("CAPTION_LLM", "/mnt/sdc/ckpts/Qwen/Qwen3.5-27B")
+QWEN_MODEL_PATH = os.environ.get("CAPTION_LLM", os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/Qwen/Qwen3.5-27B")
 
 # Qwen3.5 instruct (non-thinking) sampling for general tasks.
 GEN_TEMPERATURE = 0.7
@@ -513,7 +513,7 @@ def preflight() -> int:
             return have, len(need), size_gb
 
         hub_id = "Qwen/Qwen3.5-27B"
-        local_default = P("/mnt/sdc/ckpts/Qwen/Qwen3.5-27B")
+        local_default = P(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/Qwen/Qwen3.5-27B")
         model_p = P(QWEN_MODEL_PATH)
         if model_p.is_dir():
             if not (model_p / "model.safetensors.index.json").is_file():

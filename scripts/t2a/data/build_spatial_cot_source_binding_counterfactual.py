@@ -609,13 +609,13 @@ def main() -> int:
     parser.add_argument(
         "--family-store",
         type=Path,
-        default=Path("/mnt/sdb/audio_dataset/spatial_cot_v1/latents/train"),
+        default=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/spatial_cot_v1/latents/train"),
     )
     parser.add_argument(
         "--caption-overlay",
         type=Path,
         default=Path(
-            "/mnt/sdb/audio_dataset/spatial_cot_v1/captions/"
+            os.environ.get("AMBIT_DATA_ROOT", "data") + "/spatial_cot_v1/captions/"
             "spatial_source_regions_v3/train"
         ),
     )
@@ -632,7 +632,7 @@ def main() -> int:
         "--vae-checkpoint",
         type=Path,
         default=Path(
-            "/mnt/sdc/ckpts/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
+            os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
         ),
     )
     parser.add_argument("--device", default="cuda:0")

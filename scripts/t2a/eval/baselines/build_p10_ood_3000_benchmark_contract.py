@@ -28,10 +28,10 @@ from scripts.t2a.eval.baselines.build_p10_v11_stratified_3000_baseline_contract 
 )
 
 
-OOD_ROOT = Path("/mnt/sdb/audio_dataset/evaluation_benchmark/p10_ood_3000_v1")
+OOD_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/evaluation_benchmark/p10_ood_3000_v1")
 OUTPUT_ROOT = OOD_ROOT / "cross_system_benchmark"
 P10_INTERNAL_EVAL = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/revisions/"
     "speech_expansion_noalign_15s_v1/evaluation/"
     "p10_v11_150k_full_test_8000_semantic_v2"
 )

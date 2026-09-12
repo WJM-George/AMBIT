@@ -1,3 +1,4 @@
+import os
 import copy
 from pathlib import Path
 
@@ -10,7 +11,7 @@ from stable_audio_tools.training.transfusion_opsd.original_pair_condition import
 @pytest.fixture(scope='module')
 def tokenizer():
     from transformers import AutoTokenizer
-    p=Path('/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B')
+    p=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen/Qwen3.5-0.8B")
     if not p.exists():pytest.skip('Native tokenizer is not installed.')
     return AutoTokenizer.from_pretrained(str(p),local_files_only=True)
 

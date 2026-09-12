@@ -99,16 +99,16 @@ EXPECTED_OPERATIONS = (
 DEFAULT_TIMESTEPS = (0.1, 0.3, 0.5, 0.7, 0.9, 1.0)
 CONFIDENCE = 0.99
 CANONICAL_P10 = Path(
-    "/mnt/sdc/ckpts/dit/"
+    "${AMBIT_CKPT_ROOT}/dit/"
     "sceneplan_dit_v11_semantic_v2_protected_resume_150k/"
     "checkpoints/epoch=48-step=150000.ckpt"
 )
 CANONICAL_P10_SHA256 = (
     "be8c90cd1434bd71f73951531175c3674ff0f3173d5db591e2e1c476152ff59e"
 )
-DEFAULT_ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1")
+DEFAULT_ROOT = Path("${AMBIT_DATA_ROOT}/sceneplan_transfusion_editing_v1")
 DEFAULT_RUN = Path(
-    "/mnt/sdb/model_archives/transfusion_editing/mainline/"
+    "${AMBIT_CKPT_ROOT}/transfusion_editing/mainline/"
     "sceneplan_transfusion_editing_dit_full_seed42_v1"
 )
 DEFAULT_MODEL_CONFIG = REPO_ROOT / (

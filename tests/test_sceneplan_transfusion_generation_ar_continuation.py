@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import hashlib
 import importlib.util
 import json
@@ -39,7 +40,7 @@ assert _QUEUE_SPEC is not None and _QUEUE_SPEC.loader is not None
 _QUEUE = importlib.util.module_from_spec(_QUEUE_SPEC)
 _QUEUE_SPEC.loader.exec_module(_QUEUE)
 _CODEC_PATH = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
     "model_sceneplan_codec_v4"
 )
 

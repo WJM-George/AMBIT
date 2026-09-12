@@ -33,7 +33,7 @@ from stable_audio_tools.models.utils import copy_state_dict, load_ckpt_state_dic
 
 
 DEFAULT_ROOT = Path(
-    "/mnt/sdb/model_archives/p10_pre_v11_20260831/sceneplan_dit_fail/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//p10_pre_v11_20260831/sceneplan_dit_fail/"
     "sceneplan_dit_v4_r8_300m/evaluation/"
     "p10_ckpt_5k_10k_15k_sceneplan44_v1"
 )
@@ -42,7 +42,7 @@ DEFAULT_CONFIG = REPO_ROOT / (
     "stable_audio_4ch_vae_ds1024_z64_wdmix_scm.json"
 )
 DEFAULT_CHECKPOINT = Path(
-    "/mnt/sdc/ckpts/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
 )
 
 

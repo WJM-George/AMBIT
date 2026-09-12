@@ -6,8 +6,8 @@ set -euo pipefail
 echo '[editing-m2d-cache] M2D retired for Editing AR. Continue with native CLAP44 pretraining and validation; do not rebuild this cache.' >&2
 exit 2
 
-REPO="${P10_REPO:-/mnt/sdc/stable-audio-tools-workspace}"
-ROOT="${EDITING_DATA_ROOT:-/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1}"
+REPO="${P10_REPO:-${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace}"
+ROOT="${EDITING_DATA_ROOT:-${AMBIT_DATA_ROOT}/sceneplan_transfusion_editing_v1}"
 SPLIT="${1:?usage: $0 train|validation|test}"
 
 case "$SPLIT" in
@@ -33,12 +33,11 @@ if [[ "${M2D_NONCOMMERCIAL_EVALUATION_ACK:-}" != "1" ]]; then
     echo "[editing-m2d-cache] M2D's bundled license is evaluation-only; set M2D_NONCOMMERCIAL_EVALUATION_ACK=1 only for an authorized internal non-commercial evaluation" >&2
     exit 2
 fi
-if [[ -n "${CUDA_VISIBLE_DEVICES:-}" && "${CUDA_VISIBLE_DEVICES// /}" != "3,4,5,6,7" ]]; then
-    echo "[editing-m2d-cache] only physical GPUs 3,4,5,6,7 are allowed" >&2
+if [[ -z "${CUDA_VISIBLE_DEVICES:-}" ]]; then
+    echo "[ambit] set CUDA_VISIBLE_DEVICES to the GPUs for this job" >&2
     exit 2
 fi
 export CUDA_DEVICE_ORDER=PCI_BUS_ID
-export CUDA_VISIBLE_DEVICES=3,4,5,6,7
 MARKER="$INDEX.frozen.json"
 if [[ ! -r "$INDEX" || ! -r "$MARKER" ]]; then
     echo "[editing-m2d-cache] frozen $SPLIT Editing index is missing" >&2

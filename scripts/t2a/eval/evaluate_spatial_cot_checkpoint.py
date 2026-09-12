@@ -7,6 +7,7 @@ the previous *generated* FOA latent and generated ScenePlan, then the frozen FOA
 VAE decodes each target latent to a four-channel waveform for inspection.
 """
 from __future__ import annotations
+import os
 
 import argparse
 import json
@@ -54,11 +55,11 @@ DEFAULT_MODEL_CONFIG = REPO_ROOT / (
     "qwen35_0p8b_spatial_chat_500m.json"
 )
 DEFAULT_LATENT_ROOT = Path(
-    "/mnt/sdb/audio_dataset/spatial_cot_v1/latents/train"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/spatial_cot_v1/latents/train"
 )
-DEFAULT_CODEC_ROOT = Path("/mnt/sdb/audio_dataset/spatial_cot_v1/codec")
+DEFAULT_CODEC_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/spatial_cot_v1/codec")
 DEFAULT_PRETRANSFORM = Path(
-    "/mnt/sdc/ckpts/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
 )
 EVALUATOR_VERSION = 4
 

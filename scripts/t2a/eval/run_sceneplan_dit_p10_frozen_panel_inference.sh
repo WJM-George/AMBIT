@@ -4,8 +4,8 @@ set -euo pipefail
 # Eight persistent workers evaluate one disjoint eighth of any frozen P10
 # panel at every checkpoint listed by its contract.  Work stays balanced across
 # GPUs and every sample retains the same frozen noise at all checkpoints.
-REPO_ROOT="${REPO_ROOT:-/home/tanhe/dataset_storage/stable-audio-tools}"
-EVAL_ROOT="${EVAL_ROOT:-/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1/evaluation/p10_v9_balanced_1200_ckpt20k_100k_v1}"
+REPO_ROOT="${REPO_ROOT:-./stable-audio-tools}"
+EVAL_ROOT="${EVAL_ROOT:-${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1/evaluation/p10_v9_balanced_1200_ckpt20k_100k_v1}"
 PYTHON_BIN="${PYTHON_BIN:-${REPO_ROOT}/.venv/bin/python}"
 NUM_SHARDS="${NUM_SHARDS:-8}"
 

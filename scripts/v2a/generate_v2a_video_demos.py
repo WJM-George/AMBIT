@@ -5,6 +5,7 @@ Input: pre-encoded test metadata with VideoMAE feature paths.
 Output: generated WAV plus MP4 muxed with the corresponding video segment.
 """
 
+import os
 import argparse
 import importlib.util
 import json
@@ -90,9 +91,9 @@ def mux_video_audio(video_path: str, video_start: float, duration: float, wav_pa
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--ckpt", required=True)
-    p.add_argument("--test-latents-dir", default="/mnt/sdd/audio_dataset/Sphere360_processed/latents_dynamic10/test")
-    p.add_argument("--custom-metadata-module", default="/mnt/sdd/audio_dataset/Sphere360_processed/metadata/sphere360_video_metadata.py")
-    p.add_argument("--out-dir", default="/mnt/sdc/video_demos")
+    p.add_argument("--test-latents-dir", default=os.environ.get("AMBIT_DATA_ROOT", "data") + "/Sphere360_processed/latents_dynamic10/test")
+    p.add_argument("--custom-metadata-module", default=os.environ.get("AMBIT_DATA_ROOT", "data") + "/Sphere360_processed/metadata/sphere360_video_metadata.py")
+    p.add_argument("--out-dir", default=os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/video_demos")
     p.add_argument("--num-samples", type=int, default=10)
     p.add_argument("--steps", type=int, default=100)
     p.add_argument("--cfg-scale", type=float, default=4.0)

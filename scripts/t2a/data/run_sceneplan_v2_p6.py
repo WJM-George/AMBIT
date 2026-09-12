@@ -68,8 +68,8 @@ def main() -> int:
     sceneplan_root = args.sceneplan_root.expanduser().resolve(strict=True)
     output_root = args.output_root.expanduser().resolve(strict=False)
     try:
-        sceneplan_root.relative_to("/mnt/sdb")
-        output_root.relative_to("/mnt/sdb")
+        sceneplan_root.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
+        output_root.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
     except ValueError as error:
         raise ValueError("P6 ScenePlans/materialization must remain on SDB") from error
     ready = json.loads((sceneplan_root / "READY").read_text(encoding="utf-8"))

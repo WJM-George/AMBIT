@@ -1,20 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO="${P10_REPO:-/mnt/sdc/stable-audio-tools-workspace}"
-ROOT="${EDITING_DATA_ROOT:-/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1}"
-RUN_DIR="${RUN_ROOT:-/mnt/sdb/model_archives/transfusion_editing/mainline/sceneplan_transfusion_editing_dit_full_seed42_v1}"
+REPO="${P10_REPO:-${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace}"
+ROOT="${EDITING_DATA_ROOT:-${AMBIT_DATA_ROOT}/sceneplan_transfusion_editing_v1}"
+RUN_DIR="${RUN_ROOT:-${AMBIT_CKPT_ROOT}/transfusion_editing/mainline/sceneplan_transfusion_editing_dit_full_seed42_v1}"
 PREFLIGHT="$ROOT/contracts/full_training/PREFLIGHT.json"
 VALIDATION_INDEX="$ROOT/training_index/validation.sqlite"
 MODEL_CONFIG="${MODEL_CONFIG:-$REPO/stable_audio_tools/configs/model_configs/txt2audio/t2a/dit/qwen35_0p8b_300m_sceneplan_transfusion_editing_dit_full_v1.json}"
 OUTPUT="${SELECTION_OUTPUT:-$RUN_DIR/evaluation/validation_20k_checkpoint_selection/SELECTED.json}"
 
-if [[ -n "${CUDA_VISIBLE_DEVICES:-}" && "${CUDA_VISIBLE_DEVICES// /}" != "3,4,5,6,7" ]]; then
-    echo "[editing-dit-select] only physical GPUs 3,4,5,6,7 are allowed" >&2
+if [[ -z "${CUDA_VISIBLE_DEVICES:-}" ]]; then
+    echo "[ambit] set CUDA_VISIBLE_DEVICES to the GPUs for this job" >&2
     exit 2
 fi
 export CUDA_DEVICE_ORDER=PCI_BUS_ID
-export CUDA_VISIBLE_DEVICES=3,4,5,6,7
 if [[ ! -r "$PREFLIGHT" || ! -r "$VALIDATION_INDEX" || ! -r "$MODEL_CONFIG" ]]; then
     echo "[editing-dit-select] preflight, validation index, or model config is missing" >&2
     exit 1

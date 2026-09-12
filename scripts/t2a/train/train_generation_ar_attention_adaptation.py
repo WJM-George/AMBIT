@@ -12,7 +12,7 @@ from pathlib import Path
 import sys
 import time
 
-SNAPSHOT=Path('/mnt/sdc/ckpts/transfusion_sceneplan/generation_ar/source_snapshots/generation_ar_attention_adaptation_20260905_v2')
+SNAPSHOT=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/transfusion_sceneplan/generation_ar/source_snapshots/generation_ar_attention_adaptation_20260905_v2")
 REPO=Path(__file__).resolve().parents[3]
 sys.path.insert(0,str(SNAPSHOT))
 from generation_ar_sampling import ShuffledGlobalBatchSampler
@@ -29,11 +29,11 @@ from stable_audio_tools.models.sceneplan_generation_ar_lora import AdaptedGenera
 from stable_audio_tools.inference.sceneplan_generation_ar_precision import configure_float32_ar
 
 CACHE=Path('/dev/shm/generation_ar_manifests_20260905')
-PARENT=Path('/mnt/sdc/ckpts/transfusion_sceneplan/generation_ar/sampling_repair_1ep_20260905_v1/training')
+PARENT=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/transfusion_sceneplan/generation_ar/sampling_repair_1ep_20260905_v1/training")
 CHECKPOINT=PARENT/'checkpoints/step_00008334.pt'
 CHECKPOINT_SHA='c2bdeef77f8c50ee2ffe9090ade6177cad8fce18dcf843c137ebc8f55644ceb7'
-CODEC=Path('/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4')
-ACCEPTANCE=Path('/home/tanhe/dataset_storage/reports/generation_ar_goal_acceptance_20260905.md')
+CODEC=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4")
+ACCEPTANCE=Path("." + "/reports/generation_ar_goal_acceptance_20260905.md")
 
 
 def sha(path):

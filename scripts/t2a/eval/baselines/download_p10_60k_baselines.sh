@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-BASELINE_ROOT="${BASELINE_ROOT:-/mnt/sdc/ckpts/baselines/p10_60k_15row_v1}"
+BASELINE_ROOT="${BASELINE_ROOT:-${AMBIT_CKPT_ROOT}/baselines/p10_60k_15row_v1}"
 MODEL_ROOT="${BASELINE_ROOT}/models"
 LOG_ROOT="${BASELINE_ROOT}/logs/downloads"
 mkdir -p "${MODEL_ROOT}" "${LOG_ROOT}"

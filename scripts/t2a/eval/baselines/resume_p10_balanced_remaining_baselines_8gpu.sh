@@ -4,10 +4,10 @@ set -euo pipefail
 # Resume the two expensive baseline lanes after the fast systems have finished.
 # Six GPUs take disjoint Stable Audio Open shards and two GPUs take disjoint
 # Qwen3-TTS shards. Existing, fully audited outputs are skipped.
-REPO_ROOT="${REPO_ROOT:-/home/tanhe/dataset_storage/stable-audio-tools}"
-UPSTREAM_ROOT="${UPSTREAM_ROOT:-/home/tanhe/dataset_storage/evaluation_benchmark/repos}"
-ASSET_ROOT="${ASSET_ROOT:-/mnt/sdc/ckpts/baselines/p10_60k_15row_v1}"
-SOURCE_EVAL_ROOT="${SOURCE_EVAL_ROOT:-/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1/evaluation/p10_v9_balanced_1200_ckpt20k_100k_v1}"
+REPO_ROOT="${REPO_ROOT:-./stable-audio-tools}"
+UPSTREAM_ROOT="${UPSTREAM_ROOT:-./evaluation_benchmark/repos}"
+ASSET_ROOT="${ASSET_ROOT:-${AMBIT_CKPT_ROOT}/baselines/p10_60k_15row_v1}"
+SOURCE_EVAL_ROOT="${SOURCE_EVAL_ROOT:-${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1/evaluation/p10_v9_balanced_1200_ckpt20k_100k_v1}"
 BENCHMARK_ROOT="${BENCHMARK_ROOT:-${SOURCE_EVAL_ROOT}/cross_system_baselines}"
 MANIFEST="${MANIFEST:-${BENCHMARK_ROOT}/generation_requests.jsonl}"
 ADAPTER_ROOT="${REPO_ROOT}/scripts/t2a/eval/baselines"
@@ -80,7 +80,7 @@ PYTHONPATH="${ADAPTER_ROOT}" "${REPO_ROOT}/.venv/bin/python" \
   >"${PIPELINE_LOG_ROOT}/baseline_audit.log" 2>&1
 touch "${BENCHMARK_ROOT}/BASELINE_GENERATION_COMPLETE"
 
-CLAP_HF_HOME="${CLAP_HF_HOME:-/home/tanhe/dataset_storage/codex-home/.cache/huggingface}"
+CLAP_HF_HOME="${CLAP_HF_HOME:-./codex-home/.cache/huggingface}"
 CUDA_VISIBLE_DEVICES=0 \
   HF_HOME="${CLAP_HF_HOME}" \
   HUGGINGFACE_HUB_CACHE="${CLAP_HF_HOME}/hub" \

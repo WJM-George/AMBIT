@@ -55,11 +55,11 @@ def configure_visibility(topology):
 
 
 def resource_paths(topology):
-    root = Path(os.environ.get("EDITING_DATA_ROOT", "/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1"))
+    root = Path(os.environ.get("EDITING_DATA_ROOT", os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_transfusion_editing_v1"))
     directory = Path(os.environ.get("EDITING_GPU_LOCK_DIR", str(root / "materialized/locks")))
     paths = [directory / (row["uuid"] + ".lock") for row in topology["devices"]]
     contract = Path(os.environ.get("EDITING_DIT_RUN_CONTRACT",
-        "/mnt/sdb/model_archives/transfusion_editing/mainline/sceneplan_transfusion_editing_dit_full_seed42_v1/TRAIN_RUN_CONTRACT.json"))
+        os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives/transfusion_editing/mainline/sceneplan_transfusion_editing_dit_full_seed42_v1/TRAIN_RUN_CONTRACT.json"))
     if contract.exists():
         allocation = json.loads(contract.read_text())["training"]["physical_gpus"]
         if set(allocation).intersection(topology["physical_indices"]):

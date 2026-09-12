@@ -35,7 +35,7 @@ from audit_tts_v2_pilot import score_channel, words  # noqa: E402
 from sceneplan_v2_common import model_num_samples, normalized_transcript  # noqa: E402
 
 
-DATASET_ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m")
+DATASET_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m")
 MODEL = DATASET_ROOT / "models/faster-distil-whisper-large-v3"
 MAX_MODEL_SAMPLES = 648 * 1024
 MODEL_SAMPLE_RATE = 44_100
@@ -417,7 +417,7 @@ def main() -> int:
     candidates = args.candidates.expanduser().resolve(strict=True)
     output = args.output_root.expanduser().resolve(strict=False)
     model = args.model.expanduser().resolve(strict=True)
-    if not str(output).startswith("/mnt/sdb/audio_dataset/"):
+    if not str(output).startswith(os.environ.get("AMBIT_DATA_ROOT", "data")):
         raise ValueError("speech-expansion QC output must remain on SDB")
     rows = pq.read_table(candidates).to_pylist()
     if args.limit is not None:

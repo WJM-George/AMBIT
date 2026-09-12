@@ -7,11 +7,12 @@ and reports aggregate metrics side-by-side. Designed to run on CPU while
 training keeps the GPUs busy.
 
 Example:
-  cd /home/tanhe/dataset_storage/stable-audio-tools
+  cd ./stable-audio-tools
   uv run python scripts/vae/eval/compare_abl_850k.py --step 900 --num 40 --device cpu
 """
 
 from __future__ import annotations
+import os
 
 import argparse
 import csv
@@ -45,26 +46,26 @@ METRIC_KEYS = BASE_KEYS + EXTRA_KEYS
 
 ARMS = {
     "base_cont_850k": {
-        "config": "/mnt/sdc/ckpts/vae_ds1024_z64_hf_overshoot_decay_350k_8gpu/configs/model_hf_overshoot_decay_350k.json",
-        "ckpt": "/mnt/sdc/ckpts/vae_ds1024_z64_hf_overshoot_decay_350k_8gpu/checkpoints/vae_ds1024_z64_hf_overshoot_decay_350k_8gpu/cr8wgqb6/checkpoints/epoch=13-step=850000.ckpt",
+        "config": os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/vae_ds1024_z64_hf_overshoot_decay_350k_8gpu/configs/model_hf_overshoot_decay_350k.json",
+        "ckpt": os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/vae_ds1024_z64_hf_overshoot_decay_350k_8gpu/checkpoints/vae_ds1024_z64_hf_overshoot_decay_350k_8gpu/cr8wgqb6/checkpoints/epoch=13-step=850000.ckpt",
         "note": "base continue: no phase / no spatial loss (hf overshoot only)",
     },
     "phase_scm_850k": {
-        "config": "/mnt/sdc/ckpts/vae_abl_phase_scm/configs/model_phase_scm.json",
-        "ckpt": "/mnt/sdc/ckpts/vae_abl_phase_scm/checkpoints/vae_abl_phase_scm/l67fhyka/checkpoints/epoch=12-step=850000.ckpt",
+        "config": os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/vae_abl_phase_scm/configs/model_phase_scm.json",
+        "ckpt": os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/vae_abl_phase_scm/checkpoints/vae_abl_phase_scm/l67fhyka/checkpoints/epoch=12-step=850000.ckpt",
         "note": "ablation: frequency-gated IFGD phase + FOA SCM spatial",
     },
 }
 
 ARMS_900K = {
     "base_cont_900k": {
-        "config": "/mnt/sdc/ckpts/vae_ds1024_z64_hf_overshoot_decay_350k_8gpu/configs/model_hf_overshoot_decay_350k.json",
-        "ckpt": "/mnt/sdc/ckpts/vae_ds1024_z64_hf_overshoot_decay_350k_8gpu/checkpoints/vae_abl_base_cont/kmmm2uwb/checkpoints/epoch=13-step=900000.ckpt",
+        "config": os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/vae_ds1024_z64_hf_overshoot_decay_350k_8gpu/configs/model_hf_overshoot_decay_350k.json",
+        "ckpt": os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/vae_ds1024_z64_hf_overshoot_decay_350k_8gpu/checkpoints/vae_abl_base_cont/kmmm2uwb/checkpoints/epoch=13-step=900000.ckpt",
         "note": "base continue: no phase / no spatial loss (hf overshoot only)",
     },
     "phase_scm_900k": {
-        "config": "/mnt/sdc/ckpts/vae_abl_phase_scm/configs/model_phase_scm.json",
-        "ckpt": "/mnt/sdc/ckpts/vae_abl_phase_scm/checkpoints/vae_abl_phase_scm/hkfa5pts/checkpoints/epoch=13-step=900000.ckpt",
+        "config": os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/vae_abl_phase_scm/configs/model_phase_scm.json",
+        "ckpt": os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/vae_abl_phase_scm/checkpoints/vae_abl_phase_scm/hkfa5pts/checkpoints/epoch=13-step=900000.ckpt",
         "note": "frequency-gated IFGD phase + FOA SCM spatial",
     },
 }
@@ -91,7 +92,7 @@ def main() -> None:
     args = parser.parse_args()
     arms = ARMS if args.step == 850 else ARMS_900K
     if args.out is None:
-        args.out = Path(f"/mnt/sdc/ckpts/vae_abl_compare_{args.step}k")
+        args.out = Path(fos.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/vae_abl_compare_{args.step}k")
 
     for arm, meta in arms.items():
         if not Path(meta["ckpt"]).exists():
@@ -101,14 +102,14 @@ def main() -> None:
 
     heldout_eval.SLS_DIR = _first_existing(
         [
-            "/mnt/sdb/audio_dataset/datasets/spatial_librispeech/ambisonics",
-            "/mnt/sdd/audio_dataset/datasets/spatial_librispeech/ambisonics",
+            os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/spatial_librispeech/ambisonics",
+            os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/spatial_librispeech/ambisonics",
         ]
     )
     heldout_eval.SLS_PARQUET = _first_existing(
         [
-            "/mnt/sdb/audio_dataset/datasets/spatial_librispeech/metadata/metadata.parquet",
-            "/mnt/sdd/audio_dataset/datasets/spatial_librispeech/metadata/metadata.parquet",
+            os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/spatial_librispeech/metadata/metadata.parquet",
+            os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/spatial_librispeech/metadata/metadata.parquet",
         ]
     )
 

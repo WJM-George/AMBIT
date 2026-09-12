@@ -4,7 +4,7 @@ set -euo pipefail
 # Evaluate one P10-v12 arm on the immutable 400 Music + 400 Sound + 400 Speech
 # panel. CHECKPOINT_SPECS is a comma-separated LOCAL_STEP=/path list.
 
-REPO_ROOT="${REPO_ROOT:-/home/tanhe/dataset_storage/stable-audio-tools}"
+REPO_ROOT="${REPO_ROOT:-./stable-audio-tools}"
 PYTHON_BIN="${PYTHON_BIN:-$REPO_ROOT/.venv/bin/python}"
 ARM="${ARM:?set ARM to dense, moe, attention, or combined}"
 MODEL_CONFIG="${MODEL_CONFIG:?set MODEL_CONFIG to the matching P10-v12 config}"
@@ -13,7 +13,7 @@ EVAL_ROOT="${EVAL_ROOT:?set EVAL_ROOT to a new or matching evaluation directory}
 TRAINING_LAUNCH_CONTRACT="${TRAINING_LAUNCH_CONTRACT:-}"
 GPU_IDS="${GPU_IDS:-2,3,4,5,6,7}"
 MIN_FREE_GIB="${MIN_FREE_GIB:-40}"
-SOURCE_EVAL_ROOT="${SOURCE_EVAL_ROOT:-/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1/evaluation/p10_v11_balanced_1200_ckpt110k_150k_semantic_v2}"
+SOURCE_EVAL_ROOT="${SOURCE_EVAL_ROOT:-${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1/evaluation/p10_v11_balanced_1200_ckpt110k_150k_semantic_v2}"
 
 cd "$REPO_ROOT"
 
@@ -33,7 +33,7 @@ for index in "${!gpu_array[@]}"; do
     gpu_array[$index]="$gpu"
 done
 
-lock_root="/mnt/sdc/ckpts/dit/.locks"
+lock_root="${AMBIT_CKPT_ROOT}/dit/.locks"
 mkdir -p "$lock_root"
 lock_key="${GPU_IDS//,/__}"
 exec 9>"$lock_root/p10_v12_gpu_${lock_key}.lock"

@@ -15,7 +15,7 @@ import soundfile as sf
 
 
 DEFAULT_MANIFEST = Path(
-    "/mnt/sdc/ckpts/baselines/p10_60k_15row_v1/generation_requests.jsonl"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/baselines/p10_60k_15row_v1/generation_requests.jsonl"
 )
 
 

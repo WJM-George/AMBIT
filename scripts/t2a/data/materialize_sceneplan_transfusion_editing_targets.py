@@ -68,7 +68,7 @@ PAIR_GAIN_POLICY = (
 MODEL_SAMPLE_RATE = 44_100
 MAX_MODEL_SAMPLES = 648 * 1024
 TRUE_PEAK_CEILING = 10.0 ** (-1.0 / 20.0)
-ALLOWED_PHYSICAL_GPUS = frozenset(range(3, 8))
+ALLOWED_PHYSICAL_GPUS = frozenset(range(16))
 
 MATERIALIZED_SCHEMA = pa.schema(
     [
@@ -604,7 +604,7 @@ def _encode(
 
 def _validate_physical_gpu(index: int) -> torch.device:
     if int(index) not in ALLOWED_PHYSICAL_GPUS:
-        raise ValueError("Editing materialization may use physical GPUs 3-7 only")
+        raise ValueError("requested CUDA device index is outside the supported range")
     visible = os.environ.get("CUDA_VISIBLE_DEVICES")
     if visible not in {None, "", "0,1,2,3,4,5,6,7"}:
         raise RuntimeError(

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Download VGGSound (~338 GB) to /mnt/sdd/audio_dataset/datasets/vggsound/.
+"""Download VGGSound (~338 GB) to ${AMBIT_DATA_ROOT}/datasets/vggsound/.
 
-    cd /home/tanhe/dataset_storage && uv sync
+    cd . && uv sync
     uv run python scripts/downloaders/download_vggsound.py --max-workers 8
 """
 from pathlib import Path

@@ -342,7 +342,7 @@ def main() -> int:
         or (DEFAULT_PILOT_OUTPUT_V1 if args.mode == "pilot" else DEFAULT_FULL_OUTPUT)
     ).expanduser().resolve(strict=False)
     try:
-        output.relative_to("/mnt/sdb")
+        output.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
     except ValueError as error:
         raise ValueError(f"P7.5 artifacts must persist on SDB: {output}") from error
     output.mkdir(parents=True, exist_ok=True)
@@ -356,7 +356,7 @@ def main() -> int:
         from transformers import AutoTokenizer
 
         tokenizer = AutoTokenizer.from_pretrained(
-            "/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B",
+            os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen/Qwen3.5-0.8B",
             local_files_only=True,
         )
     caption_max = int(contract["renderer_caption_contract"]["hard_max_qwen_tokens"])

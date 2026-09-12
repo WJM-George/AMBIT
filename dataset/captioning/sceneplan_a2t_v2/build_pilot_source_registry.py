@@ -23,7 +23,7 @@ from finalize_source_registry import (
 )
 
 
-DATASET_ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m")
+DATASET_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m")
 ROOT = DATASET_ROOT / "audit/a2t_pilot_100"
 ANNOTATIONS = ROOT / "source_descriptions_instruct_100.jsonl"
 LABELS = ROOT / "spoken_language_background_v2.jsonl"

@@ -1,20 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO="${P10_REPO:-/mnt/sdc/stable-audio-tools-workspace}"
-ROOT="${EDITING_DATA_ROOT:-/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1}"
+REPO="${P10_REPO:-${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace}"
+ROOT="${EDITING_DATA_ROOT:-${AMBIT_DATA_ROOT}/sceneplan_transfusion_editing_v1}"
 MODEL_CONFIG="${MODEL_CONFIG:-$REPO/stable_audio_tools/configs/model_configs/txt2audio/t2a/dit/qwen35_0p8b_300m_sceneplan_transfusion_editing_dit_full_v1.json}"
 DATASET_CONFIG="${DATASET_CONFIG:-$ROOT/contracts/full_training/train_dataset.json}"
 VAL_DATASET_CONFIG="${VAL_DATASET_CONFIG:-$ROOT/contracts/full_training/validation_dataset.json}"
-CHECKPOINT="${PRETRAINED_CKPT:-/mnt/sdc/ckpts/dit/sceneplan_dit_v11_semantic_v2_protected_resume_150k/checkpoints/epoch=48-step=150000.ckpt}"
+CHECKPOINT="${PRETRAINED_CKPT:-${AMBIT_CKPT_ROOT}/dit/sceneplan_dit_v11_semantic_v2_protected_resume_150k/checkpoints/epoch=48-step=150000.ckpt}"
 PREFLIGHT="$ROOT/contracts/full_training/PREFLIGHT.json"
 
-if [[ -n "${CUDA_VISIBLE_DEVICES:-}" && "${CUDA_VISIBLE_DEVICES// /}" != "3,4,5,6,7" ]]; then
-    echo "[editing-dit-full] only physical GPUs 3,4,5,6,7 are allowed" >&2
+if [[ -z "${CUDA_VISIBLE_DEVICES:-}" ]]; then
+    echo "[ambit] set CUDA_VISIBLE_DEVICES to the GPUs for this job" >&2
     exit 2
 fi
 export CUDA_DEVICE_ORDER=PCI_BUS_ID
-export CUDA_VISIBLE_DEVICES=3,4,5,6,7
 
 # Prevent two direct/full-chain invocations from both deciding the run is fresh
 # before either has published its first resumable checkpoint.  The descriptor
@@ -98,7 +97,7 @@ PY
 export RUN_NAME="${RUN_NAME:-sceneplan_transfusion_editing_dit_full_seed42_v1}"
 export RUN_LABEL="sceneplan-transfusion-editing-dit-full"
 export RUN_CATEGORY=mainline
-export RUN_ROOT="${RUN_ROOT:-/mnt/sdb/model_archives/transfusion_editing/mainline/$RUN_NAME}"
+export RUN_ROOT="${RUN_ROOT:-${AMBIT_CKPT_ROOT}/transfusion_editing/mainline/$RUN_NAME}"
 export MODEL_CONFIG DATASET_CONFIG VAL_DATASET_CONFIG
 export LOAD_PRETRANSFORM=0
 export PRETRAINED_CKPT="$CHECKPOINT"
@@ -260,7 +259,7 @@ env RUN_ROOT="$RUN_ROOT" DIT_CHECKPOINT_SELECTION="$DIT_SELECTION_OUTPUT" \
 # never oversubscribed.  Existing complete caches are immutable and reused;
 # durable partials resume only after row/hash/asset validation, while an
 # incomplete final publication still fails closed.
-M2D_CACHE_ROOT="${EDITING_DATA_ROOT:-/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1}/semantic_cache/m2d_clap_v2"
+M2D_CACHE_ROOT="${EDITING_DATA_ROOT:-${AMBIT_DATA_ROOT}/sceneplan_transfusion_editing_v1}/semantic_cache/m2d_clap_v2"
 M2D_VALIDATION_CACHE="$M2D_CACHE_ROOT/validation_full/m2d-clap-validation-20000.sqlite"
 M2D_TRAIN_CACHE="$M2D_CACHE_ROOT/train_full/m2d-clap-train-1000000.sqlite"
 if [[ ! -r "$M2D_VALIDATION_CACHE" || ! -r "$M2D_VALIDATION_CACHE.frozen.json" ]]; then

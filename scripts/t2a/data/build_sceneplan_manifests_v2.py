@@ -1029,7 +1029,7 @@ def main() -> int:
     output = (args.output_root or (DEFAULT_PILOT_OUTPUT if args.mode == "pilot" else DEFAULT_FULL_OUTPUT))
     output = output.expanduser().resolve(strict=False)
     try:
-        output.relative_to("/mnt/sdb")
+        output.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
     except ValueError as error:
         raise ValueError(f"ScenePlans must be persisted on SDB: {output}") from error
     output.mkdir(parents=True, exist_ok=True)
@@ -1043,7 +1043,7 @@ def main() -> int:
         from transformers import AutoTokenizer
 
         tokenizer = AutoTokenizer.from_pretrained(
-            "/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B", local_files_only=True
+            os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen/Qwen3.5-0.8B", local_files_only=True
         )
     target_quotas = quotas(config, args.mode)
     counts: Counter[tuple[Any, ...]] = Counter()

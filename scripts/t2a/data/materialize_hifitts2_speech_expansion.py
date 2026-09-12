@@ -29,7 +29,7 @@ import pyarrow.parquet as pq
 import soundfile as sf
 
 
-DATASET_ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m")
+DATASET_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m")
 REVISION_ROOT = DATASET_ROOT / "revisions/speech_expansion_noalign_15s_v1"
 DEFAULT_CANDIDATES = (
     REVISION_ROOT / "sources/candidates/hifitts2_download_pending_qc.parquet"
@@ -293,7 +293,7 @@ def main() -> int:
     candidates_path = args.candidates.expanduser().resolve(strict=True)
     chapters_path = args.chapters.expanduser().resolve(strict=True)
     output = args.output_root.expanduser().resolve(strict=False)
-    if not str(output).startswith("/mnt/sdb/audio_dataset/"):
+    if not str(output).startswith(os.environ.get("AMBIT_DATA_ROOT", "data")):
         raise ValueError("HiFiTTS-2 materialized audio must remain on SDB")
     workers = int(args.workers)
     if not 1 <= workers <= 64:

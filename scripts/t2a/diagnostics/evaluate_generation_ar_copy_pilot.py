@@ -9,7 +9,7 @@ import sqlite3
 import subprocess
 import time
 
-PYTHON = '/mnt/sdc/stable-audio-tools-workspace/.venv/bin/python3'
+PYTHON = os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/stable-audio-tools-workspace/.venv/bin/python3"
 
 
 def sha(path):

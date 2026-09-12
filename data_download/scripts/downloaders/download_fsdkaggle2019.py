@@ -5,13 +5,13 @@ Dataset: 29,266 clips, 80 AudioSet ontology labels, ~26.9 GB compressed.
 Zenodo: https://zenodo.org/records/3612637
 
 Default storage layout (matches project convention):
-  /mnt/sdd/audio_dataset/datasets/fsdkaggle2019/
+  ${AMBIT_DATA_ROOT}/datasets/fsdkaggle2019/
     archives/     # raw .zip / split parts from Zenodo
     extracted/    # optional, after --extract
 
 Planned disk layout for the full VAE corpus:
-  /mnt/sdb/audio_dataset/datasets/audioset/      # ~2.4 TB (AUDIO_DATASET_SECONDARY_ROOT)
-  /mnt/sdd/audio_dataset/datasets/
+  ${AMBIT_DATA_ROOT}/datasets/audioset/      # ~2.4 TB (AUDIO_DATASET_SECONDARY_ROOT)
+  ${AMBIT_DATA_ROOT}/datasets/
     vggsound/      # ~338 GB
     musiccaps/     # ~3 MB metadata (wav via YouTube separately)
     picoaudio/     # ~912 MB
@@ -19,12 +19,12 @@ Planned disk layout for the full VAE corpus:
 
 Setup
 -----
-    cd /home/tanhe/dataset_storage
+    cd .
     uv sync
 
 Examples
 --------
-# Full download (resumable) to /mnt/sdd/audio_dataset/datasets/fsdkaggle2019/archives/
+# Full download (resumable) to ${AMBIT_DATA_ROOT}/datasets/fsdkaggle2019/archives/
 uv run python scripts/downloaders/download_fsdkaggle2019.py
 
 # Download + extract wav/labels (needs unzip; split noisy train needs 7z or zip)

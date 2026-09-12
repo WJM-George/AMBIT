@@ -49,7 +49,7 @@ from stable_audio_tools.data.sceneplan_p11_single_turn import (  # noqa: E402
 
 
 DEFAULT_CHECKPOINT = Path(
-    "/mnt/sdc/ckpts/sceneplan_p11/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/sceneplan_p11/"
     "p11_v4_flow_r1_curriculum810_screen300_s20260827_20260901/"
     "checkpoints/screen300.ckpt"
 )

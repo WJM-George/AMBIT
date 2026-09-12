@@ -328,9 +328,9 @@ def main() -> int:
     sceneplan_root = args.sceneplan_root.expanduser().resolve(strict=True)
     output_root = args.output_root.expanduser().resolve(strict=False)
     try:
-        materialized_root.relative_to("/mnt/sdb")
-        sceneplan_root.relative_to("/mnt/sdb")
-        output_root.relative_to("/mnt/sdb")
+        materialized_root.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
+        sceneplan_root.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
+        output_root.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
     except ValueError as error:
         raise ValueError("P9 inputs and training indexes must be on SDB") from error
     expected = {"train": 1_100_000, "validation": 20_000, "test": 4_000}

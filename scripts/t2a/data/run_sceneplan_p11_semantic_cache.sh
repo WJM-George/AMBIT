@@ -12,7 +12,7 @@ PROFILE="$1"
 GPU_IDS="${GPU_IDS:-0,1}"
 KEEP_PARTS="${KEEP_PARTS:-0}"
 MIN_FREE_DISK_GIB="${P11_MIN_FREE_DISK_GIB:-100}"
-ROOT="/mnt/sdb/audio_dataset/sceneplan_v2_1p124m"
+ROOT="${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m"
 P11_ROOT="$ROOT/p11_audio_aware_edit_v2"
 
 case "$PROFILE" in

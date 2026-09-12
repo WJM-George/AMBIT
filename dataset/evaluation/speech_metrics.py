@@ -16,7 +16,7 @@ Metric directions (for reporting):
 
 DNSMOS uses the Microsoft DNS-Challenge ONNX models (P.835 sig_bak_ovr.onnx +
 P.808 model_v8.onnx). Point ``--dnsmos-dir`` / ``DNSMOS_DIR`` at the folder that
-holds them (default: /mnt/sdc/ckpts/compareVAE_ckpt/dnsmos).
+holds them (default: ${AMBIT_CKPT_ROOT}/compareVAE_ckpt/dnsmos).
 """
 from __future__ import annotations
 
@@ -30,7 +30,7 @@ import numpy as np
 
 EPS = 1e-9
 DNSMOS_DIR_DEFAULT = os.environ.get(
-    "DNSMOS_DIR", "/mnt/sdc/ckpts/compareVAE_ckpt/dnsmos"
+    "DNSMOS_DIR", os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/compareVAE_ckpt/dnsmos"
 )
 
 # ---------------------------------------------------------------- optional deps

@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO="${P10_REPO:-/mnt/sdc/stable-audio-tools-workspace}"
-ROOT="${EDITING_DATA_ROOT:-/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1}"
+REPO="${P10_REPO:-${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace}"
+ROOT="${EDITING_DATA_ROOT:-${AMBIT_DATA_ROOT}/sceneplan_transfusion_editing_v1}"
 PREFLIGHT="$ROOT/contracts/full_training/PREFLIGHT.json"
 VALIDATION_INDEX="$ROOT/training_index/validation.sqlite"
 TEST_INDEX="$ROOT/training_index/test.sqlite"
 MODEL_CONFIG="${MODEL_CONFIG:-$REPO/stable_audio_tools/configs/model_configs/txt2audio/t2a/dit/qwen35_0p8b_300m_sceneplan_transfusion_editing_dit_full_v1.json}"
-CODEC="${CODEC:-/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4}"
-JOINT_RUN="${JOINT_RUN:-/mnt/sdb/model_archives/transfusion_editing/mainline/sceneplan_transfusion_editing_ar_joint_m2d_full_seed42_v3}"
+CODEC="${CODEC:-${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4}"
+JOINT_RUN="${JOINT_RUN:-${AMBIT_CKPT_ROOT}/transfusion_editing/mainline/sceneplan_transfusion_editing_ar_joint_m2d_full_seed42_v3}"
 JOINT_SELECTION="${JOINT_CHECKPOINT_SELECTION:-$JOINT_RUN/evaluation/validation_20k_joint_checkpoint_selection/SELECTED.json}"
 EVAL_ROOT="${OUTPUT_DIR:-$JOINT_RUN/evaluation/audio_end_to_end_phase_aware_v6}"
 CALIBRATION_DIR="$EVAL_ROOT/validation_calibration_1k"
@@ -19,12 +19,11 @@ if [[ "${M2D_NONCOMMERCIAL_EVALUATION_ACK:-}" != "1" ]]; then
     echo "[editing-audio-e2e] M2D is evaluation-only; authorization acknowledgement is required" >&2
     exit 2
 fi
-if [[ -n "${CUDA_VISIBLE_DEVICES:-}" && "${CUDA_VISIBLE_DEVICES// /}" != "3,4,5,6,7" ]]; then
-    echo "[editing-audio-e2e] only physical GPUs 3,4,5,6,7 are allowed" >&2
+if [[ -z "${CUDA_VISIBLE_DEVICES:-}" ]]; then
+    echo "[ambit] set CUDA_VISIBLE_DEVICES to the GPUs for this job" >&2
     exit 2
 fi
 export CUDA_DEVICE_ORDER=PCI_BUS_ID
-export CUDA_VISIBLE_DEVICES=3,4,5,6,7
 case "$FORMAL_BATCH_SIZE" in
     1|2|4) ;;
     *)

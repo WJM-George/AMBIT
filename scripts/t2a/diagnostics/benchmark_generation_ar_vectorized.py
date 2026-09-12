@@ -10,8 +10,8 @@ import sqlite3
 import sys
 import time
 
-SNAPSHOT = Path('/mnt/sdc/ckpts/transfusion_sceneplan/generation_ar/source_snapshots/p10v11_gen_ar_20260904_10epoch_continuation_v8')
-REPO = Path('/mnt/sdc/stable-audio-tools-workspace')
+SNAPSHOT = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/transfusion_sceneplan/generation_ar/source_snapshots/p10v11_gen_ar_20260904_10epoch_continuation_v8")
+REPO = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/stable-audio-tools-workspace")
 
 
 def main():
@@ -28,14 +28,14 @@ def main():
     spec = importlib.util.spec_from_file_location('vectorized_ar', path)
     vector = importlib.util.module_from_spec(spec); spec.loader.exec_module(vector)
     torch.set_num_threads(4); torch.manual_seed(42); device = torch.device('cuda:0')
-    codec = ModelScenePlanCodecV4('/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4')
+    codec = ModelScenePlanCodecV4(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4")
     model, p10 = load_p10v11_generation_ar(pad_id=codec.pad_id, verify_sha256=True, activation_checkpointing=False)
     state = torch.load(args.checkpoint, map_location='cpu', weights_only=False)
     model.load_trainable_state_dict(state['ar_adapter']); del state
     model.p10_dit.to(device=device, dtype=torch.bfloat16)
     model.prompt_conditioner.to(device=device, dtype=torch.bfloat16)
     model.ar_adapter.to(device=device, dtype=torch.float32); model.eval()
-    db = sqlite3.connect('file:/mnt/sdc/ckpts/transfusion_sceneplan/generation_ar/validation_diagnosis_20260905_v1/panel.sqlite?mode=ro&immutable=1', uri=True)
+    db = sqlite3.connect('file:${AMBIT_CKPT_ROOT}/transfusion_sceneplan/generation_ar/validation_diagnosis_20260905_v1/panel.sqlite?mode=ro&immutable=1', uri=True)
     rows = [r for n in range(1,5) for r in db.execute('SELECT ordinal,raw_user_request FROM rows WHERE source_count=? ORDER BY ordinal LIMIT 8',(n,))]
     db.close()
     measurements = []

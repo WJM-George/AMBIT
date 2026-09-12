@@ -18,15 +18,15 @@ if str(_SCRIPTS_DIR) not in sys.path:
 from _repo import repo_root
 SAT_ROOT = repo_root()
 DEFAULT_BASE_MODEL = Path(
-    "/mnt/sdc/ckpts/vae_ds1024_z64_baseline_full_1019k/configs/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/vae_ds1024_z64_baseline_full_1019k/configs/"
     "model_baseline_ds1024_z64.json"
 )
 DEFAULT_DATASET = Path(
-    "/mnt/sdc/ckpts/vae_ds1024_z64_baseline_full_1019k/configs/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/vae_ds1024_z64_baseline_full_1019k/configs/"
     "dataset_train_vae_4ch_v2_frozen.json"
 )
-DEFAULT_OUT = Path("/mnt/sdc/ckpts/vae_ds1024_z64_hf_ab_4gpu")
-STEREO_CKPT = Path("/mnt/sdc/ckpts/stable-audio-open-1.0/model.safetensors")
+DEFAULT_OUT = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/vae_ds1024_z64_hf_ab_4gpu")
+STEREO_CKPT = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/stable-audio-open-1.0/model.safetensors")
 
 
 def _write_json(path: Path, value: object) -> None:

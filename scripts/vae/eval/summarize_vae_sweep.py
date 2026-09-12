@@ -7,9 +7,10 @@ Modes (or auto from files under --eval-root):
 
 Run:
   uv run python scripts/vae/eval/summarize_vae_sweep.py
-  uv run python scripts/vae/eval/summarize_vae_sweep.py --eval-root /mnt/sdc/eval_metric --mode heldout
+  uv run python scripts/vae/eval/summarize_vae_sweep.py --eval-root ${AMBIT_CKPT_ROOT}/eval_metric --mode heldout
 """
 from __future__ import annotations
+import os
 
 import argparse
 import json
@@ -181,7 +182,7 @@ def _best_overall(best_per: dict, steps: list[int]) -> str:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--eval-root", type=Path, default=Path("/mnt/sdc/eval_metric"))
+    ap.add_argument("--eval-root", type=Path, default=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/eval_metric"))
     ap.add_argument("--mode", choices=("heldout", "preencode", "auto"), default="auto")
     ap.add_argument("--out", type=Path, default=None)
     args = ap.parse_args()

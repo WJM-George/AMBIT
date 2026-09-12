@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO="${P10_REPO:-/home/tanhe/dataset_storage/stable-audio-tools}"
+REPO="${P10_REPO:-./stable-audio-tools}"
 PY="$REPO/.venv/bin/python"
-REVISION_ROOT="/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1"
+REVISION_ROOT="${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1"
 EVAL_SOURCE_ROOT="$REVISION_ROOT/eval_sources"
 LOG_ROOT="$REVISION_ROOT/logs/eval_expansion_orchestrator"
 STATE_ROOT="$REVISION_ROOT/eval_stage_state"

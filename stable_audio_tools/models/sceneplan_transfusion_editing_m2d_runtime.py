@@ -26,7 +26,7 @@ from stable_audio_tools.models.sceneplan_transfusion_editing_m2d_clap import (
 
 
 M2D_CLAP_EXTERNAL_ROOT = Path(
-    "/mnt/sdc/ckpts/pretrained/m2d-clap-v0.5.0"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/m2d-clap-v0.5.0"
 )
 M2D_CLAP_PORTABLE_SOURCE = M2D_CLAP_EXTERNAL_ROOT / (
     "m2d-source-3d0c4de/examples/portable_m2d.py"

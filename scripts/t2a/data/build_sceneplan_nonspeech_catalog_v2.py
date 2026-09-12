@@ -41,7 +41,7 @@ from sceneplan_v2_common import (  # noqa: E402
 
 
 DEFAULT_SOURCE_ROOT = Path(
-    "/mnt/sdd/audio_dataset/spatial_foa_v2/spatial_sources_v2_final"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/spatial_foa_v2/spatial_sources_v2_final"
 )
 DEFAULT_OUTPUT = DATASET_ROOT / "source_catalog/nonspeech"
 MIN_MODEL_SAMPLES = round(0.20 * MODEL_SAMPLE_RATE)
@@ -170,7 +170,7 @@ def main() -> int:
     source_root = args.source_root.expanduser().resolve(strict=True)
     output = args.output_root.expanduser().resolve(strict=False)
     try:
-        output.relative_to("/mnt/sdb")
+        output.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
     except ValueError as error:
         raise ValueError(f"new catalog must be on SDB: {output}") from error
     output.mkdir(parents=True, exist_ok=True)

@@ -8,18 +8,18 @@ set -euo pipefail
 # promotion gate records independent MoE and attention wins, and then starts
 # from the promoted MoE-only checkpoint.
 
-REPO="${P10_V12_REPO:-/home/tanhe/dataset_storage/stable-audio-tools}"
+REPO="${P10_V12_REPO:-./stable-audio-tools}"
 PY="$REPO/.venv/bin/python"
 ARM="${ARM:?set ARM to dense, moe, attention, or combined}"
 PROFILE="${PROFILE:-preflight}"
 GPU_IDS="${GPU_IDS:-2,3,4,5,6,7}"
-CANONICAL_CKPT="/mnt/sdc/ckpts/dit/sceneplan_dit_v11_semantic_v2_protected_resume_150k/checkpoints/epoch=48-step=150000.ckpt"
+CANONICAL_CKPT="${AMBIT_CKPT_ROOT}/dit/sceneplan_dit_v11_semantic_v2_protected_resume_150k/checkpoints/epoch=48-step=150000.ckpt"
 CANONICAL_SHA256="be8c90cd1434bd71f73951531175c3674ff0f3173d5db591e2e1c476152ff59e"
 CONFIG_ROOT="$REPO/stable_audio_tools/configs/model_configs/txt2audio/t2a/dit"
 CANONICAL_DATASET_CONFIG="$REPO/stable_audio_tools/configs/dataset_configs/sceneplan_v2_speech_expansion_noalign_15s_v1_train_semantic_v2.json"
 P10_V12_DATASET_CONFIG="$REPO/stable_audio_tools/configs/dataset_configs/sceneplan_v2_speech_expansion_noalign_15s_v1_train_semantic_v2_p10_v12_b64.json"
 VAL_DATASET_CONFIG="${VAL_DATASET_CONFIG:-$REPO/stable_audio_tools/configs/dataset_configs/sceneplan_v2_speech_expansion_noalign_15s_v1_validation_semantic_v2.json}"
-EVAL_ROOT="${EVAL_ROOT:-/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1/evaluation/p10_v11_balanced_1200_ckpt110k_150k_semantic_v2}"
+EVAL_ROOT="${EVAL_ROOT:-${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1/evaluation/p10_v11_balanced_1200_ckpt110k_150k_semantic_v2}"
 EVAL_PANEL="$EVAL_ROOT/balanced_test_1200.jsonl"
 EVAL_PANEL_SHA256="9327379bf74101c5efc5c300a311956ee7a784ec91d99792af62bf38340353fa"
 
@@ -109,7 +109,7 @@ if (( NUM_GPUS != 6 )); then
 fi
 
 RUN_NAME="${RUN_NAME:-sceneplan_dit_p10_v12_${ARM}_from_v11_150k_s42_${default_run_suffix}}"
-RUN_ROOT="${RUN_ROOT:-/mnt/sdc/ckpts/dit/$RUN_NAME}"
+RUN_ROOT="${RUN_ROOT:-${AMBIT_CKPT_ROOT}/dit/$RUN_NAME}"
 CONTRACT_PATH="$RUN_ROOT/launch_contract.json"
 mkdir -p "$RUN_ROOT"
 
@@ -298,7 +298,7 @@ if [[ "$PROFILE" == "contract" || "${CONTRACT_ONLY:-0}" == "1" ]]; then
     exit 0
 fi
 
-lock_root="/mnt/sdc/ckpts/dit/.locks"
+lock_root="${AMBIT_CKPT_ROOT}/dit/.locks"
 mkdir -p "$lock_root"
 lock_key="${GPU_IDS//,/__}"
 exec 9>"$lock_root/p10_v12_gpu_${lock_key}.lock"
@@ -345,7 +345,7 @@ export WANDB_MODE="${WANDB_MODE:-offline}"
 export MIN_FREE_DISK_GIB="${MIN_FREE_DISK_GIB:-50}"
 export MIN_ROOT_FREE_GIB="${MIN_ROOT_FREE_GIB:-20}"
 export TEMP_DIR="${TEMP_DIR:-/dev/shm/p10_v12_${ARM}_${PROFILE}}"
-export TRITON_CACHE_DIR="${TRITON_CACHE_DIR:-/mnt/sdc/ckpts/dit/triton-cache/sceneplan_qwen35_fla052_cc170}"
+export TRITON_CACHE_DIR="${TRITON_CACHE_DIR:-${AMBIT_CKPT_ROOT}/dit/triton-cache/sceneplan_qwen35_fla052_cc170}"
 
 if [[ "$PROFILE" == "preflight" ]]; then
     export BATCH_SIZE="${BATCH_SIZE:-72}"

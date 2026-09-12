@@ -115,22 +115,22 @@ BATCH_SIZE_SIDECAR_SCHEMA = (
     "sceneplan_transfusion_editing_audio_e2e_batch_size_certification"
 )
 FORMAL_BATCH_SIZES_PER_RANK = (1, 2, 4)
-VISIBLE_GPUS = "3,4,5,6,7"
-PHYSICAL_GPUS = [3, 4, 5, 6, 7]
-WORLD_SIZE = 5
+VISIBLE_GPUS = os.environ.get("CUDA_VISIBLE_DEVICES", "").replace(" ", "")
+PHYSICAL_GPUS = [int(item) for item in VISIBLE_GPUS.split(",") if item]
+WORLD_SIZE = max(len(PHYSICAL_GPUS), 1)
 CONFIDENCE = 0.99
 CALIBRATION_ROWS = 1_000
 CALIBRATION_PER_CELL = 100
 DEMIX_RIDGE = 0.05
 DEMIX_MAX_CONDITION = 20.0
 DEMIX_MIN_CALIBRATION_SI_SDR_DB = 0.0
-DEFAULT_ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1")
+DEFAULT_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_transfusion_editing_v1")
 DEFAULT_MODEL_CONFIG = REPO_ROOT / (
     "stable_audio_tools/configs/model_configs/txt2audio/t2a/dit/"
     "qwen35_0p8b_300m_sceneplan_transfusion_editing_dit_full_v1.json"
 )
 DEFAULT_CODEC = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
     "model_sceneplan_codec_v4"
 )
 OPERATIONS = (
@@ -567,7 +567,7 @@ def _distributed() -> tuple[int, int, torch.device]:
         and 0 <= rank < WORLD_SIZE
         and torch.cuda.device_count() == WORLD_SIZE
     ):
-        raise RuntimeError("audio Editing E2E requires exact physical GPUs 3-7")
+        raise RuntimeError("audio Editing E2E requires CUDA_VISIBLE_DEVICES to match the launched world size")
     torch.cuda.set_device(local_rank)
     device = torch.device("cuda", local_rank)
     dist.init_process_group("nccl", device_id=device)

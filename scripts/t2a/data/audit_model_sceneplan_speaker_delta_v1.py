@@ -2,6 +2,7 @@
 """Exhaustively audit the speech-text delta and sample the unchanged 4+4+2 path."""
 
 from __future__ import annotations
+import os
 
 import hashlib
 import json
@@ -26,7 +27,7 @@ from stable_audio_tools.data.sceneplan_v2 import compile_442_token_masks
 
 
 ROOT = DATASET_ROOT / "sceneplans_model_v1"
-TOKENIZER = Path("/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B")
+TOKENIZER = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen/Qwen3.5-0.8B")
 
 
 def sha256_text(value: str) -> str:

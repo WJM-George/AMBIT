@@ -62,7 +62,7 @@ SCHEMA = (
 EXPECTED_ROWS = 8_000
 SAMPLE_RATE = 44_100
 DEFAULT_BASELINE_ROOT = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/revisions/"
     "speech_expansion_noalign_15s_v1/evaluation/"
     "p10_v11_150k_full_test_8000_semantic_v2"
 )

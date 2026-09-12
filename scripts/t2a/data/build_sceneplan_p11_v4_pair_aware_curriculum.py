@@ -44,12 +44,12 @@ from stable_audio_tools.data.sceneplan_p11_v4_curriculum import (  # noqa: E402
 
 
 DEFAULT_SOURCE = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
     "p11_v4_curriculum/"
     "p11_train_pilot90_curriculum_v7_seed42.sqlite"
 )
 DEFAULT_OUTPUT = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
     "p11_v4_curriculum/"
     "p11_train_pilot90_curriculum_v8_pair_aware_interleaved_batch8_seed42.sqlite"
 )

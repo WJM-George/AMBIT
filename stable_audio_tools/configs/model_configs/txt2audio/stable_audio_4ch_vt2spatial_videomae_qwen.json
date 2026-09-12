@@ -55,7 +55,7 @@
                     "id": "prompt",
                     "type": "qwen_text",
                     "config": {
-                        "model_path": "/mnt/sdc/ckpts/Qwen/Qwen3.5-0.8B",
+                        "model_path": "${AMBIT_CKPT_ROOT}/Qwen/Qwen3.5-0.8B",
                         "max_length": 128,
                         "enable_grad": false,
                         "project_out": false,

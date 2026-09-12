@@ -2,6 +2,7 @@
 """Persistent P8 worker: render assigned ScenePlan shards and encode on one GPU."""
 
 from __future__ import annotations
+import os
 
 import argparse
 import concurrent.futures
@@ -86,7 +87,7 @@ def main() -> int:
     sceneplan_root = args.sceneplan_root.expanduser().resolve(strict=True)
     output_root = args.output_root.expanduser().resolve(strict=False)
     try:
-        output_root.relative_to("/mnt/sdb")
+        output_root.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
     except ValueError as error:
         raise ValueError(f"materialized outputs must be on SDB: {output_root}") from error
     if not 0 <= args.worker_index < args.worker_count:

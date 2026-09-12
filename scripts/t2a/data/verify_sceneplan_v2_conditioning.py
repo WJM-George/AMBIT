@@ -2,6 +2,7 @@
 """Executable P5 verification for ScenePlan-v2 4+4+2 conditioning."""
 
 from __future__ import annotations
+import os
 
 import json
 import math
@@ -29,7 +30,7 @@ from stable_audio_tools.models.sceneplan_conditioning import (  # noqa: E402
 )
 
 
-QWEN = Path("/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B")
+QWEN = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen/Qwen3.5-0.8B")
 MODEL_CONFIG = (
     REPO_ROOT
     / "stable_audio_tools/configs/model_configs/txt2audio/t2a/dit/"

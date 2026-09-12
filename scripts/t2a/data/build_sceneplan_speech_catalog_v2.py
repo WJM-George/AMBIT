@@ -2,6 +2,7 @@
 """Build the resumable revision-4 dry-speech catalog from local Parquets."""
 
 from __future__ import annotations
+import os
 
 import argparse
 import hashlib
@@ -36,8 +37,8 @@ from sceneplan_v2_common import (  # noqa: E402
 
 
 SOURCES = {
-    "libritts": Path("/mnt/sdc/speech_dataset/mythicinfinity__libritts"),
-    "hifi_tts": Path("/mnt/sdc/speech_dataset/MikhailT__hifi-tts"),
+    "libritts": Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/speech_dataset/mythicinfinity__libritts"),
+    "hifi_tts": Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/speech_dataset/MikhailT__hifi-tts"),
 }
 DEFAULT_OUTPUT = DATASET_ROOT / "source_catalog/speech"
 
@@ -45,7 +46,7 @@ DEFAULT_OUTPUT = DATASET_ROOT / "source_catalog/speech"
 def ensure_sdb(path: Path) -> None:
     resolved = path.expanduser().resolve(strict=False)
     try:
-        resolved.relative_to("/mnt/sdb")
+        resolved.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
     except ValueError as error:
         raise ValueError(f"revision-4 output must be on SDB: {resolved}") from error
 
@@ -337,7 +338,7 @@ def summarize(connection: sqlite3.Connection) -> dict[str, Any]:
         },
         "rejections": {str(reason): int(count) for reason, count in rejection_rows},
         "source_roots": {key: str(value) for key, value in SOURCES.items()},
-        "output_mount": "/mnt/sdb",
+        "output_mount": os.environ.get("AMBIT_DATA_ROOT", "data"),
     }
     return summary
 

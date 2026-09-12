@@ -2,6 +2,7 @@
 """Generate a frozen text-only panel with released AudioX family checkpoints."""
 
 from __future__ import annotations
+import os
 
 import argparse
 import json
@@ -21,7 +22,7 @@ from baseline_common import (
 )
 
 
-ASSET_ROOT = Path("/mnt/sdc/ckpts/baselines/p10_60k_15row_v1")
+ASSET_ROOT = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/baselines/p10_60k_15row_v1")
 SHARED_VAE = ASSET_ROOT / "models/AudioX-Turbo/pretransform/vae.ckpt"
 VARIANTS = {
     "audiox_maf": {

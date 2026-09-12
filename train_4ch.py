@@ -19,9 +19,9 @@ Example:
   python train_4ch.py \
     --model-config stable_audio_tools/configs/model_configs/autoencoders/stable_audio_4ch_vae.json \
     --dataset-config stable_audio_tools/configs/dataset_configs/local_4ch_example.json \
-    --pretrained-ckpt-2ch /mnt/sdc/ckpts/stable-audio-open-1.0/model.safetensors \
+    --pretrained-ckpt-2ch ${AMBIT_CKPT_ROOT}/stable-audio-open-1.0/model.safetensors \
     --name vae_4ch_stage1 --batch-size 8 --num-gpus 1 --precision bf16-mixed \
-    --save-dir /mnt/sdc/ckpts/vae_4ch --checkpoint-every 5000
+    --save-dir ${AMBIT_CKPT_ROOT}/vae_4ch --checkpoint-every 5000
 """
 
 import os

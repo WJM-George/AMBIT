@@ -14,15 +14,15 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 REVISION_ROOT = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/"
     "revisions/speech_expansion_noalign_15s_v1"
 )
 DEFAULT_OVERFIT = Path(
-    "/mnt/sdb/model_archives/p10_pre_v11_20260831/pilots/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//p10_pre_v11_20260831/pilots/"
     "sceneplan_dit_speechexp_noalign_15s_overfit10_20260828/OVERFIT_GATE.json"
 )
 DEFAULT_RESUME = Path(
-    "/mnt/sdb/model_archives/p10_pre_v11_20260831/preflights/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//p10_pre_v11_20260831/preflights/"
     "sceneplan_dit_speechexp_noalign_15s_resume_preflight_20260828/RESUME_GATE.json"
 )
 MODEL_CONFIG = REPO_ROOT / (

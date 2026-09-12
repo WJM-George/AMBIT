@@ -2,6 +2,7 @@
 """Generate the frozen Sound panel with MMAudio-L v2 in text-only mode."""
 
 from __future__ import annotations
+import os
 
 import argparse
 from pathlib import Path
@@ -24,7 +25,7 @@ from baseline_common import (
 )
 
 
-DEFAULT_MODEL = Path("/mnt/sdc/ckpts/baselines/p10_60k_15row_v1/models/MMAudio")
+DEFAULT_MODEL = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/baselines/p10_60k_15row_v1/models/MMAudio")
 
 
 def _text_only_features(vae_path: Path, device: torch.device) -> FeaturesUtils:

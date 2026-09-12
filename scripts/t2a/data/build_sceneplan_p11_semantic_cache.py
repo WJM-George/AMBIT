@@ -37,9 +37,9 @@ DEFAULT_VAE_CONFIG = REPO_ROOT / (
     "stable_audio_4ch_vae_ds1024_z64_wdmix_scm.json"
 )
 DEFAULT_VAE_CHECKPOINT = Path(
-    "/mnt/sdc/ckpts/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
 )
-DEFAULT_CLAP = Path("/mnt/sdc/ckpts/pretrained/laion/clap-htsat-fused")
+DEFAULT_CLAP = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/laion/clap-htsat-fused")
 CLAP_REPO = "laion/clap-htsat-fused"
 CLAP_REVISION = "365dea6ef167def6676140ed93bbc43f84dabb28"
 

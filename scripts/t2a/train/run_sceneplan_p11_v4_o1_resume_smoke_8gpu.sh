@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO="${P11_REPO:-/mnt/sdc/stable-audio-tools-workspace}"
+REPO="${P11_REPO:-${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace}"
 PY="${P11_PYTHON:-$REPO/.venv/bin/python}"
 RUN_NAME="${RUN_NAME:?set a unique RUN_NAME for the O(1) resume smoke}"
-RUN_ROOT="${RUN_ROOT:-/mnt/sdc/ckpts/sceneplan_p11/$RUN_NAME}"
+RUN_ROOT="${RUN_ROOT:-${AMBIT_CKPT_ROOT}/sceneplan_p11/$RUN_NAME}"
 LAUNCHER="$REPO/scripts/t2a/train/run_sceneplan_p11.sh"
 VALIDATOR="$REPO/scripts/t2a/test/validate_sceneplan_p11_o1_resume.py"
-CURRICULUM="/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/p11_v4_curriculum/p11_train_269568_ddp8_rank_balanced_batch8_seed42_v2.sqlite"
+CURRICULUM="${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/p11_single_turn_15s_v2/p11_v4_curriculum/p11_train_269568_ddp8_rank_balanced_batch8_seed42_v2.sqlite"
 
 case "$RUN_ROOT" in
-    /mnt/sdc/ckpts/sceneplan_p11/*) ;;
+    ${AMBIT_CKPT_ROOT}/sceneplan_p11/*) ;;
     *)
-        echo "resume-smoke RUN_ROOT must stay under /mnt/sdc/ckpts/sceneplan_p11" >&2
+        echo "resume-smoke RUN_ROOT must stay under ${AMBIT_CKPT_ROOT}/sceneplan_p11" >&2
         exit 2
         ;;
 esac

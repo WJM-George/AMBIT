@@ -35,7 +35,7 @@ from scripts.t2a.data.sceneplan_v2_common import (  # noqa: E402
 )
 
 
-DATASET_ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m")
+DATASET_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m")
 DEFAULT_CONTRACT = REPO_ROOT / (
     "docs/sceneplan_v2/sceneplan_speech_expansion_noalign_15s_v1.json"
 )
@@ -45,10 +45,10 @@ DEFAULT_LEDGER = DATASET_ROOT / (
 )
 DEFAULT_CATALOG = DATASET_ROOT / "source_catalog/speech/catalog.sqlite"
 DEFAULT_HIFITTS2 = Path(
-    "/mnt/sdc/speech_dataset/nvidia__hifitts-2/44khz/manifest_44khz.json"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/speech_dataset/nvidia__hifitts-2/44khz/manifest_44khz.json"
 )
 DEFAULT_HIFITTS2_CHAPTERS = Path(
-    "/mnt/sdc/speech_dataset/nvidia__hifitts-2/44khz/chapters_44khz.json"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/speech_dataset/nvidia__hifitts-2/44khz/chapters_44khz.json"
 )
 SHORT_MAX_SEC = 442_368 / 44_100
 LONG_DRY_MAX_SEC = 14.5

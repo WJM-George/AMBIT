@@ -4,12 +4,9 @@ from __future__ import annotations
 
 import argparse
 from contextlib import contextmanager
-import fcntl
 import json
 import os
 from pathlib import Path
-import re
-import subprocess
 import sys
 
 REPO = Path(__file__).resolve().parents[3]
@@ -23,9 +20,6 @@ from stable_audio_tools.models.sceneplan_transfusion_editing_clap44_audio_io imp
 from stable_audio_tools.models.sceneplan_transfusion_editing_clap44_pipeline import CLAP44_PIPELINE_CONTRACT, load_clap44_validated_release
 from stable_audio_tools.models.sceneplan_transfusion_editing_clap44_release import _immutable, gt, audio
 
-LOCK_PATH = Path("/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1/materialized/locks/training-chain.lock")
-
-
 def read_source(path):
     path = Path(path).resolve(strict=True)
     artifact = gt._artifact(path)
@@ -38,34 +32,15 @@ def read_source(path):
 
 
 @contextmanager
-def editing_device(device, physical_gpu, *, lock_path=LOCK_PATH):
-    if device=="cpu":
+def editing_device(device):
+    if device == "cpu":
         yield torch.device("cpu")
         return
-    if device!="cuda" or physical_gpu not in range(3,8):
-        raise ValueError("Editing inference may use only physical GPUs 3-7")
-    visible = os.environ.get("CUDA_VISIBLE_DEVICES","").replace(" ","")
-    if visible and any(item not in {"3","4","5","6","7"} for item in visible.split(",")):
-        raise RuntimeError("Editing inference environment exposes unauthorized GPUs")
-    if torch.cuda.is_initialized():
-        raise RuntimeError("configure the Editing GPU before initializing CUDA")
-    lock_path.parent.mkdir(parents=True,exist_ok=True)
-    with lock_path.open("a+b") as handle:
-        try:
-            fcntl.flock(handle.fileno(),fcntl.LOCK_EX|fcntl.LOCK_NB)
-        except BlockingIOError as error:
-            raise RuntimeError("an Editing chain is already running; leave it running") from error
-        # Select the UUID of the authorized physical device so PCI/CUDA
-        # enumeration cannot silently redirect inference to another card.
-        uuid = subprocess.check_output(["nvidia-smi","-i",str(physical_gpu),
-            "--query-gpu=uuid","--format=csv,noheader,nounits"],text=True,timeout=10).strip()
-        if not re.fullmatch(r"GPU-[0-9a-fA-F-]{36}",uuid):
-            raise RuntimeError("could not bind the selected physical Editing GPU UUID")
-        os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-        os.environ["CUDA_VISIBLE_DEVICES"] = uuid
-        if not torch.cuda.is_available() or torch.cuda.device_count()!=1:
-            raise RuntimeError("the selected Editing GPU is unavailable")
-        yield torch.device("cuda",0)
+    if device != "cuda":
+        raise ValueError("device must be cuda or cpu")
+    if not torch.cuda.is_available():
+        raise RuntimeError("CUDA is not available")
+    yield torch.device("cuda", 0)
 
 
 def run(args):
@@ -84,7 +59,6 @@ def run(args):
         "raw_edit_instruction":args.instruction,"model_num_samples":wave.shape[-1],
         "sample_rate":44100,"channels":4,"seed":args.seed,"steps":20,"cfg_scale":1.,
         "max_plan_tokens":512,"batch_size":1,"device":args.device,
-        "physical_gpu":args.physical_gpu if args.device=="cuda" else None,
     }
     contract_path = directory/"INFERENCE_CONTRACT.json"
     result_path = directory/"RESULT.json"
@@ -101,7 +75,7 @@ def run(args):
         check_audio(result["edited_foa"]["path"],result["edited_foa"]["sha256"],samples=wave.shape[-1])
         gt._verify_artifact(result["new_sceneplan"])
         return result
-    with editing_device(args.device,args.physical_gpu) as device:
+    with editing_device(args.device) as device:
         pipeline, report = load_clap44_validated_release(release,expected_sha256=args.release_sha256,device=device)
         if report.get("quality_gate_passed") is not True or report["release_sha256"] != args.release_sha256:
             raise RuntimeError("formal inference did not load a validated native release")
@@ -158,7 +132,6 @@ def main():
     parser.add_argument("--output-dir",type=Path,required=True)
     parser.add_argument("--seed",type=int,default=42)
     parser.add_argument("--device",choices=("cuda","cpu"),default="cuda")
-    parser.add_argument("--physical-gpu",type=int,choices=(3,4,5,6,7),default=3)
     args = parser.parse_args()
     result = run(args)
     print(json.dumps({"event":"clap44_editing_complete","edited_foa":result["edited_foa"],

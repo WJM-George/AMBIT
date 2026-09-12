@@ -12,13 +12,13 @@ from typing import Any
 
 
 DEFAULT_SOURCE_EVAL = Path(
-    "/mnt/sdb/model_archives/p10_pre_v11_20260831/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//p10_pre_v11_20260831/"
     "sceneplan_dit_v7_sao_300m_from_scratch_160k/evaluation/"
     "p10_gt_vae_20k_40k_60k_instrumental_music_v1"
 )
-DEFAULT_OUTPUT_ROOT = Path("/mnt/sdc/ckpts/baselines/p10_60k_15row_v1")
+DEFAULT_OUTPUT_ROOT = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/baselines/p10_60k_15row_v1")
 REPO_LOCK = Path(
-    "/home/tanhe/dataset_storage/evaluation_benchmark/contracts/REPOS.lock.json"
+    "." + "/evaluation_benchmark/contracts/REPOS.lock.json"
 )
 
 
@@ -261,7 +261,7 @@ def main() -> int:
     _atomic_json(output_root / "BENCHMARK_CONTRACT.json", contract)
     _atomic_jsonl(output_root / "generation_requests.jsonl", requests)
     _atomic_json(
-        Path("/home/tanhe/dataset_storage/evaluation_benchmark/contracts/P10_60K_15ROW_V1.json"),
+        Path("." + "/evaluation_benchmark/contracts/P10_60K_15ROW_V1.json"),
         contract,
     )
     print(json.dumps({"status": "PASS", "requests": len(requests), "output_root": str(output_root)}))

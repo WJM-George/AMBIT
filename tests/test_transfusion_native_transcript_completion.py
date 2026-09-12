@@ -1,3 +1,4 @@
+import os
 import copy
 from pathlib import Path
 
@@ -9,7 +10,7 @@ from stable_audio_tools.training.transfusion_opsd.native_transcript_completion i
 @pytest.fixture(scope='module')
 def codec():
     from stable_audio_tools.data.model_sceneplan_codec_v4 import ModelScenePlanCodecV4
-    p=Path('/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4')
+    p=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4")
     if not p.exists():pytest.skip('Native codec is not installed.')
     return ModelScenePlanCodecV4(p)
 

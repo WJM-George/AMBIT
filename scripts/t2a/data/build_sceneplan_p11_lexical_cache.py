@@ -50,10 +50,10 @@ DEFAULT_VAE_CONFIG = REPO_ROOT / (
     "stable_audio_4ch_vae_ds1024_z64_wdmix_scm.json"
 )
 DEFAULT_VAE_CHECKPOINT = Path(
-    "/mnt/sdc/ckpts/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
 )
 DEFAULT_ASR = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/models/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/models/"
     "faster-distil-whisper-large-v3"
 )
 DEFAULT_ASR_REVISION = "distil-whisper-large-v3-ct2-fp16-local-v1"

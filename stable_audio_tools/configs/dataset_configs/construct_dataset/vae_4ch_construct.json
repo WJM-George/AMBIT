@@ -8,12 +8,12 @@
     "datasets": [
         {
             "id": "spatial_foa_construct",
-            "path": "/mnt/sdd/audio_dataset/spatial_foa/audio",
+            "path": "${AMBIT_DATA_ROOT}/spatial_foa/audio",
             "format": "foa"
         },
         {
             "id": "spatial_librispeech",
-            "path": "/mnt/sdb/audio_dataset/datasets/spatial_librispeech/ambisonics",
+            "path": "${AMBIT_DATA_ROOT}/datasets/spatial_librispeech/ambisonics",
             "format": "foa",
             "max_files": 60255
         }

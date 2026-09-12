@@ -141,7 +141,7 @@ def main() -> int:
     source = args.input.expanduser().resolve(strict=True)
     output = args.output.expanduser().resolve(strict=False)
     try:
-        output.relative_to("/mnt/sdb")
+        output.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
     except ValueError as error:
         raise ValueError(f"signal catalog must be on SDB: {output}") from error
     table = pq.read_table(source, filters=[("eligible", "=", True)])

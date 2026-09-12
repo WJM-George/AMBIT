@@ -14,8 +14,8 @@ make each contribute a target fraction of the mrstft reconstruction anchor
 Run:
   uv run python scripts/vae/loss/calibrate_fidelity_loss_weights.py \
       --model-config stable_audio_tools/configs/model_configs/autoencoders/ablation_arms/stable_audio_4ch_vae_ds1024_z64_phase_scm.json \
-      --ckpt /mnt/sdc/ckpts/vae_abl_phase_scm/checkpoints/vae_abl_phase_scm/hkfa5pts/checkpoints/epoch=13-step=900000.ckpt \
-      --audio-dir /mnt/sdb/audio_dataset/datasets/spatial_librispeech/ambisonics --num-files 6
+      --ckpt ${AMBIT_CKPT_ROOT}/vae_abl_phase_scm/checkpoints/vae_abl_phase_scm/hkfa5pts/checkpoints/epoch=13-step=900000.ckpt \
+      --audio-dir ${AMBIT_DATA_ROOT}/datasets/spatial_librispeech/ambisonics --num-files 6
 """
 
 import argparse

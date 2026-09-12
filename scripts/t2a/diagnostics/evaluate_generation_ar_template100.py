@@ -15,8 +15,8 @@ import time
 REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO))
 from scripts.t2a.diagnostics.evaluate_generation_ar_natural_candidates import metrics
-PYTHON = '/mnt/sdc/stable-audio-tools-workspace/.venv/bin/python3'
-JUDGE = Path('/mnt/sdc/ckpts/transfusion_sceneplan/generation_ar/semantic_judge_20260905_v1')
+PYTHON = os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/stable-audio-tools-workspace/.venv/bin/python3"
+JUDGE = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/transfusion_sceneplan/generation_ar/semantic_judge_20260905_v1")
 
 
 def sha(path):

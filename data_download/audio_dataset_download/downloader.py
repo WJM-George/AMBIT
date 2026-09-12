@@ -25,10 +25,10 @@ from urllib3.exceptions import ProtocolError
 from audio_dataset_download.catalog import DATASETS, DatasetSpec
 
 
-ROOT = Path(os.environ.get("AUDIO_DATASET_ROOT", "/mnt/sdd/audio_dataset"))
-SECONDARY_ROOT = Path(os.environ.get("AUDIO_DATASET_SECONDARY_ROOT", "/mnt/sdb/audio_dataset"))
-CACHE_ROOT = Path(os.environ.get("AUDIO_DATASET_CACHE_ROOT", "/mnt/sdc/audio_dataset_cache"))
-TMP_ROOT = Path(os.environ.get("AUDIO_DATASET_TMP", "/mnt/sdc/audio_dataset_tmp"))
+ROOT = Path(os.environ.get("AUDIO_DATASET_ROOT", os.environ.get("AMBIT_DATA_ROOT", "data")))
+SECONDARY_ROOT = Path(os.environ.get("AUDIO_DATASET_SECONDARY_ROOT", os.environ.get("AMBIT_DATA_ROOT", "data")))
+CACHE_ROOT = Path(os.environ.get("AUDIO_DATASET_CACHE_ROOT", os.environ.get("AMBIT_CACHE_ROOT", "cache")))
+TMP_ROOT = Path(os.environ.get("AUDIO_DATASET_TMP", os.environ.get("AMBIT_CACHE_ROOT", "cache/tmp")))
 CODE_ROOT = Path(__file__).resolve().parent
 SLS_URI = "https://docs-assets.developer.apple.com/ml-research/datasets/spatial-librispeech/v1"
 SECONDARY_DATASET_KEYS = set(
@@ -63,7 +63,7 @@ def validate_storage_paths() -> None:
         if root == code_root or code_root in root.parents:
             raise RuntimeError(
                 f"Dataset storage root must not point inside the downloader code package: {code_root}. "
-                "Use /mnt/sdd/audio_dataset, /mnt/sdb/audio_dataset, or another external storage directory."
+                "Use ${AMBIT_DATA_ROOT}, ${AMBIT_DATA_ROOT}, or another external storage directory."
             )
 
 

@@ -50,7 +50,7 @@
                     "id": "prompt",
                     "type": "qwen_text",
                     "config": {
-                        "model_path": "/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B",
+                        "model_path": "${AMBIT_CKPT_ROOT}/pretrained/Qwen/Qwen3.5-0.8B",
                         "hidden_dim": 1024,
                         "max_length": 128,
                         "enable_grad": false,

@@ -28,7 +28,7 @@
     },
     "require_speech_timing": true,
     "expected_speech_timing_rows": 500000,
-    "speech_timing_index_path": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/source_annotations/speech_forced_alignment_v1/registry/speech_timing_train.sqlite",
+    "speech_timing_index_path": "${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/source_annotations/speech_forced_alignment_v1/registry/speech_timing_train.sqlite",
     "speech_timing_index_sha256": "ed237da3c291f4b9fdd779fb0eff3e628beac2f246ce4de5de1b4681dcd85071",
     "require_complete": true,
     "max_item_retries": 0,
@@ -40,7 +40,7 @@
     "datasets": [
         {
             "id": "sceneplan_44_sound_expansion_v1_qwen_align_overfit10",
-            "path": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/sound_expansion_v1/training_index/train.sqlite",
+            "path": "${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/revisions/sound_expansion_v1/training_index/train.sqlite",
             "weight": 1.0
         }
     ]

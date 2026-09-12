@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 import pytest
 from stable_audio_tools.data.sceneplan_generation_ar_explicit_request import parse_explicit_generation_request
@@ -5,7 +6,7 @@ from stable_audio_tools.data.sceneplan_generation_ar_explicit_request import par
 
 @pytest.fixture
 def codec():
-    artifact=Path('/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4')
+    artifact=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4")
     if not artifact.is_dir():pytest.skip('existing project codec artifact required')
     from stable_audio_tools.data.model_sceneplan_codec_v4 import ModelScenePlanCodecV4
     return ModelScenePlanCodecV4(artifact)

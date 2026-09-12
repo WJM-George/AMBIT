@@ -37,7 +37,7 @@ if str(REPO_ROOT) not in sys.path:
 from scripts.t2a.data.sceneplan_v2_common import load_parquet_source  # noqa: E402
 
 
-DATASET_ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m")
+DATASET_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m")
 REVISION_ROOT = DATASET_ROOT / "revisions/speech_expansion_noalign_15s_v1"
 DEFAULT_DONORS = REVISION_ROOT / "sources/registry/final_speech_donors.parquet"
 DEFAULT_EXISTING = DATASET_ROOT / (
@@ -348,7 +348,7 @@ def main() -> int:
     donors = args.donors.expanduser().resolve(strict=True)
     existing = args.existing_registry.expanduser().resolve(strict=True)
     output = args.output_root.expanduser().resolve(strict=False)
-    if not str(output).startswith("/mnt/sdb/audio_dataset/"):
+    if not str(output).startswith(os.environ.get("AMBIT_DATA_ROOT", "data")):
         raise ValueError("speaker annotation outputs must remain on SDB")
     result = (
         prepare(donors, existing, output)

@@ -2,6 +2,7 @@
 """P9 smoke test for the frozen revision-5 loader and 4+4+2 conditioner."""
 
 from __future__ import annotations
+import os
 
 import argparse
 import json
@@ -28,7 +29,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dataset-root", type=Path, default=DATASET_ROOT)
     parser.add_argument(
-        "--tokenizer-root", type=Path, default=Path("/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B")
+        "--tokenizer-root", type=Path, default=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen/Qwen3.5-0.8B")
     )
     parser.add_argument(
         "--output", type=Path, default=DATASET_ROOT / "qc/p9_model_sceneplan_loader_smoke.json"
@@ -38,8 +39,8 @@ def main() -> int:
     tokenizer_root = args.tokenizer_root.expanduser().resolve(strict=True)
     output = args.output.expanduser().resolve(strict=False)
     try:
-        root.relative_to("/mnt/sdb")
-        output.relative_to("/mnt/sdb")
+        root.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
+        output.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
     except ValueError as error:
         raise ValueError("P9 dataset and smoke report must be on SDB") from error
     tokenizer = AutoTokenizer.from_pretrained(

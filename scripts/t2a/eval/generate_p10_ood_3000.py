@@ -49,7 +49,7 @@ from stable_audio_tools.training.factory import create_training_wrapper_from_con
 
 
 DEFAULT_ROOT = Path(
-    "/mnt/sdb/audio_dataset/evaluation_benchmark/p10_ood_3000_v1/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/evaluation_benchmark/p10_ood_3000_v1/"
     "cross_system_benchmark"
 )
 SAMPLE_RATE = 44_100

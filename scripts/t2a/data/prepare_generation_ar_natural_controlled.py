@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """N1 pilot: shared targets, five English views, request-first seeds and replay."""
+import os
 import argparse
 from collections import Counter
 from copy import deepcopy
@@ -24,8 +25,8 @@ def main(args):
     from transformers import AutoTokenizer
     import numpy as np
     spec=importlib.util.spec_from_file_location('five_views',Path(__file__).with_name('prepare_generation_ar_natural_pilot.py'));views=importlib.util.module_from_spec(spec);spec.loader.exec_module(views)
-    tokenizer=AutoTokenizer.from_pretrained('/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B',local_files_only=True)
-    codec=ModelScenePlanCodecV4('/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4')
+    tokenizer=AutoTokenizer.from_pretrained(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen/Qwen3.5-0.8B",local_files_only=True)
+    codec=ModelScenePlanCodecV4(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4")
     quality=json.loads((args.n0/'QUALITY_GATE.json').read_text());assert quality['status']=='PASS_CURATED_SMALL_BATCH'
     db=sqlite3.connect('file:'+str(args.train_db)+'?mode=ro&immutable=1',uri=True)
     high=db.execute('SELECT MAX(ordinal) FROM rows').fetchone()[0]

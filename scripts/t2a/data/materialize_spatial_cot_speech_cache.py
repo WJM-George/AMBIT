@@ -35,10 +35,10 @@ from stable_audio_tools.data.t2a_artifacts import atomic_write_json  # noqa: E40
 SCHEMA = "stable_audio_tools.spatial_cot_speech_cache"
 VERSION = 1
 DEFAULT_INDEX = Path(
-    "/mnt/sdb/audio_dataset/spatial_cot_v1/source_index/tts/index.sqlite"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/spatial_cot_v1/source_index/tts/index.sqlite"
 )
 DEFAULT_CACHE = Path(
-    "/mnt/sdb/audio_dataset/spatial_cot_v1/source_cache/speech"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/spatial_cot_v1/source_cache/speech"
 )
 SOURCE_AUDIO_SUFFIXES = (".flac", ".wav", ".ogg")
 

@@ -27,15 +27,16 @@ Metrics (per clip, vs the same source unless noted):
   + (optional) SELD localisation via PSELDNets, if --with-seld and the wrapper imports:
       seld_doa_err_deg (recon vs source pred), seld_gt_doa_err_deg (recon vs GT)
 
-Outputs (--out, default /mnt/sdc/eval_metric):
+Outputs (--out, default ${AMBIT_CKPT_ROOT}/eval_metric):
   heldout_per_file.csv, heldout_summary.json, heldout_summary.md
 
 Run:
-  cd /home/tanhe/dataset_storage/stable-audio-tools
+  cd ./stable-audio-tools
   CUDA_VISIBLE_DEVICES=1 uv run python dataset/evaluation/compare_vae_heldout.py \
-      --num 100 --out /mnt/sdc/eval_metric
+      --num 100 --out ${AMBIT_CKPT_ROOT}/eval_metric
 """
 from __future__ import annotations
+import os
 
 import argparse
 import csv
@@ -73,8 +74,8 @@ except Exception:  # noqa: BLE001
     _HAVE_SCIPY = False
 
 EPS = 1e-9
-SLS_DIR = "/mnt/sdd/audio_dataset/datasets/spatial_librispeech/ambisonics"
-SLS_PARQUET = "/mnt/sdd/audio_dataset/datasets/spatial_librispeech/metadata/metadata.parquet"
+SLS_DIR = os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/spatial_librispeech/ambisonics"
+SLS_PARQUET = os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/spatial_librispeech/metadata/metadata.parquet"
 TRAIN_ID = "spatial_librispeech"   # dataset id used as the RNG seed in dataset_4ch
 TRAIN_MAX_FILES = 60255
 
@@ -192,13 +193,13 @@ def extra_metrics(recon4: np.ndarray, src4: np.ndarray, sr: int, gt):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--vae4-config", default="stable_audio_tools/configs/model_configs/autoencoders/stable_audio_4ch_vae_ds1024.json")
-    ap.add_argument("--vae4-ckpt", default="/mnt/sdc/ckpts/vae_ds1024_z64_construct/unwrapped_ds1024_z64.ckpt")
+    ap.add_argument("--vae4-ckpt", default=os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/vae_ds1024_z64_construct/unwrapped_ds1024_z64.ckpt")
     ap.add_argument("--vae2-base-config", default="stable_audio_tools/configs/model_configs/autoencoders/stable_audio_open_1_0_oobleck_2ch.json")
-    ap.add_argument("--vae2-ckpt", default="/mnt/sdc/ckpts/stable-audio-open-1.0/model.safetensors")
+    ap.add_argument("--vae2-ckpt", default=os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/stable-audio-open-1.0/model.safetensors")
     ap.add_argument("--num", type=int, default=100)
     ap.add_argument("--pairing", choices=list(PAIRINGS), default="wy_zx")
     ap.add_argument("--seed", type=int, default=1234)
-    ap.add_argument("--out", type=Path, default=Path("/mnt/sdc/eval_metric"))
+    ap.add_argument("--out", type=Path, default=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/eval_metric"))
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--with-seld", action="store_true", help="add PSELDNets SELD-DoA columns (needs seld_pseldnets.py)")
     args = ap.parse_args()

@@ -7,6 +7,7 @@ turns compare no context, the correct target previous FOA, and a foreign
 previous FOA while holding the current Plan and anchor fixed.
 """
 from __future__ import annotations
+import os
 
 import argparse
 import copy
@@ -209,13 +210,13 @@ def main() -> int:
     parser.add_argument(
         "--latent-root",
         type=Path,
-        default=Path("/mnt/sdb/audio_dataset/spatial_cot_v1/latents/validation"),
+        default=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/spatial_cot_v1/latents/validation"),
     )
     parser.add_argument("--caption-overlay-root", type=Path)
     parser.add_argument(
         "--codec-root",
         type=Path,
-        default=Path("/mnt/sdb/audio_dataset/spatial_cot_v1/codec"),
+        default=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/spatial_cot_v1/codec"),
     )
     parser.add_argument("--family-rank", type=int, required=True)
     parser.add_argument("--donor-family-rank", type=int, required=True)

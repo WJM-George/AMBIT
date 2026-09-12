@@ -35,7 +35,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
 
-DEFAULT_DATASET_ROOT = Path(os.environ.get("AUDIO_DATASET_SECONDARY_ROOT", "/mnt/sdb/audio_dataset"))
+DEFAULT_DATASET_ROOT = Path(os.environ.get("AUDIO_DATASET_SECONDARY_ROOT", os.environ.get("AMBIT_DATA_ROOT", "data")))
 DEFAULT_SPHERE360_ROOT = DEFAULT_DATASET_ROOT / "datasets" / "sphere360"
 DEFAULT_SNAPSHOT = DEFAULT_SPHERE360_ROOT / "snapshot"
 DEFAULT_MEDIA_ROOT = DEFAULT_SPHERE360_ROOT / "media"

@@ -13,7 +13,7 @@ Prereqs (already present in this repo's setup):
                        are skipped. Installed at ~/.deno/bin on this box.
 
 Run the metadata downloader first so the CSV exists:
-    cd /home/tanhe/dataset_storage && uv sync
+    cd . && uv sync
     uv run python scripts/downloaders/download_musiccaps.py
 
 Then fetch the audio (resumable; already-downloaded clips are skipped):
@@ -40,11 +40,11 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
 
-DEFAULT_ROOT = Path(os.environ.get("AUDIO_DATASET_ROOT", "/mnt/sdd/audio_dataset"))
+DEFAULT_ROOT = Path(os.environ.get("AUDIO_DATASET_ROOT", os.environ.get("AMBIT_DATA_ROOT", "data")))
 DATASET_DIR = DEFAULT_ROOT / "datasets" / "musiccaps"
 DEFAULT_CSV = DATASET_DIR / "snapshot" / "musiccaps-public.csv"
 DEFAULT_OUTPUT = DATASET_DIR / "audio"
-TMP_ROOT = Path(os.environ.get("AUDIO_DATASET_TMP", "/mnt/sdc/audio_dataset_tmp"))
+TMP_ROOT = Path(os.environ.get("AUDIO_DATASET_TMP", os.environ.get("AMBIT_CACHE_ROOT", "cache/tmp")))
 URL_BASE = "https://www.youtube.com/watch?v="
 
 

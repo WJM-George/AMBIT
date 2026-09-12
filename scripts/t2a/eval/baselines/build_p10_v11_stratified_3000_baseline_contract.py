@@ -12,13 +12,13 @@ from typing import Any
 
 
 SOURCE_EVAL = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/revisions/"
     "speech_expansion_noalign_15s_v1/evaluation/"
     "p10_v11_150k_stratified_test_3000_semantic_v2"
 )
 OUTPUT_ROOT = SOURCE_EVAL / "cross_system_baselines"
 REPO_LOCK = Path(
-    "/home/tanhe/dataset_storage/evaluation_benchmark/contracts/REPOS.lock.json"
+    "." + "/evaluation_benchmark/contracts/REPOS.lock.json"
 )
 
 
@@ -331,7 +331,7 @@ def main() -> int:
     atomic_jsonl(output_root / "smoke_requests.jsonl", smoke_requests)
     atomic_json(
         Path(
-            "/home/tanhe/dataset_storage/evaluation_benchmark/contracts/"
+            "." + "/evaluation_benchmark/contracts/"
             "P10_V11_STRATIFIED_3000_BASELINES.json"
         ),
         contract,

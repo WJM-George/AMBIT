@@ -70,11 +70,11 @@ from stable_audio_tools.data.sceneplan_p11_v4_dataset import (  # noqa: E402
 
 P11_V4_SCREENING_ORDERING = "p11_v4_matched_triplet_interleaved_batch8_v1"
 DEFAULT_ROOT = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2"
 )
 DEFAULT_MANIFEST = DEFAULT_ROOT / "manifests/p11_train_trial30k_owner_balanced_v1.sqlite"
 DEFAULT_INDEX = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/revisions/"
     "speech_expansion_noalign_15s_v1/training_index/train.sqlite"
 )
 DEFAULT_CODEC = DEFAULT_ROOT / "model_sceneplan_codec_v4"

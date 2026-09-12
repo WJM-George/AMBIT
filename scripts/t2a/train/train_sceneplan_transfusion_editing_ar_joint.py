@@ -70,18 +70,18 @@ DEFAULT_DATASET_CONFIG = REPO_ROOT / (
     "sceneplan_transfusion_editing_v1_overfit10.json"
 )
 DEFAULT_INDEX = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1_pilot/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_transfusion_editing_v1_pilot/"
     "training_index/train.sqlite"
 )
 DEFAULT_INDEX_SHA256 = (
     "6535b4a04b38a07ff641a876361e0dd16d4d4d4737ad27c11304d1d99c785600"
 )
 DEFAULT_CODEC = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
     "model_sceneplan_codec_v4"
 )
 DEFAULT_CHECKPOINT = Path(
-    "/mnt/sdb/model_archives/transfusion_editing/pilots/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//transfusion_editing/pilots/"
     "sceneplan_transfusion_editing_dit_overfit10_seed42_v1/checkpoints/"
     "epoch=499-step=1000.ckpt"
 )

@@ -4,7 +4,7 @@
 Large rendered edit families should not be scattered file-by-file according to
 momentary free space. This planner snapshots explicitly selected volumes,
 reserves a safety margin, and assigns complete shards to one root. By default,
-all newly generated Spatial-CoT data is kept on /mnt/sdb; other roots are only
+all newly generated Spatial-CoT data is kept on ${AMBIT_DATA_ROOT}; other roots are only
 used when the caller opts in with --root. The resulting small JSON is the
 durable routing contract used by later render workers.
 """
@@ -19,7 +19,7 @@ from typing import Any
 
 
 DEFAULT_ROOTS = (
-    "/mnt/sdb/audio_dataset/spatial_cot_v1",
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/spatial_cot_v1",
 )
 GIB = 1024**3
 

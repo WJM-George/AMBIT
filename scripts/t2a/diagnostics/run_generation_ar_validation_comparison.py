@@ -21,9 +21,9 @@ import zlib
 
 from generation_ar_fidelity import compare_fields, summarize_fields, TOLERANCES
 
-SNAPSHOT = Path('/mnt/sdc/ckpts/transfusion_sceneplan/generation_ar/source_snapshots/p10v11_gen_ar_20260904_10epoch_continuation_v8')
-RUN = Path('/mnt/sdc/ckpts/transfusion_sceneplan/generation_ar/p10v11_shared_gen_ar_full_1p6m_10ep_s42_20260904_stage2_v1')
-MANIFEST = Path('/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/transfusion_shared_v1/generation_ar/validation.sqlite')
+SNAPSHOT = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/transfusion_sceneplan/generation_ar/source_snapshots/p10v11_gen_ar_20260904_10epoch_continuation_v8")
+RUN = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/transfusion_sceneplan/generation_ar/p10v11_shared_gen_ar_full_1p6m_10ep_s42_20260904_stage2_v1")
+MANIFEST = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/transfusion_shared_v1/generation_ar/validation.sqlite")
 MANIFEST_SHA = '697113f9c38f190cb7e54bf8863c3e3b78dfa77de76daeb9b1ea7c035fa6dd4c'
 STEPS = (66672, 70839, 83340)
 

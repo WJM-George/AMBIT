@@ -11,6 +11,7 @@ pure Gaussian noise and ``t=1`` is clean target data.  No audio is decoded and
 no source waveform is generated or mixed.
 """
 from __future__ import annotations
+import os
 
 import argparse
 import json
@@ -48,12 +49,12 @@ DEFAULT_MODEL_CONFIG = REPO_ROOT / (
     "bootstrap/qwen35_0p8b_spatial_chat_dense_joint_source_binding_base.json"
 )
 DEFAULT_CHECKPOINT = Path(
-    "/mnt/sdc/ckpts/spatial_cot/probes/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/spatial_cot/probes/"
     "spcot_dense_source_kv_v15_identity100_20260813_073308/"
     "checkpoints/epoch=99-step=100.ckpt"
 )
-DEFAULT_LATENT_ROOT = Path("/mnt/sdb/audio_dataset/spatial_cot_v1/latents/train")
-DEFAULT_CODEC_ROOT = Path("/mnt/sdb/audio_dataset/spatial_cot_v1/codec")
+DEFAULT_LATENT_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/spatial_cot_v1/latents/train")
+DEFAULT_CODEC_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/spatial_cot_v1/codec")
 DEFAULT_TIMES = (0.0, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.99)
 
 

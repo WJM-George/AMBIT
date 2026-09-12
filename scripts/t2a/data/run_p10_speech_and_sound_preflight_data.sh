@@ -5,10 +5,10 @@ set -euo pipefail
 # This script never starts a DiT experiment.  Every transition is guarded by a
 # machine-readable PASS receipt and all long GPU work remains resumable.
 
-REPO="/home/tanhe/dataset_storage/stable-audio-tools"
+REPO="./stable-audio-tools"
 PY_STABLE="$REPO/.venv/bin/python"
-PY_QWEN="/home/tanhe/dataset_storage/.venv-qwen/bin/python"
-DATA_ROOT="/mnt/sdb/audio_dataset/sceneplan_v2_1p124m"
+PY_QWEN=".venv/bin/python"
+DATA_ROOT="${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m"
 ALIGN_ROOT="$DATA_ROOT/source_annotations/speech_forced_alignment_v1"
 DELTA_ROOT="$DATA_ROOT/supplements/vggsound_sound_delta_v1"
 A2T_ROOT="$DELTA_ROOT/a2t_pilot_20k"

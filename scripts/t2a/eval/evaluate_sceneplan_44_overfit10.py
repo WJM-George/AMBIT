@@ -63,14 +63,14 @@ from stable_audio_tools.training.metrics.fad_metrics import load_clap_model
 
 
 DEFAULT_RUN = Path(
-    "/mnt/sdb/model_archives/p10_pre_v11_20260831/pilots/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//p10_pre_v11_20260831/pilots/"
     "sceneplan_dit_v4_r10_44_scratch_indcfg15_overfit10"
 )
 DATASET_CONFIG = REPO / (
     "stable_audio_tools/configs/dataset_configs/sceneplan_44_overfit10.json"
 )
 VAE_CHECKPOINT = Path(
-    "/mnt/sdc/ckpts/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
 )
 CLAP_CHECKPOINT = REPO / "load/clap_score/630k-audioset-fusion-best.pt"
 

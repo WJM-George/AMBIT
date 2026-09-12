@@ -111,13 +111,13 @@ def atomic_parquet(path: Path, rows: list[dict[str, Any]]) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dataset-root", type=Path, default=DATASET_ROOT)
-    parser.add_argument("--checkpoint-root", type=Path, default=Path("/mnt/sdb/ckpts/sceneplan_dit_v2"))
+    parser.add_argument("--checkpoint-root", type=Path, default=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/ckpts/sceneplan_dit_v2"))
     args = parser.parse_args()
     root = args.dataset_root.expanduser().resolve(strict=True)
     checkpoint_root = args.checkpoint_root.expanduser().resolve(strict=False)
     try:
-        root.relative_to("/mnt/sdb")
-        checkpoint_root.relative_to("/mnt/sdb")
+        root.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
+        checkpoint_root.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
     except ValueError as error:
         raise ValueError("P9 dataset/checkpoint roots must be on SDB") from error
     marker = root / "FROZEN_P9.json"
@@ -207,9 +207,9 @@ def main() -> int:
         destination = snapshot_root / relative_text
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, destination)
-    qwen_root = Path("/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B").resolve(strict=True)
+    qwen_root = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen/Qwen3.5-0.8B").resolve(strict=True)
     vae_checkpoint = Path(
-        "/mnt/sdc/ckpts/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
+        os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
     ).resolve(strict=True)
     external_dependency_rows = []
     for path in [*sorted(qwen_root.rglob("*")), vae_checkpoint]:
@@ -264,7 +264,7 @@ def main() -> int:
     def add(path: Path, role: str, expected_sha: str | None = None, verified: str = "freeze_rehash") -> None:
         resolved = path.expanduser().resolve(strict=True)
         try:
-            resolved.relative_to("/mnt/sdb")
+            resolved.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
         except ValueError as error:
             raise ValueError(f"frozen artifact is not on SDB: {resolved}") from error
         digest = expected_sha or sha256_file(resolved)

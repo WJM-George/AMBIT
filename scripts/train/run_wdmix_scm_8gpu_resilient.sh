@@ -14,10 +14,10 @@
 #  - Checkpoints every 10k steps: a crash costs <=~2h of steps, not 9h.
 set -u
 
-cd /home/tanhe/dataset_storage/stable-audio-tools
+cd ./stable-audio-tools
 
-PY=/home/tanhe/dataset_storage/stable-audio-tools/.venv/bin/python
-export PATH="/home/tanhe/dataset_storage/stable-audio-tools/.venv/bin:$PATH"
+PY=./stable-audio-tools/.venv/bin/python
+export PATH="./stable-audio-tools/.venv/bin:$PATH"
 
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 export WANDB_MODE=offline
@@ -33,9 +33,9 @@ export CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0,1,2,3,4,5,6,7}"
 
 A=stable_audio_tools/configs/model_configs/autoencoders
 MODEL_CONFIG=$A/stable_audio_4ch_vae_ds1024_z64_wdmix_scm.json
-DATA=/mnt/sdc/ckpts/vae_abl_phase_scm/configs/dataset_frozen_1018957.json
-BASE_CKPT=/mnt/sdc/ckpts/vae_abl_fidelity_cep_sisdr/checkpoints/vae_abl_fidelity_cep_sisdr/9bcle0bm/checkpoints/epoch=13-step=1000000.ckpt
-SAVE_DIR=/mnt/sdc/ckpts/vae_wdmix_scm_8gpu
+DATA=${AMBIT_CKPT_ROOT}/vae_abl_phase_scm/configs/dataset_frozen_1018957.json
+BASE_CKPT=${AMBIT_CKPT_ROOT}/vae_abl_fidelity_cep_sisdr/checkpoints/vae_abl_fidelity_cep_sisdr/9bcle0bm/checkpoints/epoch=13-step=1000000.ckpt
+SAVE_DIR=${AMBIT_CKPT_ROOT}/vae_wdmix_scm_8gpu
 CKPT_DIR=$SAVE_DIR/checkpoints
 
 mkdir -p "$CKPT_DIR"

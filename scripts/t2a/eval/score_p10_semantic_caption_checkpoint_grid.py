@@ -27,7 +27,7 @@ from faster_whisper import WhisperModel
 
 
 DEFAULT_REVISION = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/revisions/"
     "speech_expansion_noalign_15s_v1/evaluation"
 )
 DEFAULT_ROOTS = {
@@ -37,11 +37,11 @@ DEFAULT_ROOTS = {
     "105k_v2": DEFAULT_REVISION / "p10_v10_105k_clean_direct_mixed_showcase_noquote_v2",
 }
 DEFAULT_WHISPER = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/models/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/models/"
     "faster-distil-whisper-large-v3"
 )
 DEFAULT_OUTPUT = Path(
-    "/mnt/sdb/model_archives/p10_pre_v11_20260831/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//p10_pre_v11_20260831/"
     "sceneplan_dit_v10_semantic_v2_protected_resume_110k/"
     "evaluation/speech_100k_105k_semantic_v1_v2_fixed6"
 )

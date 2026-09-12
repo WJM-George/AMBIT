@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import pytest
@@ -11,7 +12,7 @@ from stable_audio_tools.training.transfusion_opsd.native_prefix_supervision impo
 @pytest.fixture
 def codec():
     from stable_audio_tools.data.model_sceneplan_codec_v4 import ModelScenePlanCodecV4
-    path = Path('/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4')
+    path = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4")
     if not path.exists():
         pytest.skip('Native Editing codec artifact is not installed.')
     return ModelScenePlanCodecV4(path)

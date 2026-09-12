@@ -9,6 +9,7 @@ checkpoint must demonstrate useful source-composition evidence before it is
 accepted as a Transfusion teacher.
 """
 from __future__ import annotations
+import os
 
 import argparse
 import json
@@ -54,14 +55,14 @@ DEFAULT_MODEL_CONFIG = REPO_ROOT / (
     "qwen35_0p8b_300m.json"
 )
 DEFAULT_CHECKPOINT = Path(
-    "/mnt/sdb/model_archives/p10_pre_v11_20260831/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//p10_pre_v11_20260831/"
     "t2a_dit_qwen35_0p8b_300m_wdmix_v2_300k/"
     "checkpoints/epoch=75-step=300000.ckpt"
 )
-DEFAULT_LATENT_ROOT = Path("/mnt/sdb/audio_dataset/spatial_cot_v1/latents/train")
-DEFAULT_CODEC_ROOT = Path("/mnt/sdb/audio_dataset/spatial_cot_v1/codec")
+DEFAULT_LATENT_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/spatial_cot_v1/latents/train")
+DEFAULT_CODEC_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/spatial_cot_v1/codec")
 DEFAULT_PRETRANSFORM = Path(
-    "/mnt/sdc/ckpts/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
 )
 
 

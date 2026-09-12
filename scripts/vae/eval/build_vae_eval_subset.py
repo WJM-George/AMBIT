@@ -30,9 +30,9 @@ if str(_SCRIPTS_DIR) not in sys.path:
 from _repo import repo_root
 SAT = repo_root()
 CFG_DIR = SAT / "stable_audio_tools/configs/dataset_configs"
-SLS_DIR = Path("/mnt/sdb/audio_dataset/datasets/spatial_librispeech/ambisonics")
-AUDIOCAPS_DIR = Path("/mnt/sdc/audio_dataset_tmp/audiocaps_foa/train")
-MRSDRAMA_DIR = Path("/mnt/sdd/audio_dataset/datasets/mrsdrama/snapshot")
+SLS_DIR = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/spatial_librispeech/ambisonics")
+AUDIOCAPS_DIR = Path(os.environ.get("AMBIT_CACHE_ROOT", "cache/tmp") + "/audiocaps_foa/train")
+MRSDRAMA_DIR = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/mrsdrama/snapshot")
 TRAIN_ID = "spatial_librispeech"
 TRAIN_MAX_FILES = 60255
 
@@ -153,10 +153,10 @@ def main() -> None:
     args = ap.parse_args()
 
     if args.mode == "heldout":
-        out = args.out or Path("/mnt/sdc/audio_latents/vae_eval/heldout_100")
+        out = args.out or Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/audio_latents/vae_eval/heldout_100")
         build_heldout(out, args.num, args.seed)
     else:
-        out = args.out or Path("/mnt/sdc/audio_latents/vae_eval/subset")
+        out = args.out or Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/audio_latents/vae_eval/subset")
         build_mixed(out, args.n_sls, args.n_audiocaps, args.n_mrsdrama, args.seed)
 
 

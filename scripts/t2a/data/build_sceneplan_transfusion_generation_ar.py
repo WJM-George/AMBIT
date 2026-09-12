@@ -43,18 +43,18 @@ from stable_audio_tools.data.sceneplan_transfusion_generation import (  # noqa: 
 
 
 REVISION_ROOT = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/revisions/"
     "speech_expansion_noalign_15s_v1"
 )
 OUTPUT_ROOT = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/"
     "transfusion_shared_v1/generation_ar"
 )
 CODEC_PATH = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
     "model_sceneplan_codec_v4"
 )
-TOKENIZER_PATH = Path("/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B")
+TOKENIZER_PATH = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen/Qwen3.5-0.8B")
 MAX_PLAN_TOKENS = 1024
 
 SPLIT_AUTHORITY = {

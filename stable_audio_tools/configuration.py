@@ -8,12 +8,15 @@ configs explicit while avoiding another model/training code tree for each T2A
 variant.
 """
 from __future__ import annotations
+import os
 
 import copy
 import json
 import math
 from pathlib import Path
 from typing import Any, Mapping, MutableMapping, Optional, Sequence, Union
+
+from .paths import expand_config_values
 
 
 ConfigPath = Union[str, Path]
@@ -90,7 +93,7 @@ def _load_config(path: Path, stack: Sequence[Path]) -> dict:
 def load_config(path: ConfigPath) -> dict:
     """Load a plain or inherited JSON config and return a fully resolved copy."""
 
-    return _load_config(Path(path), ())
+    return expand_config_values(_load_config(Path(path), ()))
 
 
 def _require_mapping(value: Any, name: str) -> Mapping[str, Any]:
@@ -1578,7 +1581,7 @@ def validate_t2a_config(
             "transcript_state_authority": "sceneplan.source.transcript",
             "canonical_executor_family": "sceneplan_dit_v11_semantic_v2_15s_300m",
             "canonical_model_config": (
-                "/mnt/sdc/stable-audio-tools-workspace/stable_audio_tools/configs/"
+                os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/stable-audio-tools-workspace/stable_audio_tools/configs/"
                 "model_configs/txt2audio/t2a/dit/"
                 "qwen35_0p8b_300m_model_sceneplan_44_soundexp_noalign_15s_"
                 "resume_cosine_40k.json"
@@ -1588,7 +1591,7 @@ def validate_t2a_config(
             ),
             "canonical_checkpoint_step": 150000,
             "canonical_checkpoint": (
-                "/mnt/sdc/ckpts/dit/"
+                os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/dit/"
                 "sceneplan_dit_v11_semantic_v2_protected_resume_150k/"
                 "checkpoints/epoch=48-step=150000.ckpt"
             ),

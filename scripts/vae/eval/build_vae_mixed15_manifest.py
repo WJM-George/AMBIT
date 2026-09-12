@@ -2,15 +2,16 @@
 """Build a fixed held-out 5 SLS + 5 music + 5 sound FOA manifest."""
 
 from __future__ import annotations
+import os
 
 import argparse
 import json
 from pathlib import Path
 
 
-SLS_ROOT = Path("/mnt/sdb/audio_dataset/datasets/spatial_librispeech/ambisonics")
+SLS_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/spatial_librispeech/ambisonics")
 SYNTHETIC_MANIFEST = Path(
-    "/mnt/sdd/audio_dataset/spatial_foa_v2/manifest_test_synthetic.jsonl"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/spatial_foa_v2/manifest_test_synthetic.jsonl"
 )
 
 SLS_IDS = ("027352", "199154", "026810", "053407", "189938")

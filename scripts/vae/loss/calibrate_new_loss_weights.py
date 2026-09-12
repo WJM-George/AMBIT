@@ -7,9 +7,9 @@ contribute a target fraction of the current dominant reconstruction term
 
 Run:
   uv run python scripts/vae/loss/calibrate_new_loss_weights.py \
-      --model-config /mnt/sdc/ckpts/vae_ds1024_z64_hf_overshoot_decay_350k_8gpu/configs/model_hf_overshoot_decay_350k.json \
-      --ckpt /mnt/sdc/ckpts/vae_ds1024_z64_hf_overshoot_decay_350k_8gpu/checkpoints/vae_ds1024_z64_hf_overshoot_decay_350k_8gpu/cx9iuuoa/checkpoints/epoch=12-step=800000.ckpt \
-      --audio-dir /mnt/sdd/audio_dataset/spatial_foa/audio --num-files 6
+      --model-config ${AMBIT_CKPT_ROOT}/vae_ds1024_z64_hf_overshoot_decay_350k_8gpu/configs/model_hf_overshoot_decay_350k.json \
+      --ckpt ${AMBIT_CKPT_ROOT}/vae_ds1024_z64_hf_overshoot_decay_350k_8gpu/checkpoints/vae_ds1024_z64_hf_overshoot_decay_350k_8gpu/cx9iuuoa/checkpoints/epoch=12-step=800000.ckpt \
+      --audio-dir ${AMBIT_DATA_ROOT}/spatial_foa/audio --num-files 6
 """
 
 import argparse

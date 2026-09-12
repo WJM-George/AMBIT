@@ -13,7 +13,7 @@ from typing import Any
 
 
 DEFAULT_ROOT = Path(
-    "/mnt/sdb/audio_dataset/evaluation_benchmark/p10_final_paper_six_tables_v1"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/evaluation_benchmark/p10_final_paper_six_tables_v1"
 )
 EXPECTED_TABLES = {
     "INTERNAL_MUSIC_TABLE.md",

@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO="${SOUND_EXPANSION_REPO:-/home/tanhe/dataset_storage/stable-audio-tools}"
+REPO="${SOUND_EXPANSION_REPO:-./stable-audio-tools}"
 PY="$REPO/.venv/bin/python"
-QWEN_PY="/home/tanhe/dataset_storage/.venv-qwen/bin/python"
-DATASET_ROOT="/mnt/sdb/audio_dataset/sceneplan_v2_1p124m"
+QWEN_PY=".venv/bin/python"
+DATASET_ROOT="${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m"
 REVISION_ROOT="$DATASET_ROOT/revisions/sound_expansion_v1"
 VGG_ROOT="$DATASET_ROOT/supplements/vggsound_sound_delta_v1"
 VGG_SELECTION="$VGG_ROOT/source_selection"
 VGG_EXTRACTION="$VGG_ROOT/extraction_pilot_20k"
-VGG_SNAPSHOT="/mnt/sdc/audio_dataset/datasets/vggsound/snapshot"
+VGG_SNAPSHOT="${AMBIT_CKPT_ROOT}/audio_dataset/datasets/vggsound/snapshot"
 FSDK_ROOT="$REVISION_ROOT/sources/fsdkaggle2019"
 UNIVERSE_ROOT="$REVISION_ROOT/sources/universe"
 ANNOTATION_ROOT="$REVISION_ROOT/source_annotations/annotations"

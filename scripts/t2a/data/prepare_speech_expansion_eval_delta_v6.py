@@ -80,7 +80,7 @@ from stable_audio_tools.data.model_sceneplan import (  # noqa: E402
 )
 
 
-DATASET_ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m")
+DATASET_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m")
 REVISION_ROOT = DATASET_ROOT / "revisions/speech_expansion_noalign_15s_v1"
 LEDGER = DATASET_ROOT / "split_ledgers/speech_v2/speech_split_ledger.parquet"
 CATALOG = DATASET_ROOT / "source_catalog/speech/catalog.sqlite"
@@ -736,7 +736,7 @@ def build_scenes() -> dict[str, Any]:
     from transformers import AutoTokenizer
 
     tokenizer = AutoTokenizer.from_pretrained(
-        "/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B",
+        os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen/Qwen3.5-0.8B",
         local_files_only=True,
     )
     SCENEPLAN_ROOT.mkdir(parents=True, exist_ok=True)

@@ -22,6 +22,7 @@ We therefore report intervention-to-state RMS ratios across RF times, but do
 not count their necessarily invariant direction as evidence.
 """
 from __future__ import annotations
+import os
 
 import argparse
 import copy
@@ -71,9 +72,9 @@ from stable_audio_tools.data.t2a_artifacts import atomic_write_json
 from stable_audio_tools.training.metrics.fad_metrics import load_clap_model
 
 
-DEFAULT_FAMILY_STORE = Path("/mnt/sdb/audio_dataset/spatial_cot_v1/latents/train")
+DEFAULT_FAMILY_STORE = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/spatial_cot_v1/latents/train")
 DEFAULT_CAPTION_OVERLAY = Path(
-    "/mnt/sdb/audio_dataset/spatial_cot_v1/captions/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/spatial_cot_v1/captions/"
     "spatial_source_regions_v3/train"
 )
 DEFAULT_VAE_CONFIG = REPO_ROOT / (
@@ -81,7 +82,7 @@ DEFAULT_VAE_CONFIG = REPO_ROOT / (
     "stable_audio_4ch_vae_ds1024_z64_wdmix_scm.json"
 )
 DEFAULT_VAE_CHECKPOINT = Path(
-    "/mnt/sdc/ckpts/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
 )
 
 DRAW_COUNT = 8

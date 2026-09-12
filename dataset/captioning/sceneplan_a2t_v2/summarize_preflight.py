@@ -19,7 +19,7 @@ import pyarrow.parquet as pq
 from description_contract import validate_source_description
 
 
-DATASET_ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m")
+DATASET_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m")
 SOURCE_ROOT = DATASET_ROOT / "source_annotations/nonspeech_instruct_v2"
 STRESS_ROOT = DATASET_ROOT / "audit/a2t_throughput_1k_20260816"
 REVISED_ROOT = DATASET_ROOT / "pilots/revised_sceneplan_100_registry_v1"
@@ -129,9 +129,7 @@ def main() -> int:
 
     full_output_base = SOURCE_ROOT / "annotations/source_descriptions_instruct.jsonl"
     production_command = (
-        "/home/tanhe/dataset_storage/.venv-qwen/bin/python "
-        "/mnt/sdc/stable-audio-tools-workspace/dataset/captioning/"
-        "sceneplan_a2t_v2/launch_transformers_scaleout.py "
+        "python dataset/captioning/sceneplan_a2t_v2/launch_transformers_scaleout.py "
         f"--log-dir {SOURCE_ROOT / 'annotations/logs'} -- "
         f"--input-jsonl {SOURCE_ROOT / 'instruct_input.jsonl'} "
         f"--out {full_output_base} "

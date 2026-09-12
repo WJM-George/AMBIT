@@ -2,6 +2,7 @@
 """Generate the frozen Music/Sound panel with AudioX-Turbo text-only."""
 
 from __future__ import annotations
+import os
 
 import argparse
 import json
@@ -22,8 +23,8 @@ from baseline_common import (
 )
 
 
-REPO = Path("/home/tanhe/dataset_storage/evaluation_benchmark/repos/AudioX-Turbo")
-DEFAULT_MODEL = Path("/mnt/sdc/ckpts/baselines/p10_60k_15row_v1/models/AudioX-Turbo")
+REPO = Path("third_party" + "/AudioX-Turbo")
+DEFAULT_MODEL = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/baselines/p10_60k_15row_v1/models/AudioX-Turbo")
 
 
 def main() -> int:

@@ -46,13 +46,13 @@ DEFAULT_VAE2_CONFIG = (
     / "stable_audio_tools/configs/model_configs/autoencoders/"
     "stable_audio_open_1_0_oobleck_2ch.json"
 )
-DEFAULT_VAE2_CKPT = Path("/mnt/sdc/ckpts/stable-audio-open-1.0/model.safetensors")
-DEFAULT_CACHE_DIR = Path("/mnt/sdc/eval_metric/foa_recon/result_compare/foa_baseline")
+DEFAULT_VAE2_CKPT = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/stable-audio-open-1.0/model.safetensors")
+DEFAULT_CACHE_DIR = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/eval_metric/foa_recon/result_compare/foa_baseline")
 BASELINE_TAG = "stable_audio_open_1_0_2x_stereo"
 BASELINE_LABEL = "2x Stable Audio Open 1.0 stereo VAE"
 SLS_PARQUET_CANDIDATES = (
-    Path("/mnt/sdb/audio_dataset/datasets/spatial_librispeech/metadata/metadata.parquet"),
-    Path("/mnt/sdd/audio_dataset/datasets/spatial_librispeech/metadata/metadata.parquet"),
+    Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/spatial_librispeech/metadata/metadata.parquet"),
+    Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/spatial_librispeech/metadata/metadata.parquet"),
 )
 
 METRIC_KEYS = [

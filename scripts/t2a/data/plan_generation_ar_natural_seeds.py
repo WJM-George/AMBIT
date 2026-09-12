@@ -139,7 +139,7 @@ def run(args):
     import torch
     from transformers import AutoTokenizer, Qwen3_5ForConditionalGeneration
     from stable_audio_tools.data.model_sceneplan_codec_v4 import ModelScenePlanCodecV4
-    codec = ModelScenePlanCodecV4('/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4')
+    codec = ModelScenePlanCodecV4(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4")
     module = module_at('frozen_natural_constraints', args.constraints)
     torch.set_num_threads(8); torch.manual_seed(42)
     atomic(args.output / 'STATUS.json', {'status': 'LOADING', 'pid': os.getpid()})

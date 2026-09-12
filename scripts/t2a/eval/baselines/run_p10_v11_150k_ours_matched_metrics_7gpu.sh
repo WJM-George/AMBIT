@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_ROOT="${REPO_ROOT:-/home/tanhe/dataset_storage/stable-audio-tools}"
+REPO_ROOT="${REPO_ROOT:-./stable-audio-tools}"
 PYTHON_BIN="${PYTHON_BIN:-${REPO_ROOT}/.venv/bin/python}"
-BENCHMARK_ROOT="${BENCHMARK_ROOT:-/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1/evaluation/p10_v11_150k_stratified_test_3000_semantic_v2/cross_system_baselines}"
+BENCHMARK_ROOT="${BENCHMARK_ROOT:-${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1/evaluation/p10_v11_150k_stratified_test_3000_semantic_v2/cross_system_baselines}"
 SOURCE_EVAL="${SOURCE_EVAL:-${BENCHMARK_ROOT%/cross_system_baselines}}"
 SCORER="${REPO_ROOT}/scripts/t2a/eval/baselines/score_p10_v11_150k_ours_matched.py"
 LOG_ROOT="${BENCHMARK_ROOT}/logs/ours_150k_matched_metrics"
@@ -15,7 +15,7 @@ cd "${REPO_ROOT}"
 test -f "${BENCHMARK_ROOT}/PUBLIC_BASELINE_METRICS_COMPLETE"
 test -f "${SOURCE_EVAL}/INFERENCE_COMPLETE"
 
-export HF_HOME="${HF_HOME:-/home/tanhe/dataset_storage/codex-home/.cache/huggingface}"
+export HF_HOME="${HF_HOME:-./codex-home/.cache/huggingface}"
 export HUGGINGFACE_HUB_CACHE="${HUGGINGFACE_HUB_CACHE:-${HF_HOME}/hub}"
 export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1

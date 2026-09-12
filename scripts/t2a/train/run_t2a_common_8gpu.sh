@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO=/home/tanhe/dataset_storage/stable-audio-tools
+REPO=./stable-audio-tools
 PY="$REPO/.venv/bin/python"
 RUN_NAME="${RUN_NAME:?invoke this helper through run_t2a_spatial_chat_500m_8gpu.sh}"
 RUN_LABEL="${RUN_LABEL:-t2a-spatial-chat}"
@@ -13,7 +13,7 @@ case "$RUN_CATEGORY" in
         exit 2
         ;;
 esac
-RUN_ROOT="${RUN_ROOT:-/mnt/sdc/ckpts/spatial_cot/$RUN_CATEGORY/$RUN_NAME}"
+RUN_ROOT="${RUN_ROOT:-${AMBIT_CKPT_ROOT}/spatial_cot/$RUN_CATEGORY/$RUN_NAME}"
 CHECKPOINT_DIR="$RUN_ROOT/checkpoints"
 LOG_DIR="$RUN_ROOT/logs"
 WANDB_DIR="$RUN_ROOT/wandb"
@@ -26,7 +26,7 @@ MODEL_CONFIG="${MODEL_CONFIG:?the Spatial-Chat launcher must set MODEL_CONFIG}"
 DATASET_CONFIG="${DATASET_CONFIG:?the Spatial-Chat launcher must set DATASET_CONFIG}"
 VAL_DATASET_CONFIG="${VAL_DATASET_CONFIG:-}"
 DISABLE_VALIDATION="${DISABLE_VALIDATION:-0}"
-PRETRANSFORM_CKPT="${PRETRANSFORM_CKPT:-/mnt/sdc/ckpts/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt}"
+PRETRANSFORM_CKPT="${PRETRANSFORM_CKPT:-${AMBIT_CKPT_ROOT}/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt}"
 LOAD_PRETRANSFORM="${LOAD_PRETRANSFORM:-0}"
 
 # These defaults match the canonical family-based Spatial-CoT route. Performance

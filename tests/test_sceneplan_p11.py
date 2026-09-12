@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import copy
 
 import pytest
@@ -20,7 +21,7 @@ from stable_audio_tools.data.sceneplan_p11_single_turn import (
 
 
 CODEC_PATH = (
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
     "model_sceneplan_codec_v4"
 )
 

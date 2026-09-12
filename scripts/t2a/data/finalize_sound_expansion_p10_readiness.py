@@ -53,7 +53,7 @@ def main() -> int:
 
     root = args.revision_root.expanduser().resolve(strict=True)
     try:
-        root.relative_to(Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions"))
+        root.relative_to(Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/revisions"))
     except ValueError as error:
         raise RuntimeError("revision must remain below the frozen dataset revisions root") from error
     marker_path = root / "FROZEN_P9.json"

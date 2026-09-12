@@ -2,6 +2,7 @@
 """Generate the frozen Music/Sound panel with local TangoFlux weights."""
 
 from __future__ import annotations
+import os
 
 import argparse
 import json
@@ -21,7 +22,7 @@ from baseline_common import (
 )
 
 
-DEFAULT_MODEL = Path("/mnt/sdc/ckpts/baselines/p10_60k_15row_v1/models/TangoFlux")
+DEFAULT_MODEL = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/baselines/p10_60k_15row_v1/models/TangoFlux")
 
 
 def main() -> int:

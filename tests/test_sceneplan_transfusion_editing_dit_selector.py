@@ -652,7 +652,7 @@ def test_full_launchers_cannot_fall_back_to_unvalidated_last_checkpoint() -> Non
     assert "materialization workers are already active" in materialization
     assert "flock -n 9" in materialization
     assert ') >>"$LOG" 2>&1 &' in materialization
-    assert "export CUDA_VISIBLE_DEVICES=3,4,5,6,7" in full_chain
+    assert "set CUDA_VISIBLE_DEVICES to the GPUs for this job" in full_chain
     assert "full-chain.lock" in full_chain
     assert "materialized_complete_frozen" in full_chain
     assert "--replace" not in full_chain

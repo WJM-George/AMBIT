@@ -51,8 +51,8 @@ def main() -> int:
     sceneplan_root = args.sceneplan_root.expanduser().resolve(strict=True)
     output_root = args.output_root.expanduser().resolve(strict=False)
     try:
-        sceneplan_root.relative_to("/mnt/sdb")
-        output_root.relative_to("/mnt/sdb")
+        sceneplan_root.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
+        output_root.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
     except ValueError as error:
         raise ValueError("P8 ScenePlans and materialized outputs must be on SDB") from error
     ready = sceneplan_root / "READY"
@@ -160,7 +160,7 @@ def main() -> int:
                     value = json.loads(path.read_text(encoding="utf-8"))
                     rows += int(value["rows"])
                     by_split[value["split"]] = by_split.get(value["split"], 0) + int(value["rows"])
-                stat = os.statvfs("/mnt/sdb")
+                stat = os.statvfs(os.environ.get("AMBIT_DATA_ROOT", "data"))
                 free_fraction = stat.f_bavail / stat.f_blocks
                 if free_fraction < 0.20:
                     raise RuntimeError(f"SDB free fraction fell below 20%: {free_fraction}")

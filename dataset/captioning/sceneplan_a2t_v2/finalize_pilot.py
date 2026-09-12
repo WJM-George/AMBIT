@@ -20,9 +20,9 @@ from description_contract import (
 )
 
 
-ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/audit/a2t_pilot_100")
+ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/audit/a2t_pilot_100")
 PROMPT = Path(__file__).with_name("source_description_prompt_v4.txt")
-MODEL = Path("/mnt/sdc/ckpts/pretrained/Qwen3-Omni-30B-A3B-Instruct")
+MODEL = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen3-Omni-30B-A3B-Instruct")
 MODEL_REVISION = "26291f793822fb6be9555850f06dfe95f2d7e695"
 
 

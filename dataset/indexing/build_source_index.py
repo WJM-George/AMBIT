@@ -16,12 +16,12 @@ Each row: {"id", "path", "category", "dataset", "label"}
   * label : the native caption / class label (used later by the caption refiner).
 
 Datasets & how they map to categories:
-  audiocaps  (parquet, caption)         -> audio    [/mnt/sdd .../audiocaps]
-  musiccaps  (wav + csv caption)        -> music    [/mnt/sdd .../musiccaps]
-  audioset   (parquet, human_labels)    -> routed by label (music/speech/audio) [/mnt/sdb]
-  fsd50k     (wav + csv labels)         -> routed by label (music/audio; speech excluded) [/mnt/sdd]
-  picoaudio  (zip + json caption)       -> audio    [/mnt/sdd] (needs unzip)
-  vggsound   (extracted wav + csv label)-> routed by label (music/audio) [/mnt/sdd]
+  audiocaps  (parquet, caption)         -> audio    [${AMBIT_DATA_ROOT} .../audiocaps]
+  musiccaps  (wav + csv caption)        -> music    [${AMBIT_DATA_ROOT} .../musiccaps]
+  audioset   (parquet, human_labels)    -> routed by label (music/speech/audio) [${AMBIT_DATA_ROOT}]
+  fsd50k     (wav + csv labels)         -> routed by label (music/audio; speech excluded) [${AMBIT_DATA_ROOT}]
+  picoaudio  (zip + json caption)       -> audio    [${AMBIT_DATA_ROOT}] (needs unzip)
+  vggsound   (extracted wav + csv label)-> routed by label (music/audio) [${AMBIT_DATA_ROOT}]
                                             (run dataset/indexing/extract_vggsound.py first)
 
 NOTE: Spatial LibriSpeech is intentionally NOT indexed here. SLS is used DIRECTLY as
@@ -29,10 +29,10 @@ real FOA (referenced in configs/dataset_configs/construct_dataset/*), NOT downmi
 re-synthesized. It is the speech category of the constructed dataset.
 
 Run (build the synth pools; SLS is added directly downstream, not here):
-    cd /home/tanhe/dataset_storage/stable-audio-tools
+    cd ./stable-audio-tools
     uv run python dataset/indexing/build_source_index.py \
-        --out /mnt/sdd/audio_dataset/spatial_sources \
-        --cache /mnt/sdd/audio_dataset/source_wav_cache \
+        --out ${AMBIT_DATA_ROOT}/spatial_sources \
+        --cache ${AMBIT_DATA_ROOT}/source_wav_cache \
         --datasets audiocaps,musiccaps,audioset,fsd50k,picoaudio,vggsound \
         --audioset-max 120000 --vggsound-max 80000
 
@@ -397,15 +397,15 @@ def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--out", type=Path, required=True, help="Output dir for sources_*.jsonl")
-    ap.add_argument("--cache", type=Path, default=Path("/mnt/sdc/audio_dataset_tmp/source_wav_cache"))
+    ap.add_argument("--cache", type=Path, default=Path(os.environ.get("AMBIT_CACHE_ROOT", "cache/tmp") + "/source_wav_cache"))
     ap.add_argument("--datasets", default="audiocaps,musiccaps,audioset,picoaudio,vggsound",
                     help="Comma list of adapters to run. NOTE: 'sls' is intentionally "
                          "omitted -- SLS is used directly as real FOA, not synthesized.")
     # roots
-    ap.add_argument("--sdd", type=Path, default=Path("/mnt/sdd/audio_dataset/datasets"))
-    ap.add_argument("--sdb", type=Path, default=Path("/mnt/sdb/audio_dataset/datasets"))
+    ap.add_argument("--sdd", type=Path, default=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets"))
+    ap.add_argument("--sdb", type=Path, default=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets"))
     ap.add_argument("--audiocaps-jsonl", type=Path,
-                    default=Path("/mnt/sdc/audio_dataset_tmp/audiocaps_train.jsonl"))
+                    default=Path(os.environ.get("AMBIT_CACHE_ROOT", "cache/tmp") + "/audiocaps_train.jsonl"))
     # per-dataset caps (None = all)
     ap.add_argument("--audiocaps-max", type=int, default=None)
     ap.add_argument("--musiccaps-max", type=int, default=None)
@@ -418,7 +418,7 @@ def main() -> None:
     ap.add_argument("--picoaudio-max", type=int, default=None)
     ap.add_argument("--vggsound-max", type=int, default=None)
     ap.add_argument("--vggsound-root", type=Path,
-                    default=Path("/mnt/sdc/audio_dataset/datasets/vggsound"),
+                    default=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/audio_dataset/datasets/vggsound"),
                     help="Root of the extracted VGGSound dataset")
     ap.add_argument("--vggsound-audio", type=Path,
                     default=None,

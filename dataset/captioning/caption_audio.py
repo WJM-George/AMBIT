@@ -23,16 +23,16 @@ Output:
     --out FILE             jsonl of {"id", "caption", "audio", "model"} (resumable)
 
 Environment (DEDICATED venv; Qwen3-Omni needs transformers from source):
-    uv venv /home/tanhe/dataset_storage/.venv-qwen --python 3.10
-    source /home/tanhe/dataset_storage/.venv-qwen/bin/activate
+    uv venv .venv --python 3.10
+    source .venv/bin/activate
     pip install git+https://github.com/huggingface/transformers accelerate qwen-omni-utils soundfile
     pip install -U flash-attn --no-build-isolation       # or pass --attn sdpa
-    hf download Qwen/Qwen3-Omni-30B-A3B-Captioner --local-dir /mnt/sdc/ckpts/Qwen3-Omni-30B-A3B-Captioner
+    hf download Qwen/Qwen3-Omni-30B-A3B-Captioner --local-dir ${AMBIT_CKPT_ROOT}/Qwen3-Omni-30B-A3B-Captioner
 
 Run (single instance, sharded across all visible GPUs via device_map=auto):
     python dataset/captioning/caption_audio.py \
-        --audio-dir /mnt/sdc/audio_dataset_tmp/audiocaps_foa/train \
-        --out /mnt/sdc/audio_dataset_tmp/audiocaps_foa/audio_captions.jsonl
+        --audio-dir ${AMBIT_CACHE_ROOT}/audiocaps_foa/train \
+        --out ${AMBIT_CACHE_ROOT}/audiocaps_foa/audio_captions.jsonl
 
 Scale out (data-parallel: one process per GPU group, disjoint shards):
     CUDA_VISIBLE_DEVICES=0,1 python dataset/captioning/caption_audio.py --audio-dir DIR --out OUT --num-shards 4 --shard 0 &

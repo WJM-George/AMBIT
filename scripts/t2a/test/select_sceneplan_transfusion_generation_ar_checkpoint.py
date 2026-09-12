@@ -44,7 +44,7 @@ from stable_audio_tools.models.sceneplan_transfusion_generation_ar import (  # n
 
 
 CODEC_PATH = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
     "model_sceneplan_codec_v4"
 )
 EXPECTED_TRAIN_MANIFEST_SHA256 = (

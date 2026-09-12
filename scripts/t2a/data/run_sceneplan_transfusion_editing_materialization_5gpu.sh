@@ -19,11 +19,11 @@ case "$RETENTION" in
   *) echo "invalid retention policy: $RETENTION" >&2; exit 2 ;;
 esac
 
-ROOT=/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1
+ROOT=${AMBIT_DATA_ROOT}/sceneplan_transfusion_editing_v1
 PAIR_INDEX="$ROOT/pair_index/$SPLIT.sqlite"
 LOG_ROOT="$ROOT/materialized/logs/$SPLIT"
-PYTHON=/mnt/sdc/stable-audio-tools-venv/bin/python
-WORKER=/mnt/sdc/stable-audio-tools-workspace/scripts/t2a/data/materialize_sceneplan_transfusion_editing_worker.py
+PYTHON=${AMBIT_CKPT_ROOT}/stable-audio-tools-venv/bin/python
+WORKER=${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace/scripts/t2a/data/materialize_sceneplan_transfusion_editing_worker.py
 TOTAL_SHARDS=$(( (ROWS + 1023) / 1024 ))
 
 [[ -f "$PAIR_INDEX" ]] || { echo "missing pair index: $PAIR_INDEX" >&2; exit 1; }

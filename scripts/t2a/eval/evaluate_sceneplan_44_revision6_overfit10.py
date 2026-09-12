@@ -68,7 +68,7 @@ from stable_audio_tools.training.metrics.fad_metrics import (  # noqa: E402
 
 
 DEFAULT_RUN = Path(
-    "/mnt/sdb/model_archives/p10_pre_v11_20260831/pilots/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//p10_pre_v11_20260831/pilots/"
     "sceneplan_dit_speechexp_noalign_15s_overfit10_20260828"
 )
 MODEL_CONFIG = REPO_ROOT / (
@@ -80,7 +80,7 @@ DATASET_CONFIG = REPO_ROOT / (
     "sceneplan_44_speechexp_noalign_15s_overfit10.json"
 )
 VAE_CHECKPOINT = Path(
-    "/mnt/sdc/ckpts/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
 )
 CLAP_CHECKPOINT = REPO_ROOT / "load/clap_score/630k-audioset-fusion-best.pt"
 

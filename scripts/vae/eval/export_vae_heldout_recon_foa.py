@@ -8,6 +8,7 @@ and aggregate reconstruction metrics.
 """
 
 from __future__ import annotations
+import os
 
 import argparse
 import csv
@@ -75,14 +76,14 @@ def main() -> None:
 
     heldout_eval.SLS_DIR = args.sls_dir or _first_existing(
         [
-            "/mnt/sdb/audio_dataset/datasets/spatial_librispeech/ambisonics",
-            "/mnt/sdd/audio_dataset/datasets/spatial_librispeech/ambisonics",
+            os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/spatial_librispeech/ambisonics",
+            os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/spatial_librispeech/ambisonics",
         ]
     )
     heldout_eval.SLS_PARQUET = args.sls_parquet or _first_existing(
         [
-            "/mnt/sdb/audio_dataset/datasets/spatial_librispeech/metadata/metadata.parquet",
-            "/mnt/sdd/audio_dataset/datasets/spatial_librispeech/metadata/metadata.parquet",
+            os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/spatial_librispeech/metadata/metadata.parquet",
+            os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/spatial_librispeech/metadata/metadata.parquet",
         ]
     )
 

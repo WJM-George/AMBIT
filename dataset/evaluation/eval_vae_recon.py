@@ -28,14 +28,14 @@ Output: writes into  <output-base>/<tag>/  (default base = recon dir's parent):
     summary.md          human-readable table
 
 Run:
-    cd /home/tanhe/dataset_storage/stable-audio-tools
+    cd ./stable-audio-tools
     uv run python dataset/evaluation/eval_vae_recon.py \
-        --recon-dir /mnt/sdc/vae_4ch_train_result_audio \
+        --recon-dir ${AMBIT_CKPT_ROOT}/vae_4ch_train_result_audio \
         --tag oobleck_ds2048_z64 \
-        --output-base /mnt/sdc/vae_4ch_train_result_audio
+        --output-base ${AMBIT_CKPT_ROOT}/vae_4ch_train_result_audio
 
 The --tag is the SHORT name of the VAE setting; results land in
-/mnt/sdc/vae_4ch_train_result_audio/<tag>/.
+${AMBIT_CKPT_ROOT}/vae_4ch_train_result_audio/<tag>/.
 """
 from __future__ import annotations
 

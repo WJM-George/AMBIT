@@ -11,7 +11,7 @@ from typing import Any
 
 
 DEFAULT_ROOT = Path(
-    "/mnt/sdb/model_archives/p10_pre_v11_20260831/sceneplan_dit_fail/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//p10_pre_v11_20260831/sceneplan_dit_fail/"
     "sceneplan_dit_v2_r6_300m/evaluation/"
     "p10_sound_simple_5way_v1"
 )

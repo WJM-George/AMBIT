@@ -21,7 +21,7 @@ import pyarrow.compute as pc
 import pyarrow.parquet as pq
 
 
-DATASET_ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m")
+DATASET_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m")
 DEFAULT_CATALOG = (
     DATASET_ROOT / "source_catalog/nonspeech/nonspeech_signal_catalog.parquet"
 )
@@ -104,7 +104,7 @@ def main() -> int:
     catalog = args.catalog.expanduser().resolve(strict=True)
     output = args.output_root.expanduser().resolve(strict=False)
     try:
-        output.relative_to("/mnt/sdb")
+        output.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
     except ValueError as error:
         raise ValueError(f"A2T pilot must persist on SDB: {output}") from error
 

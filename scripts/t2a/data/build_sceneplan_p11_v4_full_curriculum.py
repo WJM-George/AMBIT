@@ -74,7 +74,7 @@ from stable_audio_tools.data.sceneplan_p11_v4_dataset import (  # noqa: E402
 )
 
 
-ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m")
+ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m")
 P11_ROOT = ROOT / "p11_single_turn_15s_v2"
 DEFAULT_MANIFEST = P11_ROOT / "manifests/p11_train_4p8m_v6.sqlite"
 DEFAULT_INDEX = (

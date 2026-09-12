@@ -8,6 +8,7 @@ reconstruction.  Single-source and overlapping frames are reported separately
 so source-level geometry is not conflated with mixture-energy approximation.
 """
 from __future__ import annotations
+import os
 
 import argparse
 import itertools
@@ -278,17 +279,17 @@ def main() -> int:
     parser.add_argument(
         "--latent-root",
         type=Path,
-        default=Path("/mnt/sdb/audio_dataset/spatial_cot_v1/latents/validation"),
+        default=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/spatial_cot_v1/latents/validation"),
     )
     parser.add_argument(
         "--codec-root",
         type=Path,
-        default=Path("/mnt/sdb/audio_dataset/spatial_cot_v1/codec"),
+        default=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/spatial_cot_v1/codec"),
     )
     parser.add_argument(
         "--render-root",
         type=Path,
-        default=Path("/mnt/sdb/audio_dataset/spatial_cot_v1/eval_rendered/validation"),
+        default=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/spatial_cot_v1/eval_rendered/validation"),
     )
     parser.add_argument("--family-ranks", type=_parse_ranks, default=[274, 8179])
     parser.add_argument(

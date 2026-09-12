@@ -2,6 +2,7 @@
 """Fail-closed audit for compact P7.5 model ScenePlan manifests."""
 
 from __future__ import annotations
+import os
 
 import argparse
 from collections import Counter
@@ -60,7 +61,7 @@ from stable_audio_tools.data.model_sceneplan import (  # noqa: E402
 from stable_audio_tools.data.sceneplan_v2 import compile_442_token_masks  # noqa: E402
 
 
-TOKENIZER = Path("/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B")
+TOKENIZER = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen/Qwen3.5-0.8B")
 
 
 def require(condition: bool, message: str) -> None:

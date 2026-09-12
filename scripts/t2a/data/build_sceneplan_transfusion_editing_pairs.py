@@ -69,7 +69,7 @@ EDITING_AR_INPUT_CONTRACT = "source_foa_latent_plus_raw_edit_request_v2"
 FULL_COUNTS = {"train": 1_000_000, "validation": 20_000, "test": 5_000}
 SOURCE_INDICES = {
     split: Path(
-        "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/"
+        os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/revisions/"
         "speech_expansion_noalign_15s_v1/training_index"
     )
     / f"{split}.sqlite"
@@ -1022,9 +1022,9 @@ def build(args: argparse.Namespace) -> Path:
     source_index = Path(args.source_index or SOURCE_INDICES[split]).resolve(strict=True)
     target_root = Path(args.output_root).expanduser().resolve()
     try:
-        target_root.relative_to("/mnt/sdb")
+        target_root.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
     except ValueError as error:
-        raise ValueError("Editing data output_root must reside on /mnt/sdb") from error
+        raise ValueError("Editing data output_root must reside on ${AMBIT_DATA_ROOT}") from error
     index_root = target_root / "pair_index"
     index_root.mkdir(parents=True, exist_ok=True)
     final_path = index_root / f"{split}.sqlite"

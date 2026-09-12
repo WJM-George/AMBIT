@@ -5,7 +5,7 @@
     "datasets": [
         {
             "id": "sceneplan_v2_speech_expansion_noalign_15s_v1_train_semantic_v2",
-            "path": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1/training_index/train.sqlite",
+            "path": "${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1/training_index/train.sqlite",
             "weight": 1.0
         }
     ],

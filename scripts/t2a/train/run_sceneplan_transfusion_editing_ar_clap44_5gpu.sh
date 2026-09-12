@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
-REPO="${P10_REPO:-/mnt/sdc/stable-audio-tools-workspace}"
-ROOT="${EDITING_DATA_ROOT:-/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1}"
+REPO="${P10_REPO:-${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace}"
+ROOT="${EDITING_DATA_ROOT:-${AMBIT_DATA_ROOT}/sceneplan_transfusion_editing_v1}"
 PHASE="${CLAP44_AR_PHASE:-pilot}"
 VARIANT="${CLAP44_AR_VARIANT:-global_and_sequence}"
 MODE="${EDITING_AR_MODE:-joint}"
@@ -19,8 +19,8 @@ NPROC="${#GPU_IDS[@]}"
 case "$MODE" in joint|ar_pretrain) ;; *) echo '[clap44-ar] invalid EDITING_AR_MODE' >&2; exit 2 ;; esac
 case "$PHASE" in pilot|full) ;; *) echo '[clap44-ar] phase must be pilot or full' >&2; exit 2 ;; esac
 case "$VARIANT" in latent_only|global_only|sequence_only|global_and_sequence) ;; *) echo '[clap44-ar] unknown feature variant' >&2; exit 2 ;; esac
-RUN_DIR="${CLAP44_AR_RUN_DIR:-/mnt/sdb/model_archives/transfusion_editing/mainline/editing_ar_clap44_${MODE}_${VARIANT}_${PHASE}_seed42_v1}"
-BASE_RUN="${BASE_DIT_RUN:-/mnt/sdb/model_archives/transfusion_editing/mainline/sceneplan_transfusion_editing_dit_full_seed42_v1}"
+RUN_DIR="${CLAP44_AR_RUN_DIR:-${AMBIT_CKPT_ROOT}/transfusion_editing/mainline/editing_ar_clap44_${MODE}_${VARIANT}_${PHASE}_seed42_v1}"
+BASE_RUN="${BASE_DIT_RUN:-${AMBIT_CKPT_ROOT}/transfusion_editing/mainline/sceneplan_transfusion_editing_dit_full_seed42_v1}"
 export TOKENIZERS_PARALLELISM=false HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 OMP_NUM_THREADS=1
 ulimit -Sn 65536
 cd "$REPO"

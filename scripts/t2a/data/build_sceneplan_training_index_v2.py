@@ -245,7 +245,7 @@ def main() -> int:
         )
     ).expanduser().resolve(strict=False)
     try:
-        output_root.relative_to("/mnt/sdb")
+        output_root.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
     except ValueError as error:
         raise ValueError(f"training indexes must be on SDB: {output_root}") from error
     expected = (

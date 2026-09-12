@@ -12,6 +12,7 @@ added to the user-facing ScenePlan.
 """
 
 from __future__ import annotations
+import os
 
 import argparse
 import hashlib
@@ -30,13 +31,13 @@ from transformers import AutoTokenizer
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
 DEFAULT_ROOT = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/"
     "audit/p10_speech_alignment_pilot_100_v1"
 )
 DEFAULT_TEST_INDEX = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/training_index/test.sqlite"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/training_index/test.sqlite"
 )
-DEFAULT_TOKENIZER = Path("/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B")
+DEFAULT_TOKENIZER = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen/Qwen3.5-0.8B")
 SAMPLE_RATE = 44_100
 VAE_HOP_SAMPLES = 1024
 MAX_CAPTION_TOKENS = 512

@@ -8,6 +8,7 @@ and fail-closed capability limits.
 """
 
 from __future__ import annotations
+import os
 
 import argparse
 import copy
@@ -59,11 +60,11 @@ from stable_audio_tools.data.scene_sketch_v1 import sha256_json  # noqa: E402
 
 
 DEFAULT_MANIFEST = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/"
     "p11_audio_aware_edit_v2/manifests/p11_train_pilot90_v8_seed42.sqlite"
 )
 DEFAULT_CODEC = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/"
     "p11_single_turn_15s_v2/model_sceneplan_codec_v4"
 )
 DEFAULT_OUTPUT = REPO_ROOT / (

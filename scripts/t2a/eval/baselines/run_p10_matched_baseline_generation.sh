@@ -3,10 +3,10 @@ set -euo pipefail
 
 # Generate every locally reproducible public baseline on one frozen P10 panel.
 # Each incompatible upstream model keeps its own pinned environment.
-REPO_ROOT="${REPO_ROOT:-/home/tanhe/dataset_storage/stable-audio-tools}"
-UPSTREAM_ROOT="${UPSTREAM_ROOT:-/home/tanhe/dataset_storage/evaluation_benchmark/repos}"
-ASSET_ROOT="${ASSET_ROOT:-/mnt/sdc/ckpts/baselines/p10_60k_15row_v1}"
-BENCHMARK_ROOT="${BENCHMARK_ROOT:-/mnt/sdc/ckpts/baselines/p10_v7_40k_140k_50x3_v1}"
+REPO_ROOT="${REPO_ROOT:-./stable-audio-tools}"
+UPSTREAM_ROOT="${UPSTREAM_ROOT:-./evaluation_benchmark/repos}"
+ASSET_ROOT="${ASSET_ROOT:-${AMBIT_CKPT_ROOT}/baselines/p10_60k_15row_v1}"
+BENCHMARK_ROOT="${BENCHMARK_ROOT:-${AMBIT_CKPT_ROOT}/baselines/p10_v7_40k_140k_50x3_v1}"
 MANIFEST="${MANIFEST:-${BENCHMARK_ROOT}/generation_requests.jsonl}"
 ADAPTER_ROOT="${REPO_ROOT}/scripts/t2a/eval/baselines"
 LOG_ROOT="${BENCHMARK_ROOT}/logs"

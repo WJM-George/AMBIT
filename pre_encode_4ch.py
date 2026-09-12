@@ -18,9 +18,9 @@ Run (single node, all visible GPUs):
 
   python pre_encode_4ch.py \
     --model-config stable_audio_tools/configs/model_configs/autoencoders/stable_audio_4ch_vae.json \
-    --ckpt-path /mnt/sdc/ckpts/vae_4ch/unwrapped_4ch_vae.ckpt \
+    --ckpt-path ${AMBIT_CKPT_ROOT}/vae_4ch/unwrapped_4ch_vae.ckpt \
     --dataset-config stable_audio_tools/configs/dataset_configs/local_4ch_example.json \
-    --output-path /mnt/sdc/audio_latents/stage1_vae_4ch \
+    --output-path ${AMBIT_CKPT_ROOT}/audio_latents/stage1_vae_4ch \
     --no-pad --batch-size 1 --num-workers 8
 
 Notes:
@@ -177,7 +177,7 @@ def main():
                         help="Stereo VAE ckpt for warm-start dry run (latents not final)")
     parser.add_argument("--zero-init-output", action="store_true")
     parser.add_argument("--dataset-config", required=True)
-    parser.add_argument("--output-path", default="/mnt/sdc/audio_latents/stage1_vae_4ch")
+    parser.add_argument("--output-path", default=os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/audio_latents/stage1_vae_4ch")
     parser.add_argument("--batch-size", type=int, default=1)
     parser.add_argument("--sample-size", type=int, default=1320960,
                         help="Pad/crop length in samples when not using --no-pad")

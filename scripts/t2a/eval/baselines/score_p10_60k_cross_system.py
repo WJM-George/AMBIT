@@ -36,14 +36,14 @@ from stable_audio_tools.training.metrics.fad_metrics import (
 )
 
 
-DEFAULT_BENCHMARK = Path("/mnt/sdc/ckpts/baselines/p10_60k_15row_v1")
+DEFAULT_BENCHMARK = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/baselines/p10_60k_15row_v1")
 DEFAULT_SOURCE = Path(
-    "/mnt/sdb/model_archives/p10_pre_v11_20260831/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//p10_pre_v11_20260831/"
     "sceneplan_dit_v7_sao_300m_from_scratch_160k/evaluation/"
     "p10_gt_vae_20k_40k_60k_instrumental_music_v1"
 )
 DEFAULT_WHISPER = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/models/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/models/"
     "faster-distil-whisper-large-v3"
 )
 REFERENCE_ID = "ground_truth"

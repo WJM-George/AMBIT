@@ -6,6 +6,7 @@ understanding system. They are used offline only. No compiler, supplied count,
 or intent annotation is an input to Generation AR at evaluation/inference.
 """
 from __future__ import annotations
+import os
 import argparse
 from copy import deepcopy
 import hashlib
@@ -286,5 +287,5 @@ def make_pairs(seed,count_per_group,codec,split=None):
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--output',type=Path,required=True);parser.add_argument('--per-count',type=int,default=8);parser.add_argument('--seed',type=int,default=252);args=parser.parse_args()
     from stable_audio_tools.data.model_sceneplan_codec_v4 import ModelScenePlanCodecV4
-    codec=ModelScenePlanCodecV4('/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4');records,attempts=make_pairs(args.seed,args.per_count,codec)
+    codec=ModelScenePlanCodecV4(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4");records,attempts=make_pairs(args.seed,args.per_count,codec)
     args.output.mkdir(parents=True,exist_ok=False);(args.output/'pairs.json').write_text(json.dumps({'records':records,'test_used':False,'quality':'DETERMINISTIC_CHECKS_PASS_MANUAL_ENGLISH_SEMANTIC_REVIEW_PENDING'},ensure_ascii=False,indent=2)+'\n');print(json.dumps({'records':len(records),'pairs':len(records)*5,'attempts':attempts,'output':str(args.output)}))

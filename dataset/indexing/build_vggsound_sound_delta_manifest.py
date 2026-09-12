@@ -93,28 +93,28 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--vggsound-csv",
         type=Path,
-        default=Path("/mnt/sdc/audio_dataset/datasets/vggsound/snapshot/vggsound.csv"),
+        default=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/audio_dataset/datasets/vggsound/snapshot/vggsound.csv"),
     )
     parser.add_argument(
         "--existing-audio-root",
         type=Path,
-        default=Path("/mnt/sdc/audio_dataset/datasets/vggsound/extracted/audio"),
+        default=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/audio_dataset/datasets/vggsound/extracted/audio"),
     )
     parser.add_argument(
         "--sceneplan-root",
         type=Path,
-        default=Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m"),
+        default=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m"),
     )
     parser.add_argument(
         "--audiocaps-full-root",
         type=Path,
-        default=Path("/mnt/sdd/audio_dataset/datasets/audiocaps/snapshot/data"),
+        default=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/audiocaps/snapshot/data"),
     )
     parser.add_argument(
         "--external-manifest-root",
         type=Path,
         default=Path(
-            "/mnt/sdb/audio_dataset/evaluation_benchmark/"
+            os.environ.get("AMBIT_DATA_ROOT", "data") + "/evaluation_benchmark/"
             "p10_evaluation_benchmark_v1/manifests"
         ),
     )
@@ -122,7 +122,7 @@ def parse_args() -> argparse.Namespace:
         "--output-root",
         type=Path,
         default=Path(
-            "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/supplements/"
+            os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/supplements/"
             "vggsound_sound_delta_v1/source_selection"
         ),
     )
@@ -145,9 +145,9 @@ def main() -> int:
     if args.pilot_selection_rows <= 0:
         raise ValueError("pilot-selection-rows must be positive")
     try:
-        output_root.relative_to(Path("/mnt/sdb"))
+        output_root.relative_to(Path(os.environ.get("AMBIT_DATA_ROOT", "data")))
     except ValueError as error:
-        raise ValueError("delta manifests must live on /mnt/sdb") from error
+        raise ValueError("delta manifests must live on ${AMBIT_DATA_ROOT}") from error
 
     (
         train_assets,

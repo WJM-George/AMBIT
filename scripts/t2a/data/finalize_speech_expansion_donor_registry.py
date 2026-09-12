@@ -23,7 +23,7 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 
-DATASET_ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m")
+DATASET_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m")
 REVISION_ROOT = DATASET_ROOT / "revisions/speech_expansion_noalign_15s_v1"
 DEFAULT_RESERVE = (
     REVISION_ROOT / "sources/candidates/existing_train_reserve.parquet"
@@ -282,7 +282,7 @@ def main() -> int:
     external_root = args.external_qc.expanduser().resolve(strict=True)
     ledger = args.ledger.expanduser().resolve(strict=True)
     output = args.output.expanduser().resolve(strict=False)
-    if not str(output).startswith("/mnt/sdb/audio_dataset/"):
+    if not str(output).startswith(os.environ.get("AMBIT_DATA_ROOT", "data")):
         raise ValueError("speech donor registry must remain on SDB")
 
     formal_audio, formal_text, ledger_by_hash = formal_lineage(ledger)

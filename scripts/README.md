@@ -37,14 +37,14 @@ scripts/
 | Build Spatial-CoT artifacts/catalog | `t2a/data/prepare_spatial_cot_v1_artifacts.sh` |
 | Render + stream-preencode Spatial-CoT data | `t2a/data/run_spatial_cot_data.sh` |
 | Train final Spatial-CoT model | `t2a/train/run_t2a_spatial_chat_500m_8gpu.sh` |
-| Transfusion OPSD: current native AR / DiT training route | [method and code map](/mnt/sdc/stable-audio-tools-workspace/docs/transfusion_opsd.md): V46 exact existing-data matrix completed, all native planners16/16. Retain small actual DiT direction gains; free-duration execution regressions and quote-format score artifacts are recorded. No new model or promotion. Continue with actual data types, explicit lexical calibration and execution credit for native decisions; V45 fixed recipe repetition stopped |
+| Transfusion OPSD: current native AR / DiT training route | [method and code map](${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace/docs/transfusion_opsd.md): V46 exact existing-data matrix completed, all native planners16/16. Retain small actual DiT direction gains; free-duration execution regressions and quote-format score artifacts are recorded. No new model or promotion. Continue with actual data types, explicit lexical calibration and execution credit for native decisions; V45 fixed recipe repetition stopped |
 | Other Qwen T2A training/eval helpers | `t2a/` |
 | V2A demos | `v2a/` |
 
 ## Common commands
 
 ```bash
-cd /home/tanhe/dataset_storage/stable-audio-tools
+cd ./stable-audio-tools
 
 # VAE heldout sweep
 MODE=heldout GPU=4 bash scripts/vae/eval/run_vae_sweep.sh

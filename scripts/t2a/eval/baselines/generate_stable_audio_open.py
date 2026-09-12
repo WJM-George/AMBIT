@@ -2,6 +2,7 @@
 """Generate the frozen Music/Sound panel with Stable Audio Open 1.0."""
 
 from __future__ import annotations
+import os
 
 import argparse
 import json
@@ -23,11 +24,11 @@ from baseline_common import (
 
 
 DEFAULT_CONFIG = Path(
-    "/mnt/sdc/ckpts/baselines/p10_60k_15row_v1/models/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/baselines/p10_60k_15row_v1/models/"
     "stable-audio-open-1.0-config/model_config.json"
 )
 DEFAULT_WEIGHTS = Path(
-    "/mnt/sdc/ckpts/pretrained/stable-audio-open-1.0/model.safetensors"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/stable-audio-open-1.0/model.safetensors"
 )
 
 

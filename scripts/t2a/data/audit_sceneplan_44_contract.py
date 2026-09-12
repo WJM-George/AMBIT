@@ -25,13 +25,13 @@ from stable_audio_tools.data.model_sceneplan import (
 
 
 DEFAULT_INDEX = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/training_index/train.sqlite"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/training_index/train.sqlite"
 )
 DEFAULT_OUTPUT = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/audit/conditioning_v3/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/audit/conditioning_v3/"
     "sceneplan_44_train_audit.json"
 )
-DEFAULT_QWEN = Path("/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B")
+DEFAULT_QWEN = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen/Qwen3.5-0.8B")
 
 
 def _sha256(path: Path) -> str:

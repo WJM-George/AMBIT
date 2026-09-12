@@ -50,7 +50,7 @@ def parse_args() -> argparse.Namespace:
         "--candidate-root",
         type=Path,
         default=Path(
-            "/mnt/sdb/audio_dataset/evaluation_benchmark/"
+            os.environ.get("AMBIT_DATA_ROOT", "data") + "/evaluation_benchmark/"
             "p10_evaluation_benchmark_v1/manifests"
         ),
     )
@@ -58,7 +58,7 @@ def parse_args() -> argparse.Namespace:
         "--output-root",
         type=Path,
         default=Path(
-            "/mnt/sdb/audio_dataset/evaluation_benchmark/p10_ood_3000_v1"
+            os.environ.get("AMBIT_DATA_ROOT", "data") + "/evaluation_benchmark/p10_ood_3000_v1"
         ),
     )
     parser.add_argument("--fingerprint-workers", type=int, default=4)

@@ -247,19 +247,19 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output-root", type=Path, required=True)
     parser.add_argument(
         "--base-index", type=Path,
-        default=Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/sceneplans_model_v1/index.parquet"),
+        default=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/sceneplans_model_v1/index.parquet"),
     )
     parser.add_argument(
         "--base-catalog", type=Path,
-        default=Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/source_catalog/nonspeech/nonspeech_signal_catalog.parquet"),
+        default=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/source_catalog/nonspeech/nonspeech_signal_catalog.parquet"),
     )
     parser.add_argument(
         "--audiocaps-root", type=Path,
-        default=Path("/mnt/sdd/audio_dataset/datasets/audiocaps/snapshot/data"),
+        default=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/audiocaps/snapshot/data"),
     )
     parser.add_argument(
         "--external-manifest-root", type=Path,
-        default=Path("/mnt/sdb/audio_dataset/evaluation_benchmark/p10_evaluation_benchmark_v1/manifests"),
+        default=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/evaluation_benchmark/p10_evaluation_benchmark_v1/manifests"),
     )
     return parser.parse_args()
 
@@ -268,9 +268,9 @@ def main() -> int:
     args = parse_args()
     output_root = args.output_root.expanduser().resolve()
     try:
-        output_root.relative_to(Path("/mnt/sdb"))
+        output_root.relative_to(Path(os.environ.get("AMBIT_DATA_ROOT", "data")))
     except ValueError as error:
-        raise ValueError("Sound expansion universe must live on /mnt/sdb") from error
+        raise ValueError("Sound expansion universe must live on ${AMBIT_DATA_ROOT}") from error
     output_root.mkdir(parents=True, exist_ok=True)
     base_index = args.base_index.expanduser().resolve(strict=True)
     base_catalog = args.base_catalog.expanduser().resolve(strict=True)

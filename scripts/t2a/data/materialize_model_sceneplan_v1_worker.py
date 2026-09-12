@@ -2,6 +2,7 @@
 """Persistent single-GPU P8 worker for revision-5 model ScenePlans."""
 
 from __future__ import annotations
+import os
 
 import argparse
 import concurrent.futures
@@ -128,8 +129,8 @@ def main() -> int:
     sceneplan_root = args.sceneplan_root.expanduser().resolve(strict=True)
     output_root = args.output_root.expanduser().resolve(strict=False)
     try:
-        sceneplan_root.relative_to("/mnt/sdb")
-        output_root.relative_to("/mnt/sdb")
+        sceneplan_root.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
+        output_root.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
     except ValueError as error:
         raise ValueError("P8 inputs and outputs must remain on SDB") from error
     if args.supplement_mode:

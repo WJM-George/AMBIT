@@ -18,7 +18,7 @@ import torch
 from safetensors import safe_open
 
 
-DATASET_ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m")
+DATASET_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m")
 REVISION_ROOT = DATASET_ROOT / "revisions/speech_expansion_noalign_15s_v1"
 DEFAULT_SCENEPLANS = REVISION_ROOT / "sceneplans_model_v2_delta"
 DEFAULT_MATERIALIZED = REVISION_ROOT / "materialized_delta"
@@ -151,7 +151,7 @@ def main() -> int:
     required_median = 20.0 * math.log10(0.6 / 0.4)
     measured_median = float(np.median(direct_ratios))
     require(abs(measured_median - required_median) <= 0.02, "overlap loudness median changed")
-    storage = os.statvfs("/mnt/sdb")
+    storage = os.statvfs(os.environ.get("AMBIT_DATA_ROOT", "data"))
     free_fraction = storage.f_bavail / storage.f_blocks
     require(free_fraction >= 0.20, "SDB free fraction fell below 20%")
     audit = {

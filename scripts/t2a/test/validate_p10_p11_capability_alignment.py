@@ -2,6 +2,7 @@
 """Fail-closed audit of the P11 planner profile against the active P10 DiT."""
 
 from __future__ import annotations
+import os
 
 import argparse
 import copy
@@ -70,7 +71,7 @@ DEFAULT_P11_DATASET = REPO_ROOT / (
     "sceneplan_p11_pilot90_curriculum_pair_aware_transfusion_cot_v4_reliable_asr_v1.json"
 )
 DEFAULT_P10_INDEX = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/revisions/"
     "speech_expansion_noalign_15s_v1/training_index/train.sqlite"
 )
 

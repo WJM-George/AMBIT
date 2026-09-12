@@ -1,46 +1,161 @@
 # AMBIT
 
-这是从独立 staging 副本整合到 AMBIT 的源码目录，包含数据构造、生成/编辑 AR 与 DiT、CLAP 及共用训练和评估代码。原工作区和 staging 均保留；模型、数据和环境不随代码复制。尚未完成跨机器运行验证。
+**Executable Scene Plans for Native Ambisonic Generation and Editing**
 
-已完成一轮功能去重：编辑数据读取、内存音频/RIR 辅助逻辑、评估聚合和 VAE 解码统一实现，旧入口保留兼容；清除了孤立本机运维脚本及 retired P10 的历史实现。详见 [整合记录](docs/CLEANUP.md)。
+Official implementation of AMBIT, a Transfusion-style framework for first-order Ambisonic (FOA) generation and instruction-guided editing.
 
-本次合入又统一了 artifact I/O、caption 模型加载、数据审计配额及评估元数据配置。可从 [功能入口](docs/ENTRYPOINTS.md) 查找实现，迁移范围和验证见 [本次合入记录](docs/INTEGRATION.md)。原 Python 包名保持 `stable_audio_tools`，以兼容现有 import 和检查点。
+Creating and revising a spatial scene requires deciding what each source produces, when it is active, and where it moves, then realizing those decisions acoustically while leaving everything else untouched. AMBIT represents that target with an executable intermediate, **ScenePlan**: a source-wise specification of content, optional transcript, activity interval, and 3D trajectory. A deterministic compiler turns the plan into renderer conditions. A shared Transformer predicts the plan autoregressively from a qualitative request or an edit instruction, and renders FOA latents with rectified flow.
 
-## 目录
+For editing, the planner also receives contrastively aligned FOA audio–text features of the reference recording, and the renderer keeps the full reference latent sequence so unmodified sources can be preserved.
 
-| 目录 | 内容 |
+```text
+request or edit instruction
+        │
+        ▼
+   ScenePlan AR  ──compile──►  FOA DiT (rectified flow)
+        ▲                            │
+        │                            ▼
+   optional CLAP-FOA            native FOA waveform
+   reference features           (WYZX / ACN / SN3D)
+```
+
+## Highlights
+
+- **Native FOA generation and editing** through one planner–renderer stack, rather than stereo proxies or implicit source assignment.
+- **ScenePlan** as structured, executable chain-of-thought: content, timing, and trajectory are explicit and compilable.
+- **FOA-aware VAE** with shared-decoder reconstruction of the omnidirectional W channel, asymmetric grouped KL, and spatial covariance supervision.
+- **On-policy self-distillation (OPSD)** that couples discrete plan-decision feedback with audio-validated velocity targets for the renderer.
+
+## Repository layout
+
+| Path | Role |
 | --- | --- |
-| `stable_audio_tools/` | 共用模型、数据读取、生成/编辑 AR 与 DiT、CLAP、训练和推理实现 |
-| `dataset/` | 数据索引、caption、FOA 合成及语音处理 |
-| `scripts/t2a/data/` | ScenePlan 与编辑数据构造 |
-| `scripts/t2a/inference/` | 生成与编辑推理入口 |
-| `scripts/t2a/train/` | AR、DiT、CLAP 训练入口 |
-| `scripts/t2a/experiments/` | AR/CLAP 各版本研究实现；不代表全部推荐使用 |
-| `data_download/` | 独立的数据下载包及脚本 |
-| `research/` | 新增 500k 数据与 1.75M 续训代码快照，尚需路径适配 |
-| `tests/` | 原有测试源码 |
-| `docs/SOURCE_MANIFEST.json` | 初次复制时每个文件的原路径、大小和 SHA-256（历史记录） |
-| `docs/CURRENT_SOURCE_AUDIT.json` | 整合后的 Python/Shell 语法、哈希和绝对路径检查 |
-| `docs/CLEANUP_MANIFEST.json` | 此次清理的文件变更与前后哈希 |
-| `docs/INTEGRATION_MANIFEST.json` | staging → AMBIT 的文件差异和来源一致性检查 |
+| `stable_audio_tools/` | Models, data loaders, training, and inference library |
+| `stable_audio_tools/configs/` | Model and dataset configs (paths use `${AMBIT_*}` placeholders) |
+| `scripts/t2a/inference/` | Generation and editing entry points |
+| `scripts/t2a/train/` | AR, DiT, and CLAP training |
+| `scripts/t2a/eval/` | Official evaluation and baseline scoring |
+| `scripts/t2a/data/` | ScenePlan construction and materialization |
+| `dataset/` | Source indexing, captioning, and FOA synthesis |
+| `data_download/` | Public-dataset downloaders |
+| `tests/` | Unit and contract tests |
 
-保留原包名与相对结构以减少 import 破坏。未复制模型权重、实际数据、音视频、缓存、虚拟环境、训练日志或原 `.git`。共用源码及脚本中仍包含 OPSD 和历史实验；这些不视为已完成的发布功能，也没有自动执行。
+The Python package name remains `stable_audio_tools` so existing checkpoints and imports stay compatible.
 
-## 状态边界
+## Installation
 
-- 生成 AR→DiT：已有 8k 评估和 CLI 冒烟记录；原记录仍有人工听评和自由补全合理性审查未完成。
-- Dataset：最新编辑队列 RESULT 已完成，新增空间/多声源 500k train 数据已有 DATA_READY；训练 pair 总量可达 1.75M。
-- 编辑：既有 AR20k 音频及论文评估完成，DiT50k/65k 结果已有记录；新结构 AR/DiT 联训和 1.75M 数据续训不可据此宣称最终完成。
-- CLAP：新增 50k 训练和五检查点 20k 选型完成，新增 10k 为 AR 接入主候选；不代表后续所有 AR 质量验收完成。
-- OPSD：仍为研究开发内容。
+Python 3.10 is required.
 
-依据来自原工作区 `reports/editing_pipeline_20260912/RESULT.json`、`reports/generation_ar_CURRENT.json`、`reports/editing_dit_mixed1750k_30k_20260912/README.md`，以及原数据盘 AR/CLAP 的 CURRENT 与 README。部分交接文档落后于后续 RESULT；此处不以旧状态推断实时训练步数。
+```bash
+git clone https://github.com/WJM-George/AMBIT.git
+cd AMBIT
+uv sync --extra train --extra spatial
+```
 
-## 发布前尚需完成
+Alternatively:
 
-1. 修复或完成 GitHub 仓库连接。合入前 AMBIT 只有不完整的 `.git`，Git 无法识别为仓库；本次保留它，没有声称 clone 成功，也没有 commit/push。
-2. 选择正式发布的训练/推理版本；实际重复实现已合并，相互依赖的历史实验仍保留。
-3. 将检查报告列出的本机绝对路径替换为明确的输入参数或配置，核对动态加载及外部资源依赖。不要直接运行历史 launcher，它们可能操作原数据目录。
-4. 在隔离环境验证安装、正式 CLI 和代表性 CPU/GPU 工作流。本次在 AMBIT 下通过 35 项 CPU 测试、静态检查和提取函数一致性检查；staging 阶段另有 16 条真实数据读取对照。这不是完整训练/推理复现。
+```bash
+pip install -e ".[train,spatial]"
+```
 
-上游 `LICENSE`、`LICENSES/` 和作者信息原样保留；此快照没有重新声明全部代码归属。
+Copy the environment template and point it at **your** data and checkpoint directories:
+
+```bash
+cp .env.example .env
+```
+
+| Variable | Default | Meaning |
+| --- | --- | --- |
+| `AMBIT_DATA_ROOT` | `data` | ScenePlan indexes, latents, and synthesized FOA |
+| `AMBIT_CKPT_ROOT` | `checkpoints` | VAE, DiT, AR, CLAP, and pretrained backbones |
+| `AMBIT_CACHE_ROOT` | `cache` | Hugging Face and download caches |
+
+JSON configs expand `${AMBIT_DATA_ROOT}`, `${AMBIT_CKPT_ROOT}`, and `${AMBIT_CACHE_ROOT}`. Do not hard-code machine mounts in configs or launchers.
+
+## Checkpoints
+
+Place released or locally trained weights under `$AMBIT_CKPT_ROOT`, for example:
+
+```text
+$AMBIT_CKPT_ROOT/
+  pretrained/Qwen/Qwen3.5-0.8B/
+  compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt
+  dit/sceneplan_dit_v11_.../checkpoints/*.ckpt
+```
+
+Pretrained AMBIT weights will be linked here when they are released. Until then, pass explicit `--checkpoint` / `--release` paths.
+
+## Inference
+
+**Text-to-FOA generation** (English request → ScenePlan AR → frozen renderer):
+
+```bash
+python scripts/t2a/inference/generate_foa_from_raw_english.py \
+  --request "A dog barks on the left while rain falls behind me." \
+  --checkpoint "$AMBIT_CKPT_ROOT/generation_ar.ckpt" \
+  --snapshot "$AMBIT_CKPT_ROOT/generation_ar_snapshot" \
+  --output outputs/generation_demo
+```
+
+**Instruction-guided editing** (reference FOA + instruction → new ScenePlan + edited FOA):
+
+```bash
+python scripts/t2a/inference/edit_foa_with_clap44.py \
+  --release "$AMBIT_CKPT_ROOT/editing_clap44_release.pt" \
+  --release-sha256 <sha256> \
+  --source path/to/source.wav \
+  --instruction "Move the speaker behind me and keep the music unchanged." \
+  --output-dir outputs/edit_demo
+```
+
+Inputs and outputs are 44.1 kHz, 4-channel FOA in WYZX / ACN / SN3D. Set `CUDA_VISIBLE_DEVICES` to whatever GPUs you want to use.
+
+## Training
+
+FOA VAE:
+
+```bash
+python train_4ch.py \
+  --model-config stable_audio_tools/configs/model_configs/autoencoders/stable_audio_4ch_vae_ds1024_z64_wdmix_scm.json \
+  --dataset-config stable_audio_tools/configs/dataset_configs/local_4ch_example.json \
+  --save-dir "$AMBIT_CKPT_ROOT/vae"
+```
+
+Generation AR, editing DiT / AR / CLAP, and the shared renderer use the scripts in `scripts/t2a/train/` with the configs under `stable_audio_tools/configs/`. See [docs/TRAINING.md](docs/TRAINING.md).
+
+## Data
+
+Public source corpora are downloaded with `data_download/`. ScenePlan construction and FOA synthesis live under `dataset/` and `scripts/t2a/data/`. Layout and commands: [docs/DATA.md](docs/DATA.md).
+
+Generation uses 1.6M / 32k / 8k train–val–test scenes. Editing uses a separate 1M / 20k / 5k pair split.
+
+## Evaluation
+
+Official scorers and baseline runners are in `scripts/t2a/eval/`. They read paths from the environment and from the contracts you pass in; they do not assume a particular machine layout.
+
+```bash
+python -m pytest -q tests
+```
+
+Some tests skip unless the corresponding codec or data artifacts exist under `$AMBIT_DATA_ROOT`.
+
+## Citation
+
+If you use this repository, please cite:
+
+```bibtex
+@inproceedings{ambit2027,
+  title     = {AMBIT: Executable Scene Plans for Native Ambisonic Generation and Editing},
+  author    = {Anonymous},
+  booktitle = {International Conference on Learning Representations},
+  year      = {2027}
+}
+```
+
+## Acknowledgements
+
+AMBIT builds on [stable-audio-tools](https://github.com/Stability-AI/stable-audio-tools). The upstream MIT license and third-party notices are retained in `LICENSE` and `LICENSES/`.
+
+## License
+
+MIT. See `LICENSE`.

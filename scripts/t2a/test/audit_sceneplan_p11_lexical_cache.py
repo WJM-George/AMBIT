@@ -2,6 +2,7 @@
 """Audit frozen-ASR reliability without exposing target text to P11 inputs."""
 
 from __future__ import annotations
+import os
 
 import argparse
 from collections import Counter
@@ -28,13 +29,13 @@ from stable_audio_tools.data.sceneplan_p11_lexical_cache import (  # noqa: E402
 )
 
 
-ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2")
+ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2")
 DEFAULT_CACHE = ROOT / (
     "lexical_cache/p11_train_trial10k_owner_balanced_distilwhisper_v1.sqlite"
 )
 DEFAULT_MANIFEST = ROOT / "manifests/p11_train_trial30k_owner_balanced_v1.sqlite"
 DEFAULT_INDEX = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/revisions/"
     "speech_expansion_noalign_15s_v1/training_index/train.sqlite"
 )
 DEFAULT_OUTPUT = REPO_ROOT / (

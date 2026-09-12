@@ -282,25 +282,25 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("result_json", nargs="+", type=Path)
     parser.add_argument(
-        "--package-root", type=Path, default=Path("/mnt/sdc/sat_tools/openflam-py")
+        "--package-root", type=Path, default=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/sat_tools/openflam-py")
     )
     parser.add_argument(
         "--checkpoint",
         type=Path,
         default=Path(
-            "/mnt/sdc/ckpts/evaluators/openflam/open_flam_oct17.pth"
+            os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/evaluators/openflam/open_flam_oct17.pth"
         ),
     )
     parser.add_argument(
         "--license",
         type=Path,
-        default=Path("/mnt/sdc/ckpts/evaluators/openflam/LICENSE"),
+        default=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/evaluators/openflam/LICENSE"),
     )
     parser.add_argument(
         "--text-cache",
         type=Path,
         default=Path(
-            "/home/tanhe/dataset_storage/codex-home/.cache/huggingface/hub"
+            "." + "/codex-home/.cache/huggingface/hub"
         ),
     )
     parser.add_argument("--device", default="cuda:0")

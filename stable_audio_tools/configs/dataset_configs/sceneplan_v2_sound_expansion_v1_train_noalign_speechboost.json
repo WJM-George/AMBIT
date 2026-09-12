@@ -6,13 +6,13 @@
     "datasets": [
         {
             "id": "sceneplan_v2_sound_expansion_v1_full",
-            "path": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/sound_expansion_v1/training_index/train.sqlite",
+            "path": "${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/revisions/sound_expansion_v1/training_index/train.sqlite",
             "num_samples": 1100000,
             "weight": 1.0
         },
         {
             "id": "sceneplan_v2_sound_expansion_v1_speech_boost",
-            "path": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/sound_expansion_v1/training_index/train.sqlite",
+            "path": "${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/revisions/sound_expansion_v1/training_index/train.sqlite",
             "index_num_samples": 1100000,
             "num_samples": 500000,
             "ordinal_range": [0, 500000],

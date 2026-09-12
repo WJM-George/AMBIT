@@ -13,6 +13,7 @@ reported alongside caption-independent post-to-pre audio assignment, and every
 family fails closed when its pre-VAE sources are not themselves distinguishable.
 """
 from __future__ import annotations
+import os
 
 import argparse
 import copy
@@ -43,12 +44,12 @@ from stable_audio_tools.data.spatial_family_dataset import SpatialFamilyDataset
 from stable_audio_tools.training.metrics.fad_metrics import load_clap_model
 
 
-DEFAULT_FAMILY_STORE = Path("/mnt/sdb/audio_dataset/spatial_cot_v1/latents/train")
+DEFAULT_FAMILY_STORE = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/spatial_cot_v1/latents/train")
 DEFAULT_CAPTION_OVERLAY = Path(
-    "/mnt/sdb/audio_dataset/spatial_cot_v1/captions/spatial_source_regions_v3/train"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/spatial_cot_v1/captions/spatial_source_regions_v3/train"
 )
 DEFAULT_SOURCE_CURRICULUM = Path(
-    "/mnt/sdb/audio_dataset/spatial_cot_v1/curriculum/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/spatial_cot_v1/curriculum/"
     "source_identifiability_fixed48_v2"
 )
 DEFAULT_VAE_CONFIG = REPO_ROOT / (
@@ -56,7 +57,7 @@ DEFAULT_VAE_CONFIG = REPO_ROOT / (
     "stable_audio_4ch_vae_ds1024_z64_wdmix_scm.json"
 )
 DEFAULT_VAE_CHECKPOINT = Path(
-    "/mnt/sdc/ckpts/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
 )
 
 

@@ -38,7 +38,7 @@ def run(args):
     from stable_audio_tools.inference.sceneplan_generation_ar_vectorized import generate_constrained_vectorized
     torch.set_num_threads(4);torch.manual_seed(42);device=torch.device('cuda:0');torch.cuda.set_device(device)
     torch.backends.cuda.matmul.allow_tf32=False;torch.backends.cudnn.allow_tf32=False
-    codec=ModelScenePlanCodecV4('/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4')
+    codec=ModelScenePlanCodecV4(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4")
     started=time.monotonic()
     atomic(args.output/'STATUS.json',{'status':'LOADING','pid':os.getpid()})
     state=torch.load(args.checkpoint,map_location='cpu',weights_only=False)

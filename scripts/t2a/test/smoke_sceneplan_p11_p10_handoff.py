@@ -2,6 +2,7 @@
 """Read-only real-checkpoint smoke for the P11 -> external P10 handoff."""
 
 from __future__ import annotations
+import os
 
 import argparse
 import hashlib
@@ -30,7 +31,7 @@ def main() -> None:
         "--checkpoint",
         type=Path,
         default=Path(
-            "/mnt/sdc/ckpts/dit/"
+            os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/dit/"
             "sceneplan_dit_v11_semantic_v2_protected_resume_150k/"
             "checkpoints/epoch=48-step=150000.ckpt"
         ),
@@ -39,14 +40,14 @@ def main() -> None:
         "--vae-checkpoint",
         type=Path,
         default=Path(
-            "/mnt/sdc/ckpts/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
+            os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
         ),
     )
     parser.add_argument(
         "--codec",
         type=Path,
         default=Path(
-            "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
+            os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/"
             "model_sceneplan_codec_v4"
         ),
     )
@@ -109,7 +110,7 @@ def main() -> None:
     codec = load_model_sceneplan_codec(args.codec.resolve(strict=True))
     encoded = codec.encode(plan, max_tokens=1024)
     tokenizer = AutoTokenizer.from_pretrained(
-        "/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B",
+        os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen/Qwen3.5-0.8B",
         local_files_only=True,
         use_fast=True,
     )

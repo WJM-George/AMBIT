@@ -14,10 +14,10 @@ Disk: video stays (~17 GB/tarball), audio is small (~0.2 MB/clip). 80k clips
 => ~8 tarballs of mp4 kept + ~16 GB wav.
 
 Run:
-    cd /home/tanhe/dataset_storage/stable-audio-tools
+    cd ./stable-audio-tools
     uv run python dataset/indexing/extract_vggsound.py \
-        --snapshot /mnt/sdd/audio_dataset/datasets/vggsound/snapshot \
-        --out /mnt/sdd/audio_dataset/datasets/vggsound/extracted \
+        --snapshot ${AMBIT_DATA_ROOT}/datasets/vggsound/snapshot \
+        --out ${AMBIT_DATA_ROOT}/datasets/vggsound/extracted \
         --max-clips 80000 --sr 48000 --jobs 16
 """
 from __future__ import annotations
@@ -60,9 +60,9 @@ def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--snapshot", type=Path,
-                    default=Path("/mnt/sdd/audio_dataset/datasets/vggsound/snapshot"))
+                    default=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/vggsound/snapshot"))
     ap.add_argument("--out", type=Path,
-                    default=Path("/mnt/sdd/audio_dataset/datasets/vggsound/extracted"))
+                    default=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/vggsound/extracted"))
     ap.add_argument("--max-clips", type=int, default=80000)
     ap.add_argument("--sr", type=int, default=48000)
     ap.add_argument("--jobs", type=int, default=16)

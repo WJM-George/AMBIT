@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_ROOT="${REPO_ROOT:-/mnt/sdc/stable-audio-tools-workspace}"
-PYTHON_BIN="${PYTHON_BIN:-/mnt/sdc/stable-audio-tools-venv/bin/python}"
+REPO_ROOT="${REPO_ROOT:-${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace}"
+PYTHON_BIN="${PYTHON_BIN:-${AMBIT_CKPT_ROOT}/stable-audio-tools-venv/bin/python}"
 PLAN_EVALUATION_DIR="${PLAN_EVALUATION_DIR:?PLAN_EVALUATION_DIR is required}"
 OUTPUT_DIR="${OUTPUT_DIR:?OUTPUT_DIR is required}"
-BASELINE_ROOT="${BASELINE_ROOT:-/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1/evaluation/p10_v11_150k_full_test_8000_semantic_v2}"
+BASELINE_ROOT="${BASELINE_ROOT:-${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1/evaluation/p10_v11_150k_full_test_8000_semantic_v2}"
 GPU_LIST="${GPU_LIST:-0,1,2}"
 IFS=',' read -r -a GPUS <<<"${GPU_LIST}"
 if [[ "${#GPUS[@]}" -ne 3 ]]; then
@@ -24,7 +24,7 @@ if ! flock -n 9; then
 fi
 : >"${LOG_ROOT}/status.tsv"
 
-export HF_HOME="${HF_HOME:-/home/tanhe/dataset_storage/codex-home/.cache/huggingface}"
+export HF_HOME="${HF_HOME:-./codex-home/.cache/huggingface}"
 export HUGGINGFACE_HUB_CACHE="${HUGGINGFACE_HUB_CACHE:-${HF_HOME}/hub}"
 export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1

@@ -13,11 +13,11 @@ import soundfile as sf
 PARTS = [
     {
         "name": "sdb",
-        "root": Path("/mnt/sdb/audio_dataset/datasets/spatial_speech_foa_tts_v1_part_sdb"),
+        "root": Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/datasets/spatial_speech_foa_tts_v1_part_sdb"),
     },
     {
         "name": "sdc",
-        "root": Path("/mnt/sdc/speech_dataset/spatial_speech_foa_tts_v1_part_sdc"),
+        "root": Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/speech_dataset/spatial_speech_foa_tts_v1_part_sdc"),
     },
 ]
 
@@ -265,7 +265,7 @@ def main():
         'reject_rate': (sum(r['rejected_rows'] for r in reports) / sum(r['input_rows'] for r in reports)) if reports else 0.0,
         'partitions': reports,
     }
-    out = Path('/mnt/sdc/speech_dataset/spatial_speech_foa_tts_v1_work/quality_reports/qc_clean_combined_report.json')
+    out = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/speech_dataset/spatial_speech_foa_tts_v1_work/quality_reports/qc_clean_combined_report.json")
     if not args.no_write and not args.sample_per_part:
         out.parent.mkdir(parents=True, exist_ok=True)
         tmp = out.with_suffix('.json.tmp')

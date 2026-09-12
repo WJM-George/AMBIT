@@ -54,11 +54,11 @@ from stable_audio_tools.models.utils import (  # noqa: E402
 
 
 DEFAULT_INDEX = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_transfusion_editing_v1/"
     "training_index/validation.sqlite"
 )
 DEFAULT_OUTPUT = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_transfusion_editing_v1/"
     "semantic_cache/m2d_clap_v2/temporal_policy_pilot/PASS.json"
 )
 DEFAULT_VAE_CONFIG = REPO_ROOT / (
@@ -66,7 +66,7 @@ DEFAULT_VAE_CONFIG = REPO_ROOT / (
     "stable_audio_4ch_vae_ds1024_z64_wdmix_scm.json"
 )
 DEFAULT_VAE_CHECKPOINT = Path(
-    "/mnt/sdc/ckpts/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/compareVAE_ckpt/unwrapped_wdmix_1350000.ckpt"
 )
 EXPECTED_INDEX_ROWS = 20_000
 MINIMUM_MODEL_SAMPLES = 15 * 44_100

@@ -5,7 +5,7 @@
     "datasets": [
         {
             "id": "sceneplan_transfusion_editing_v1_overfit10",
-            "path": "/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1_pilot/training_index/train.sqlite",
+            "path": "${AMBIT_DATA_ROOT}/sceneplan_transfusion_editing_v1_pilot/training_index/train.sqlite",
             "weight": 1.0
         }
     ],

@@ -99,7 +99,7 @@ DATASETS: dict[str, DatasetSpec] = {
         kind="hf_snapshot",
         repo_id="agkphysics/AudioSet",
         description="~2.4 TB of 10-second AudioSet clips (YouTube-sourced wav, March 2023 snapshot).",
-        note="Stored on AUDIO_DATASET_SECONDARY_ROOT (/mnt/sdb) by default. Requires ~2.4 TB free.",
+        note="Stored on AUDIO_DATASET_SECONDARY_ROOT (${AMBIT_DATA_ROOT}) by default. Requires ~2.4 TB free.",
     ),
     "vggsound": DatasetSpec(
         key="vggsound",

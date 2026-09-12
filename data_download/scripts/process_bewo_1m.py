@@ -3,7 +3,7 @@
 
 Keeps ``snapshot/`` as the immutable HF download. Writes processed assets next to it:
 
-  /mnt/sdb/audio_dataset/datasets/bewo_1m/
+  ${AMBIT_DATA_ROOT}/datasets/bewo_1m/
     snapshot/              # raw chunks + small tars (do not delete)
     extracted/             # merged .tar.gz + untar'd audio trees
       BEWO_SS_Audio_v1/
@@ -39,7 +39,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-DEFAULT_ROOT = Path(os.environ.get("AUDIO_DATASET_SECONDARY_ROOT", "/mnt/sdb/audio_dataset"))
+DEFAULT_ROOT = Path(os.environ.get("AUDIO_DATASET_SECONDARY_ROOT", os.environ.get("AMBIT_DATA_ROOT", "data")))
 DEFAULT_BEWO = DEFAULT_ROOT / "datasets" / "bewo_1m"
 DEFAULT_SNAPSHOT = DEFAULT_BEWO / "snapshot"
 

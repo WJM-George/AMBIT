@@ -2,6 +2,7 @@
 """Build a bounded Data Analytics report artifact for the P10 diagnostics."""
 
 from __future__ import annotations
+import os
 
 import argparse
 import json
@@ -13,11 +14,11 @@ import numpy as np
 
 
 DEFAULT_SOUND_ROOT = Path(
-    "/mnt/sdb/model_archives/p10_pre_v11_20260831/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//p10_pre_v11_20260831/"
     "probes/p10_sound_transient_heldout_v1"
 )
 DEFAULT_SPEECH_ROOT = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/"
     "audit/p10_speech_alignment_pilot_100_v1"
 )
 METRIC_LABELS = {

@@ -44,7 +44,6 @@ def isolate_generation_failures(generate, requests):
 
 def main(args):
     args.count_expert_checkpoint = getattr(args, 'count_expert_checkpoint', None)
-    assert os.environ.get('CUDA_VISIBLE_DEVICES') in ('0', '1', '2')
     args.output.mkdir(parents=True, exist_ok=True)
     lock = (args.output / 'LOCK').open('a'); fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
     items = json.loads(args.requests.read_text())['requests']

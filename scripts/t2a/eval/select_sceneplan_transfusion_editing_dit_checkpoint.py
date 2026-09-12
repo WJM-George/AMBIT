@@ -77,9 +77,9 @@ SCHEMA_VERSION = 1
 SELECTION_CONTRACT = (
     "full_20k_10k_select_10k_holdout_ema_rf_paired_source_and_p10_gate_5k_v4"
 )
-VISIBLE_GPUS = "3,4,5,6,7"
-PHYSICAL_GPUS = [3, 4, 5, 6, 7]
-WORLD_SIZE = 5
+VISIBLE_GPUS = os.environ.get("CUDA_VISIBLE_DEVICES", "").replace(" ", "")
+PHYSICAL_GPUS = [int(item) for item in VISIBLE_GPUS.split(",") if item]
+WORLD_SIZE = max(len(PHYSICAL_GPUS), 1)
 EXPECTED_ROWS = 20_000
 EXPECTED_SHORT_ROWS = 15_000
 EXPECTED_LONG_ROWS = 5_000
@@ -99,16 +99,16 @@ EXPECTED_OPERATIONS = (
 DEFAULT_TIMESTEPS = (0.1, 0.3, 0.5, 0.7, 0.9, 1.0)
 CONFIDENCE = 0.99
 CANONICAL_P10 = Path(
-    "/mnt/sdc/ckpts/dit/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/dit/"
     "sceneplan_dit_v11_semantic_v2_protected_resume_150k/"
     "checkpoints/epoch=48-step=150000.ckpt"
 )
 CANONICAL_P10_SHA256 = (
     "be8c90cd1434bd71f73951531175c3674ff0f3173d5db591e2e1c476152ff59e"
 )
-DEFAULT_ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_transfusion_editing_v1")
+DEFAULT_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_transfusion_editing_v1")
 DEFAULT_RUN = Path(
-    "/mnt/sdb/model_archives/transfusion_editing/mainline/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//transfusion_editing/mainline/"
     "sceneplan_transfusion_editing_dit_full_seed42_v1"
 )
 DEFAULT_MODEL_CONFIG = REPO_ROOT / (

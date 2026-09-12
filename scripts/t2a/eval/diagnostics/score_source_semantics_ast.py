@@ -15,6 +15,7 @@ RMS is retained beside peak-normalized semantic scores so a silent source
 cannot pass merely because normalization hides its missing energy.
 """
 from __future__ import annotations
+import os
 
 import argparse
 import json
@@ -41,7 +42,7 @@ from scripts.t2a.eval.diagnostics.score_source_location_semantics import (
 
 
 DEFAULT_MODEL = "MIT/ast-finetuned-audioset-10-10-0.4593"
-DEFAULT_CACHE = Path("/mnt/sdb/audio_dataset/.cache/hf_ast_source_gate/hub")
+DEFAULT_CACHE = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/.cache/hf_ast_source_gate/hub")
 
 
 def _active_ast_waveform(

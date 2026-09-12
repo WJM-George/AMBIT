@@ -28,15 +28,15 @@ from stable_audio_tools.data.sceneplan_transfusion_generation_ar_contract import
 )
 
 DEFAULT_EVALUATION_ROOT = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/transfusion_shared_v1/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/transfusion_shared_v1/"
     "generation_ar/evaluation"
 )
 DEFAULT_VALIDATION_MANIFEST = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/transfusion_shared_v1/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/transfusion_shared_v1/"
     "generation_ar/validation.sqlite"
 )
 DEFAULT_TEST_MANIFEST = Path(
-    "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/transfusion_shared_v1/"
+    os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/transfusion_shared_v1/"
     "generation_ar/test.sqlite"
 )
 

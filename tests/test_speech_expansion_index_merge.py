@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 import sqlite3
 import zlib
@@ -64,7 +65,7 @@ def test_revision6_merge_rebases_ordinals_and_deduplicates_latent_shards(
 ) -> None:
     first = tmp_path / "first.sqlite"
     second = tmp_path / "second.sqlite"
-    shared_latent = "/mnt/sdb/audio_dataset/shared.safetensors"
+    shared_latent = os.environ.get("AMBIT_DATA_ROOT", "data") + "/shared.safetensors"
     _source_index(first, "base_validation", shared_latent)
     _source_index(second, "delta_validation", shared_latent)
 

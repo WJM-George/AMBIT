@@ -19,7 +19,7 @@ import soundfile as sf
 from scipy.signal import resample_poly
 
 
-DATASET_ROOT = Path("/mnt/sdb/audio_dataset/sceneplan_v2_1p124m")
+DATASET_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m")
 DEFAULT_LEDGER = DATASET_ROOT / "split_ledgers/speech_v2/speech_split_ledger.parquet"
 DEFAULT_OUTPUT = DATASET_ROOT / "source_annotations/speech_speaker_instruct_v1"
 LIBRITTS_P = DEFAULT_OUTPUT / "external/LibriTTS-P"

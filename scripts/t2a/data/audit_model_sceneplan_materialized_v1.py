@@ -98,9 +98,9 @@ def main() -> int:
     materialized_root = args.materialized_root.expanduser().resolve(strict=True)
     output = args.output.expanduser().resolve(strict=False)
     try:
-        sceneplan_root.relative_to("/mnt/sdb")
-        materialized_root.relative_to("/mnt/sdb")
-        output.relative_to("/mnt/sdb")
+        sceneplan_root.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
+        materialized_root.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
+        output.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
     except ValueError as error:
         raise ValueError("P9 inputs and audit output must be on SDB") from error
     p8_summary = json.loads(
@@ -446,7 +446,7 @@ def main() -> int:
     target_median = float(np.median(target_ratios))
     required_median = 20.0 * math.log10(0.6 / 0.4)
     require(abs(target_median - required_median) <= 0.02, "global 0.6:0.4 median drift")
-    stat = os.statvfs("/mnt/sdb")
+    stat = os.statvfs(os.environ.get("AMBIT_DATA_ROOT", "data"))
     total_bytes = stat.f_blocks * stat.f_frsize
     free_bytes = stat.f_bavail * stat.f_frsize
     require(free_bytes / total_bytes >= 0.20, "SDB free fraction fell below 20%")

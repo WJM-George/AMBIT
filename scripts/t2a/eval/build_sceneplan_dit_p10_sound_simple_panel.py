@@ -8,6 +8,7 @@ The same rows and noise seeds are then shared by r5 and r6 checkpoint runs.
 """
 
 from __future__ import annotations
+import os
 
 import argparse
 import json
@@ -31,17 +32,17 @@ from scripts.t2a.eval.build_sceneplan_dit_p10_eval_contract import (
 
 
 DEFAULT_OUTPUT = Path(
-    "/mnt/sdb/model_archives/p10_pre_v11_20260831/sceneplan_dit_fail/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//p10_pre_v11_20260831/sceneplan_dit_fail/"
     "sceneplan_dit_v2_r6_300m/evaluation/"
     "p10_sound_simple_5way_v1"
 )
 R5_PRIOR_CONTRACT = Path(
-    "/mnt/sdb/model_archives/p10_pre_v11_20260831/sceneplan_dit_fail/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//p10_pre_v11_20260831/sceneplan_dit_fail/"
     "sceneplan_dit_v2_r5_300m/evaluation/"
     "p10_ckpt_10k_20k_30k_40k_50k_speaker_v1/EVAL_CONTRACT.json"
 )
 R6_PRIOR_CONTRACT = Path(
-    "/mnt/sdb/model_archives/p10_pre_v11_20260831/sceneplan_dit_fail/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//p10_pre_v11_20260831/sceneplan_dit_fail/"
     "sceneplan_dit_v2_r6_300m/evaluation/"
     "p10_r6_10k_20k_effect_audit_v1/EVAL_CONTRACT.json"
 )

@@ -1,7 +1,7 @@
 {
   "extends": "sceneplan_p11_trial30k_matched_screening_v1_discrete_d0.json",
   "_task": "Matched D0 control for the seed-42 269,568-row, global-batch-64-exact P11-v4 DDP8 rank-balanced pair-aware validation curriculum.",
-  "p11_v4_curriculum_path": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/p11_v4_curriculum/p11_train_269568_ddp8_rank_balanced_batch8_seed42_v2.sqlite",
+  "p11_v4_curriculum_path": "${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/p11_single_turn_15s_v2/p11_v4_curriculum/p11_train_269568_ddp8_rank_balanced_batch8_seed42_v2.sqlite",
   "p11_v4_curriculum_sha256": "e852bb29b13ae4beeeb4718bfe7be34fa5a2fab98b818e75d7e62845887db718",
   "p11_v4_curriculum_expected_rows": 269568,
   "p11_v4_curriculum_contract": "p10_v11_train_only_gue_multitarget_v1",

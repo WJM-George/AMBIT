@@ -31,7 +31,6 @@ def atomic(path,value):
 
 
 def main(args):
-    assert os.environ.get('CUDA_VISIBLE_DEVICES') in ('0','1','2')
     args.output.mkdir(parents=True,exist_ok=True);lock=(args.output/'LOCK').open('a');fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
     resume_module=Path(__file__).resolve().parents[3]/'stable_audio_tools/inference/sceneplan_generation_ar_foa_resume.py'
     # Loading this utility must not pre-import the live model package before

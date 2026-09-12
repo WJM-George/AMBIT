@@ -11,12 +11,13 @@ Output layout (under --out):
   manifest.json
 
 Run:
-  cd /home/tanhe/dataset_storage/stable-audio-tools
+  cd ./stable-audio-tools
   CUDA_VISIBLE_DEVICES=1 uv run python dataset/evaluation/export_vae_listen_samples.py \\
     --steps 660000 700000 720000 740000 --with-baseline --num 10 --seed 1234 \\
-    --out /mnt/sdc/eval_metric/result_compare
+    --out ${AMBIT_CKPT_ROOT}/eval_metric/result_compare
 """
 from __future__ import annotations
+import os
 
 import argparse
 import json
@@ -45,7 +46,7 @@ from compare_vae_4ch_vs_2stereo import (  # noqa: E402
 from compare_vae_heldout import held_out_sls_files  # noqa: E402
 from eval_vae_recon import _read_4ch, _resample  # noqa: E402
 
-DEFAULT_CKPT_ROOT = Path("/mnt/sdc/ckpts/vae_ds1024_z64_construct")
+DEFAULT_CKPT_ROOT = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/vae_ds1024_z64_construct")
 DEFAULT_VAE4_CONFIG = (
     "stable_audio_tools/configs/model_configs/autoencoders/stable_audio_4ch_vae_ds1024.json"
 )
@@ -53,7 +54,7 @@ DEFAULT_VAE2_CONFIG = (
     "stable_audio_tools/configs/model_configs/autoencoders/"
     "stable_audio_open_1_0_oobleck_2ch.json"
 )
-DEFAULT_VAE2_CKPT = "/mnt/sdc/ckpts/stable-audio-open-1.0/model.safetensors"
+DEFAULT_VAE2_CKPT = os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/stable-audio-open-1.0/model.safetensors"
 
 
 def step_tag(step: int) -> str:
@@ -120,7 +121,7 @@ def ensure_unwrapped(step: int, ckpt_root: Path, model_cfg: str) -> Path:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--out", type=Path, default=Path("/mnt/sdc/eval_metric/result_compare"))
+    ap.add_argument("--out", type=Path, default=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/eval_metric/result_compare"))
     ap.add_argument("--num", type=int, default=10)
     ap.add_argument("--seed", type=int, default=1234)
     ap.add_argument("--steps", type=int, nargs="+", default=[660000, 700000, 720000, 740000])

@@ -374,7 +374,7 @@ def main() -> int:
     model = args.model.expanduser().resolve(strict=True)
     output = args.output_root.expanduser().resolve(strict=False)
     try:
-        output.relative_to("/mnt/sdb")
+        output.relative_to(os.environ.get("AMBIT_DATA_ROOT", "data"))
     except ValueError as error:
         raise ValueError(f"speech strong-QC output must be on SDB: {output}") from error
     columns = [

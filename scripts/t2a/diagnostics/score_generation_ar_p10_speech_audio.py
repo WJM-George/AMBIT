@@ -34,7 +34,7 @@ def main(args):
     witnesses = json.loads(args.witnesses.read_text())
     witnesses = {r['id']: r for r in witnesses['pairs']}
     args.output.mkdir(parents=True, exist_ok=True)
-    model_path = Path('/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/models/faster-distil-whisper-large-v3')
+    model_path = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/models/faster-distil-whisper-large-v3")
     identity = {'schema': 'generation_ar_p10_speech_audio_diagnostic_v1', 'summary_sha256': sha(args.summary),
         'witnesses_sha256': sha(args.witnesses), 'script_sha256': sha(Path(__file__)),
         'asr_helper_sha256': sha(args.snapshot / 'scripts/t2a/eval/score_sceneplan_dit_p10_speech.py'),

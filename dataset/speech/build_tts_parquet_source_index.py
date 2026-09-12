@@ -6,6 +6,7 @@ micro-batch. The index stores only source id, dataset, parquet path, and row
 number within the parquet file; it does not duplicate audio bytes.
 """
 from __future__ import annotations
+import os
 
 import argparse
 import json
@@ -17,8 +18,8 @@ import pyarrow.parquet as pq
 
 
 DATASET_ROOTS = {
-    "libritts": Path("/mnt/sdc/speech_dataset/mythicinfinity__libritts"),
-    "hifi_tts": Path("/mnt/sdc/speech_dataset/MikhailT__hifi-tts"),
+    "libritts": Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/speech_dataset/mythicinfinity__libritts"),
+    "hifi_tts": Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/speech_dataset/MikhailT__hifi-tts"),
 }
 
 

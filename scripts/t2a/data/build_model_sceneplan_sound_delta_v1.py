@@ -55,7 +55,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--tokenizer-root",
         type=Path,
-        default=Path("/mnt/sdc/ckpts/pretrained/Qwen/Qwen3.5-0.8B"),
+        default=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen/Qwen3.5-0.8B"),
     )
     return parser.parse_args()
 
@@ -125,9 +125,9 @@ def main() -> int:
     output_root = args.output_root.expanduser().resolve(strict=False)
     tokenizer_root = args.tokenizer_root.expanduser().resolve(strict=True)
     try:
-        output_root.relative_to(Path("/mnt/sdb"))
+        output_root.relative_to(Path(os.environ.get("AMBIT_DATA_ROOT", "data")))
     except ValueError as error:
-        raise ValueError("Sound delta ScenePlans must persist on /mnt/sdb") from error
+        raise ValueError("Sound delta ScenePlans must persist on ${AMBIT_DATA_ROOT}") from error
     if output_root.exists() and any(output_root.iterdir()):
         raise FileExistsError(f"refusing to overwrite non-empty output: {output_root}")
     output_root.mkdir(parents=True, exist_ok=True)

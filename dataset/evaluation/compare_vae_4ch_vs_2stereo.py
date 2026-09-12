@@ -26,17 +26,18 @@ Metrics (same for both, vs the same source): si_sdr_db (4ch mean), w_si_sdr_db,
 lsd_db, stft_mag_l1, doa_az_err_deg, doa_el_err_deg, dir_energy_ratio_err,
 ic_corr_err  (see eval_vae_recon.py for definitions).
 
-Outputs (--out, default /mnt/sdc/eval_metric):
+Outputs (--out, default ${AMBIT_CKPT_ROOT}/eval_metric):
   per_file.csv     one row per (clip, method)
   summary.json     aggregate medians/means for both methods + deltas
   summary.md       human-readable side-by-side table with a winner per metric
 
 Run:
-  cd /home/tanhe/dataset_storage/stable-audio-tools
+  cd ./stable-audio-tools
   CUDA_VISIBLE_DEVICES=0 uv run python dataset/evaluation/compare_vae_4ch_vs_2stereo.py \
-      --num 100 --out /mnt/sdc/eval_metric
+      --num 100 --out ${AMBIT_CKPT_ROOT}/eval_metric
 """
 from __future__ import annotations
+import os
 
 import argparse
 import copy
@@ -162,16 +163,16 @@ def collect_latents(latent_root: Path):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--latent-root", type=Path, default=Path("/mnt/sdc/audio_latents/construct_4ch"))
+    ap.add_argument("--latent-root", type=Path, default=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/audio_latents/construct_4ch"))
     ap.add_argument("--vae4-config", default="stable_audio_tools/configs/model_configs/autoencoders/stable_audio_4ch_vae_ds1024.json")
-    ap.add_argument("--vae4-ckpt", default="/mnt/sdc/ckpts/vae_ds1024_z64_construct/unwrapped_ds1024_z64.ckpt")
+    ap.add_argument("--vae4-ckpt", default=os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/vae_ds1024_z64_construct/unwrapped_ds1024_z64.ckpt")
     ap.add_argument("--vae2-base-config", default="stable_audio_tools/configs/model_configs/autoencoders/stable_audio_open_1_0_oobleck_2ch.json",
                     help="ds2048 config used as the channel-2 template for the stereo baseline VAE")
-    ap.add_argument("--vae2-ckpt", default="/mnt/sdc/ckpts/stable-audio-open-1.0/model.safetensors")
+    ap.add_argument("--vae2-ckpt", default=os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/stable-audio-open-1.0/model.safetensors")
     ap.add_argument("--num", type=int, default=100)
     ap.add_argument("--pairing", choices=list(PAIRINGS), default="wy_zx")
     ap.add_argument("--seed", type=int, default=1234)
-    ap.add_argument("--out", type=Path, default=Path("/mnt/sdc/eval_metric"))
+    ap.add_argument("--out", type=Path, default=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/eval_metric"))
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     args = ap.parse_args()
 

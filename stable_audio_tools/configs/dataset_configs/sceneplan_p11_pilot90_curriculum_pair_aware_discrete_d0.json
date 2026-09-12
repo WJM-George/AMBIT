@@ -1,7 +1,7 @@
 {
   "extends": "sceneplan_p11_pilot90_discrete_d0_matched_v4.json",
   "_task": "Matched D0 over the canonical seed-42 810-row P11-v4 semantic+numeric instruction curriculum with exact pair-aware interleaved batch-8 ordering.",
-  "p11_v4_curriculum_path": "/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/p11_single_turn_15s_v2/p11_v4_curriculum/p11_train_pilot90_curriculum_v8_pair_aware_interleaved_batch8_seed42.sqlite",
+  "p11_v4_curriculum_path": "${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/p11_single_turn_15s_v2/p11_v4_curriculum/p11_train_pilot90_curriculum_v8_pair_aware_interleaved_batch8_seed42.sqlite",
   "p11_v4_curriculum_expected_rows": 810,
   "p11_v4_curriculum_contract": "p10_v11_train_only_gue_multitarget_v1",
   "p11_v4_curriculum_ordering_contract": "p11_v4_pair_aware_interleaved_batch8_diverse_instruction_surface_v6",

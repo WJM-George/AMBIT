@@ -25,10 +25,10 @@ Run four independent two-GPU Transformers workers:
 
 ```bash
 .venv-qwen/bin/python dataset/captioning/sceneplan_a2t_v2/launch_transformers_scaleout.py \
-  --log-dir /mnt/sdb/audio_dataset/sceneplan_v2_1p124m/audit/a2t_pilot_100/logs_transformers \
+  --log-dir ${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/audit/a2t_pilot_100/logs_transformers \
   -- \
-  --input-jsonl /mnt/sdb/audio_dataset/sceneplan_v2_1p124m/audit/a2t_pilot_100/instruct_input.jsonl \
-  --out /mnt/sdb/audio_dataset/sceneplan_v2_1p124m/audit/a2t_pilot_100/source_descriptions_instruct.jsonl \
+  --input-jsonl ${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/audit/a2t_pilot_100/instruct_input.jsonl \
+  --out ${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/audit/a2t_pilot_100/source_descriptions_instruct.jsonl \
   --device-map balanced \
   --attn-implementation sdpa \
   --safety-max-generation-tokens 256
@@ -70,7 +70,7 @@ TTS source.
 The frozen input and schemas live under:
 
 ```text
-/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/source_annotations/nonspeech_instruct_v2/
+${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/source_annotations/nonspeech_instruct_v2/
 ```
 
 The eight-GPU preflight used four independent two-GPU workers, batch size 256,
@@ -80,7 +80,7 @@ aggregate 12.216 descriptions/s.  That projects to 19.86 hours for the frozen
 universe.  The authoritative report is:
 
 ```text
-/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/audit/a2t_throughput_1k_20260816/preflight_report.json
+${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/audit/a2t_throughput_1k_20260816/preflight_report.json
 ```
 
 The revised 100-row ScenePlan pilot is canonical JSONL with one complete sample
@@ -89,7 +89,7 @@ formal-TTS/spoken-background violations, passes all 4+4+2 and structured-control
 checks, and has no caption truncation under the 512-token contract:
 
 ```text
-/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/pilots/revised_sceneplan_100_registry_v1/revised_sceneplans_100.jsonl
+${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/pilots/revised_sceneplan_100_registry_v1/revised_sceneplans_100.jsonl
 ```
 
 The full-scale launch command is recorded in `preflight_report.json` as

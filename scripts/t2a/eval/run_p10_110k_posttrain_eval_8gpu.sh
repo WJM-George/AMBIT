@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_ROOT="${REPO_ROOT:-/home/tanhe/dataset_storage/stable-audio-tools}"
+REPO_ROOT="${REPO_ROOT:-./stable-audio-tools}"
 PYTHON_BIN="${PYTHON_BIN:-${REPO_ROOT}/.venv/bin/python}"
-REVISION_EVAL="/mnt/sdb/audio_dataset/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1/evaluation"
-RUN_ROOT="/mnt/sdb/model_archives/p10_pre_v11_20260831/sceneplan_dit_v10_semantic_v2_protected_resume_110k"
+REVISION_EVAL="${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1/evaluation"
+RUN_ROOT="${AMBIT_CKPT_ROOT}/p10_pre_v11_20260831/sceneplan_dit_v10_semantic_v2_protected_resume_110k"
 CKPT_110K="${RUN_ROOT}/checkpoints/epoch=35-step=110000.ckpt"
 SPEECH_105_ROOT="${REVISION_EVAL}/p10_speech_fixed50_105k_v2"
 SPEECH_110_ROOT="${REVISION_EVAL}/p10_speech_fixed50_110k_v2"
