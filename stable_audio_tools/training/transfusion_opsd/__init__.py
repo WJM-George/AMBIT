@@ -1,7 +1,7 @@
-"""Execution-linked self-distillation for the complete Generation EVENT policy.
+"""On-policy self-distillation for the shared AR + DiT Transformer.
 
-Current research entry points and retained controls are in docs/transfusion_opsd.md.
-Native Generation/Editing adapters remain reusable; Editing OPSD is unvalidated.
+The current recipe is Editing: STE off, hidden request-side GT, fixed 40k
+reference retention, and same-plan RF teachers. See docs/OPSD.md.
 """
 
 from .objectives import DiffusionTargets, RewardScore, forward_kl

@@ -59,7 +59,7 @@ Following Transfusion, the same 15-block DiT (width 1024, about 0.32B parameters
 
 `event_addition` · `event_removal` · `linear_to_static` · `static_to_linear` · `stationary_spatial_relocation`
 
-**OPSD.** On-policy self-distillation (`stable_audio_tools/training/transfusion_opsd/`) couples execution feedback on discrete plan decisions with audio-validated velocity targets for the renderer.
+**OPSD.** After the joint 40k editor, on-policy self-distillation (`stable_audio_tools/training/transfusion_opsd/`) updates the same Transformer from actual executions. The current recipe hides request-side ground truth, keeps a frozen-40k reference hold on discrete fields, trains same-plan RF teachers, and adds a paired FOA auxiliary. Straight-through credit into AR logits is **off**. Details: [`docs/OPSD.md`](docs/OPSD.md).
 
 ```text
   English request or edit + reference FOA
@@ -283,7 +283,19 @@ python scripts/t2a/train/train_sceneplan_transfusion_generation_ar.py \
 
 Editing DiT warms the generation renderer and adds 64 reference-latent channels. Editing AR shares those blocks and trains the discrete plan head on the five operations.
 
-OPSD data prep: `scripts/t2a/rl/`. Training code: `stable_audio_tools/training/transfusion_opsd/`.
+### 5. Editing OPSD (optional post-training)
+
+Current recipe: start from the joint 40k editor, STE off, 16 requests + 512 paired rows per step, shared/DiT LR `3.75e-7`, AR heads `5e-6`. See [`docs/OPSD.md`](docs/OPSD.md).
+
+```bash
+python scripts/t2a/rl/train_editing_opsd_spatial.py --config "$AMBIT_CKPT_ROOT/opsd/config.json"
+# later continuation
+python scripts/t2a/rl/train_editing_opsd_to2000.py \
+  --config "$AMBIT_CKPT_ROOT/opsd/continue.json" \
+  --resume "$AMBIT_CKPT_ROOT/opsd/step-00000500.pt"
+```
+
+Set `CUDA_VISIBLE_DEVICES`. Launchers use the current Python and do not pin a lab GPU map.
 
 More flags and configs: [`docs/TRAINING.md`](docs/TRAINING.md).
 
@@ -314,8 +326,10 @@ Tests that need a local codec or index skip if `$AMBIT_DATA_ROOT` is empty.
 | `stable_audio_tools/configs/` | Model and dataset JSON (`${AMBIT_*}` placeholders) |
 | `scripts/t2a/inference/` | Generation and editing CLIs |
 | `scripts/t2a/train/` | AR, DiT, CLAP trainers and launchers |
+| `scripts/t2a/rl/` | Editing OPSD learners and launchers |
 | `scripts/t2a/eval/` | Paper evaluation and baselines |
 | `scripts/t2a/data/` | ScenePlan / edit-pair construction |
+| `docs/OPSD.md` | Current OPSD method and recipe |
 | `dataset/` | Indexing, captioning, FOA synthesis |
 | `data_download/` | Public corpus downloaders |
 | `tests/` | Unit and contract tests |

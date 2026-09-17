@@ -36,7 +36,10 @@ class EditingObservation:
             raise ValueError("Editing source mask geometry/type mismatch")
         frames = math.ceil(self.model_num_samples / 1024)
         expected = torch.arange(source.shape[-1], device=mask.device)[None] < frames
-        if not 0 < self.model_num_samples <= 661500 or not torch.equal(mask, expected):
+        # Native data includes sample-aligned durations just above 15 seconds.
+        # The 648-frame bucket covers 663552 samples; an exact 15-second cap
+        # wrongly rejects those valid observations before the joint update.
+        if not 0 < self.model_num_samples <= source.shape[-1] * 1024 or not torch.equal(mask, expected):
             raise ValueError("Editing source duration and contiguous mask disagree")
         if source.requires_grad or not torch.isfinite(source).all():
             raise ValueError("source observations must be detached and finite")

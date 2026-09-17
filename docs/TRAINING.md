@@ -43,4 +43,19 @@ Pass model/dataset configs from `stable_audio_tools/configs/`. Checkpoint select
 
 ## OPSD
 
-On-policy self-distillation code is under `stable_audio_tools/training/transfusion_opsd/`, with holdout preparation in `scripts/t2a/rl/`.
+Method: [`docs/OPSD.md`](OPSD.md). Library: `stable_audio_tools/training/transfusion_opsd/`. Learners: `scripts/t2a/rl/train_editing_opsd_*.py`.
+
+Current Editing recipe, after the joint 40k checkpoint:
+
+- request side sees only source FOA + instruction (no request-side GT)
+- STE / discrete credit into AR logits is off
+- 16 requests + 512 paired rows; typical 4-GPU split is 4+128 with paired microbatch 48
+- shared Transformer and DiT at `3.752567682220472e-7`; AR / structure heads at `5e-6`
+- frozen-40k reference hold on non-text decisions; same-plan RF teachers; paired FOA auxiliary
+
+```bash
+python scripts/t2a/rl/train_editing_opsd_spatial.py --config path/to/opsd_config.json
+python scripts/t2a/rl/train_editing_opsd_to2000.py --config path/to/continue.json --resume path/to/step500.pt
+```
+
+Set `CUDA_VISIBLE_DEVICES`. A four-rank continuation still needs four devices and the 16+512 recipe. Development-panel scores do not replace the released 40k baseline.
