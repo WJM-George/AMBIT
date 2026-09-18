@@ -38,7 +38,7 @@ from stable_audio_tools.training.metrics.fad_metrics import (
 
 DEFAULT_BENCHMARK = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/baselines/p10_60k_15row_v1")
 DEFAULT_SOURCE = Path(
-    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//p10_pre_v11_20260831/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives/"
     "sceneplan_dit_v7_sao_300m_from_scratch_160k/evaluation/"
     "p10_gt_vae_20k_40k_60k_instrumental_music_v1"
 )

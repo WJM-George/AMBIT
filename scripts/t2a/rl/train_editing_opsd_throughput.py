@@ -23,6 +23,7 @@ from scripts.t2a.rl import train_editing_opsd_spatial as spatial
 from stable_audio_tools.training.transfusion_opsd.editing_stream import OrdinalStream, homogeneous_microbatches
 from stable_audio_tools.training.transfusion_opsd.frozen_forward_cache import FrozenForwardCache
 from stable_audio_tools.training.transfusion_opsd.native_greedy_fastpath import NativeGreedyFastpath
+from stable_audio_tools.training.transfusion_opsd.request_evaluation_cache import request_evaluation_cache
 
 PERFORMANCE_DIRECTORY = None
 
@@ -86,6 +87,7 @@ class ThroughputLearner(StabilityLearner):
         self.plan_batch_cap = 1
         self.pending_plans = {}
         self.performance_dir = PERFORMANCE_DIRECTORY
+        self.request_cache_enabled = q.get('request_evaluation_cache', False)
 
     def gather(self, value):
         values = [None] * self.world
@@ -258,6 +260,14 @@ class ThroughputLearner(StabilityLearner):
         self.pending_plans = {i: dict(inputs=inputs[i], current=current[i], reference=reference.get(i)) for i in ordinals}
 
     def collect(self, ordinal):
+        if self.request_cache_enabled:
+            with request_evaluation_cache(self) as report:
+                item = self.collect_with_prepared_plans(ordinal)
+            item['evaluation_cache'] = report
+            return item
+        return self.collect_with_prepared_plans(ordinal)
+
+    def collect_with_prepared_plans(self, ordinal):
         cached = self.pending_plans.pop(ordinal, None)
         if cached is None:
             return super().collect(ordinal)

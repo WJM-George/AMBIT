@@ -1,0 +1,27 @@
+{
+  "duration_sec": 10.02542,
+  "room": {
+    "type": "outdoor"
+  },
+  "sample_id": "edited_000000",
+  "sources": [
+    {
+      "activity": {
+        "offset_sec": 10.00780045351474,
+        "onset_sec": 0.0
+      },
+      "description": "A deep, resonant synthesizer drone with a slow, pulsating rhythm. The sound slowly fades in and then gradually fades out, creating a dark and atmospheric texture.",
+      "gain_db": 0.0,
+      "kind": "music",
+      "source_id": "source_0",
+      "trajectory": {
+        "position": {
+          "azimuth_deg": -90.0,
+          "distance_m": 2.155801,
+          "elevation_deg": 2.0
+        },
+        "type": "static"
+      }
+    }
+  ]
+}

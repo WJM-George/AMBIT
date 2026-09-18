@@ -14,7 +14,6 @@ Disk: video stays (~17 GB/tarball), audio is small (~0.2 MB/clip). 80k clips
 => ~8 tarballs of mp4 kept + ~16 GB wav.
 
 Run:
-    cd ./stable-audio-tools
     uv run python dataset/indexing/extract_vggsound.py \
         --snapshot ${AMBIT_DATA_ROOT}/datasets/vggsound/snapshot \
         --out ${AMBIT_DATA_ROOT}/datasets/vggsound/extracted \

@@ -31,7 +31,7 @@ DEFAULT_CONFIG = REPO_ROOT / (
     "qwen35_0p8b_300m.json"
 )
 DEFAULT_CHECKPOINT = Path(
-    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//p10_pre_v11_20260831/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives/"
     "t2a_dit_qwen35_0p8b_300m_wdmix_v2_300k/"
     "checkpoints/epoch=75-step=300000.ckpt"
 )

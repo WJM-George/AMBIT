@@ -19,7 +19,6 @@ Planned disk layout for the full VAE corpus:
 
 Setup
 -----
-    cd .
     uv sync
 
 Examples

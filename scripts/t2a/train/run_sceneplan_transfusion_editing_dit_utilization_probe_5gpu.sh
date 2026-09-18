@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO="${P10_REPO:-${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace}"
+REPO="${P10_REPO:-.}"
 ROOT="${EDITING_DATA_ROOT:-${AMBIT_DATA_ROOT}/sceneplan_transfusion_editing_v1}"
 MODEL_CONFIG="${MODEL_CONFIG:-$REPO/stable_audio_tools/configs/model_configs/txt2audio/t2a/dit/qwen35_0p8b_300m_sceneplan_transfusion_editing_dit_full_v1.json}"
 CHECKPOINT="${PRETRAINED_CKPT:-${AMBIT_CKPT_ROOT}/dit/sceneplan_dit_v11_semantic_v2_protected_resume_150k/checkpoints/epoch=48-step=150000.ckpt}"
@@ -81,6 +81,6 @@ export TRAINING_GATE_MAX_LOSS_RATIO=-1
 export TRAINING_GATE_GRADIENT_EVERY=5
 export MIN_FREE_DISK_GIB=30
 export MIN_ROOT_FREE_GIB=10
-export TEMP_DIR="${TEMP_DIR:-/dev/shm/spedit_dit_utilization_b${BATCH_SIZE}_l${LONG_BATCH_SIZE}}"
+export TEMP_DIR="${TEMP_DIR:-${AMBIT_CACHE_ROOT:-cache}/spedit_dit_utilization_b${BATCH_SIZE}_l${LONG_BATCH_SIZE}}"
 
 exec "$REPO/scripts/t2a/train/run_t2a_common_8gpu.sh"

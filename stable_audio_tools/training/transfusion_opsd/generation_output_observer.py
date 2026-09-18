@@ -50,7 +50,9 @@ class NativeGenerationObserver:
             del text, raw, semantic
             gc.collect(); torch.cuda.empty_cache()
         self.cache_path = Path(cache_path)
-        self.whisper = WhisperModel(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/models/faster-distil-whisper-large-v3",
+        from stable_audio_tools.paths import whisper_model
+
+        self.whisper = WhisperModel(str(whisper_model()),
             device='cuda', device_index=0, compute_type='float16', local_files_only=True, cpu_threads=4, num_workers=1)
         self.processor = Wav2Vec2Processor.from_pretrained(protocol['ctc_model_directory'], local_files_only=True)
         with torch.random.fork_rng(devices=[0]):

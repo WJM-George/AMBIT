@@ -31,7 +31,7 @@ def main(args):
     source_root = Path(__file__).resolve().parents[3]
     path = source_root / 'stable_audio_tools/data/sceneplan_generation_ar_template_evidence.py'
     spec = importlib.util.spec_from_file_location('training_template_evidence', path); trace = importlib.util.module_from_spec(spec); spec.loader.exec_module(trace)
-    base = args.base_root or args.root.parent / 'template100_rebuild_20260905_v1'
+    base = args.base_root or args.root.parent / 'template_run'
     sys.path.insert(0, str(base / 'evaluation_source_snapshot'))
     from stable_audio_tools.data.sceneplan_generation_template100 import RECIPES
     from stable_audio_tools.data.sceneplan_generation_ar_natural_constraints import validate_requirements

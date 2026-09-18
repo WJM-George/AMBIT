@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_ROOT="${REPO_ROOT:-./stable-audio-tools}"
+REPO_ROOT="${REPO_ROOT:-.}"
 PYTHON_BIN="${PYTHON_BIN:-${REPO_ROOT}/.venv/bin/python}"
-EVAL_ROOT="${EVAL_ROOT:-${AMBIT_CKPT_ROOT}/p10_pre_v11_20260831/sceneplan_dit_fail/sceneplan_dit_v4_r8_300m/evaluation/p10_ckpt_5k_10k_15k_sceneplan44_v1}"
+EVAL_ROOT="${EVAL_ROOT:-${AMBIT_CKPT_ROOT}/archives/p10_eval/p10_ckpt_5k_10k_15k_sceneplan44_v1}"
 LOG_ROOT="${EVAL_ROOT}/logs"
 mkdir -p "${LOG_ROOT}"
 cd "${REPO_ROOT}"

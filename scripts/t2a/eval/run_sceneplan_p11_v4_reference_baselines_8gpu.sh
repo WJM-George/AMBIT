@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_ROOT="${REPO_ROOT:-${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace}"
+REPO_ROOT="${REPO_ROOT:-.}"
 PYTHON_BIN="${PYTHON_BIN:-${REPO_ROOT}/.venv/bin/python}"
 OUTPUT_ROOT="${OUTPUT_ROOT:-${REPO_ROOT}/artifacts/sceneplan_p11/evals/p11_v4_reference_baselines_20260903}"
 EVAL="${REPO_ROOT}/scripts/t2a/eval/evaluate_sceneplan_p11_v4_challenge.py"

@@ -4,7 +4,7 @@ set -euo pipefail
 # Evaluate one P10-v12 arm on the immutable 400 Music + 400 Sound + 400 Speech
 # panel. CHECKPOINT_SPECS is a comma-separated LOCAL_STEP=/path list.
 
-REPO_ROOT="${REPO_ROOT:-./stable-audio-tools}"
+REPO_ROOT="${REPO_ROOT:-.}"
 PYTHON_BIN="${PYTHON_BIN:-$REPO_ROOT/.venv/bin/python}"
 ARM="${ARM:?set ARM to dense, moe, attention, or combined}"
 MODEL_CONFIG="${MODEL_CONFIG:?set MODEL_CONFIG to the matching P10-v12 config}"

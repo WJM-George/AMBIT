@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO=./stable-audio-tools
+REPO=.
 PY="$REPO/.venv/bin/python"
 RUN_NAME="${RUN_NAME:?invoke this helper through run_t2a_spatial_chat_500m_8gpu.sh}"
 RUN_LABEL="${RUN_LABEL:-t2a-spatial-chat}"

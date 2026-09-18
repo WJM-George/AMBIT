@@ -59,7 +59,7 @@ Following Transfusion, the same 15-block DiT (width 1024, about 0.32B parameters
 
 `event_addition` · `event_removal` · `linear_to_static` · `static_to_linear` · `stationary_spatial_relocation`
 
-**OPSD.** After the joint 40k editor, on-policy self-distillation (`stable_audio_tools/training/transfusion_opsd/`) updates the same Transformer from actual executions. The current recipe hides request-side ground truth, keeps a frozen-40k reference hold on discrete fields, trains same-plan RF teachers, and adds a paired FOA auxiliary. Straight-through credit into AR logits is **off**. Details: [`docs/OPSD.md`](docs/OPSD.md).
+**OPSD.** After the joint 40k editor, on-policy self-distillation (`stable_audio_tools/training/transfusion_opsd/`) updates the same Transformer from actual executions. The current mainline is the v3 exclusive-branch recipe: hide request-side GT during rollout, keep a frozen-40k reference hold, train same-plan RF teachers, fall back to the same-request pair per missing AR/RF branch, and add a paired FOA auxiliary. Straight-through credit into AR logits is **off**. The evaluated 500-step run is continuing on eight GPUs to 2000. Details: [`docs/OPSD.md`](docs/OPSD.md), [`docs/TRANSFUSION_OPSD_MAINLINE.md`](docs/TRANSFUSION_OPSD_MAINLINE.md).
 
 ```text
   English request or edit + reference FOA
@@ -106,11 +106,12 @@ set -a && source .env && set +a
 
 | Variable | Default | What it should contain |
 | --- | --- | --- |
+| `AMBIT_REPO_ROOT` | `.` | This repository |
 | `AMBIT_DATA_ROOT` | `data` | ScenePlan indexes, latents, synthesized FOA |
 | `AMBIT_CKPT_ROOT` | `checkpoints` | VAE, DiT, AR, CLAP, Qwen |
 | `AMBIT_CACHE_ROOT` | `cache` | Hugging Face and download caches |
 
-JSON configs expand `${AMBIT_DATA_ROOT}`, `${AMBIT_CKPT_ROOT}`, and `${AMBIT_CACHE_ROOT}`. Launchers read GPUs from `CUDA_VISIBLE_DEVICES`; they do not assume a laboratory device map.
+JSON configs expand `${AMBIT_REPO_ROOT}`, `${AMBIT_DATA_ROOT}`, `${AMBIT_CKPT_ROOT}`, and `${AMBIT_CACHE_ROOT}`. Launchers read GPUs from `CUDA_VISIBLE_DEVICES`; they do not assume a laboratory device map.
 
 ---
 
@@ -176,6 +177,16 @@ $AMBIT_CKPT_ROOT/
 Released AMBIT weights will be linked here when they are public. Until then, pass explicit `--checkpoint` / `--release` paths. A typical Qwen snapshot is `Qwen/Qwen3.5-0.8B` from Hugging Face.
 
 ---
+
+## Listening demo
+
+A static project page with qualitative generation and editing examples lives in [`docs/demo/`](docs/demo/index.html). Rebuild with:
+
+```bash
+python scripts/t2a/eval/build_ambit_demo_page.py
+```
+
+Headphones are required. Previews are KEMAR binaural (or ±30° stereo if the KEMAR asset is unavailable), not native FOA. The six clips passed quality gates and a waveform/mel screen; they are a qualitative shortlist, not an average-case score.
 
 ## Inference
 
@@ -285,17 +296,15 @@ Editing DiT warms the generation renderer and adds 64 reference-latent channels.
 
 ### 5. Editing OPSD (optional post-training)
 
-Current recipe: start from the joint 40k editor, STE off, 16 requests + 512 paired rows per step, shared/DiT LR `3.75e-7`, AR heads `5e-6`. See [`docs/OPSD.md`](docs/OPSD.md).
+Current mainline: start from the joint 40k editor, STE off, exclusive per-branch fallback, 16 requests + 512 paired rows on eight GPUs, shared/DiT LR `3.75e-7`, AR heads `5e-6`. Continue the current v3 run; do not re-init Adam. See [`docs/OPSD.md`](docs/OPSD.md).
 
 ```bash
-python scripts/t2a/rl/train_editing_opsd_spatial.py --config "$AMBIT_CKPT_ROOT/opsd/config.json"
-# later continuation
-python scripts/t2a/rl/train_editing_opsd_to2000.py \
-  --config "$AMBIT_CKPT_ROOT/opsd/continue.json" \
-  --resume "$AMBIT_CKPT_ROOT/opsd/step-00000500.pt"
+python scripts/t2a/rl/launch_editing_opsd_repaired_fresh.py \
+  --run-dir "$AMBIT_CKPT_ROOT/transfusion_opsd/editing_v3" \
+  --recover
 ```
 
-Set `CUDA_VISIBLE_DEVICES`. Launchers use the current Python and do not pin a lab GPU map.
+Set `CUDA_VISIBLE_DEVICES` to eight devices. Launchers use the current Python.
 
 More flags and configs: [`docs/TRAINING.md`](docs/TRAINING.md).
 
@@ -330,6 +339,7 @@ Tests that need a local codec or index skip if `$AMBIT_DATA_ROOT` is empty.
 | `scripts/t2a/eval/` | Paper evaluation and baselines |
 | `scripts/t2a/data/` | ScenePlan / edit-pair construction |
 | `docs/OPSD.md` | Current OPSD method and recipe |
+| `docs/TRANSFUSION_OPSD_MAINLINE.md` | Current OPSD recipe and continuation rules |
 | `dataset/` | Indexing, captioning, FOA synthesis |
 | `data_download/` | Public corpus downloaders |
 | `tests/` | Unit and contract tests |

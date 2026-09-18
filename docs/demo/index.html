@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AMBIT · Listening examples</title>
+  <style>
+    :root {
+      --ink: #16202b;
+      --muted: #5b6876;
+      --line: #d7dee6;
+      --paper: #f6f3ec;
+      --card: #fffdf8;
+      --accent: #1f4b6e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font: 17px/1.6 "Iowan Old Style", "Palatino Linotype", Palatino, serif;
+    }
+    main { max-width: 1080px; margin: 0 auto; padding: 40px 22px 80px; }
+    h1, h2, h3 { font-family: "Source Serif 4", "Iowan Old Style", Palatino, serif; letter-spacing: -0.02em; }
+    h1 { font-size: 42px; line-height: 1.15; margin: 12px 0 8px; }
+    h2 { font-size: 26px; margin: 42px 0 12px; }
+    h3 { font-size: 22px; margin: 0 0 8px; }
+    .kicker, .metrics, .note, nav a { font-family: "IBM Plex Sans", "Helvetica Neue", sans-serif; }
+    .kicker { text-transform: uppercase; letter-spacing: 0.08em; font-size: 12px; color: var(--accent); margin: 0; }
+    .lead { font-size: 19px; max-width: 72ch; }
+    .note, .metrics, .listen { color: var(--muted); font-size: 14px; }
+    nav { display: flex; gap: 16px; flex-wrap: wrap; margin: 22px 0 8px; }
+    nav a { color: var(--accent); }
+    blockquote {
+      margin: 14px 0;
+      padding: 12px 16px;
+      background: #efe8d8;
+      border-left: 3px solid var(--accent);
+      white-space: pre-wrap;
+    }
+    .case {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 22px;
+      margin: 22px 0 28px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+      margin: 16px 0;
+    }
+    .player { min-width: 0; }
+    audio { width: 100%; display: block; margin: 8px 0; }
+    button {
+      font: 13px/1.3 "IBM Plex Sans", sans-serif;
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 8px;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+    img { width: 100%; border-radius: 8px; margin-top: 12px; background: #111; }
+    details { margin-top: 10px; }
+    pre { white-space: pre-wrap; font-size: 13px; background: #f3f0e7; padding: 12px; border-radius: 8px; }
+    footer { color: var(--muted); font-size: 14px; margin-top: 48px; max-width: 72ch; }
+  </style>
+</head>
+<body>
+<main>
+  <p class="kicker">Listening examples</p>
+  <h1>AMBIT</h1>
+  <p class="lead"><strong>AMBIsonic Transfusion</strong> — native first-order Ambisonic generation and instruction-guided editing with executable ScenePlans.</p>
+  <p>Generating and editing multi-source spatial audio requires fine-grained control over content, timing, and 3D trajectories, while preserving unmodified sources. AMBIT (AMBIsonic Transfusion) is an end-to-end framework for native first-order Ambisonic generation and editing that models spatial planning as an executable ScenePlan.</p>
+  <p class="note">Headphones recommended. 0° is front, positive azimuth is left, negative is right. This is a fixed first-order binaural preview, not native FOA playback. Playback uses <strong>MIT KEMAR 8-virtual-speaker FOA binaural</strong>. One shared peak gain is applied inside each example. These six clips passed the archived quality gates, then an audio-preview screen for matched duration, no leading silence or hard cutoff, and a waveform/mel that follows GT. They are showcase examples, not an estimate of average test performance.</p>
+  <nav>
+    <a href="#generation">Generation</a>
+    <a href="#editing">Editing</a>
+    <a href="https://github.com/WJM-George/AMBIT">Code</a>
+  </nav>
+
+  <h2 id="generation">Generation</h2>
+  <p>English request → ScenePlan AR → compiled control → FOA DiT. Each row compares the real test FOA with the full AMBIT AR→DiT150k output.</p>
+  
+<article class="case" id="G1" data-task="generation">
+  <header>
+    <p class="kicker">G1 · generation · generation · spv2_test_no_speech_1_0000223</p>
+    <h3>Solo acoustic guitar, stationary behind the listener</h3>
+    <p class="listen">The guitar should sit behind you for the full clip. The late swell near 8s should line up with GT.</p>
+    <p class="metrics">DOA 0.95° · IoU 1.000 · W log-mel MAE 9.13 dB</p>
+  </header>
+  <blockquote>Compose a spatial audio clip around me with one sources and outdoor acoustics. Place music described as “A solo acoustic guitar plays a gentle, fingerstyle melody. The music has a calm, folk-like quality with a warm and resonant timbre.” in the scene as the first sound. Let it come in near the beginning and finish near the end. Keep it stationary behind me. Use only these sources.</blockquote>
+  <div class="grid"><div class="player"><strong>Ground truth</strong><audio id="G1-gt" controls preload="metadata" src="assets/G1_0002223/gt.wav"></audio><button type="button" data-audio="G1-gt">Switch at this time</button></div><div class="player"><strong>AMBIT</strong><audio id="G1-ours" controls preload="metadata" src="assets/G1_0002223/ours.wav"></audio><button type="button" data-audio="G1-ours">Switch at this time</button></div></div>
+  <details><summary>Predicted ScenePlan</summary><pre>source_0 · music · 0.19–10.01s · static at 172.0° az, 0.0° el, 2.56 m · A solo acoustic guitar plays a gentle, fingerstyle melody. The music has a calm, folk-like quality with a warm and resonant timbre.</pre><p><a href="assets/G1_0002223/sceneplan.json">sceneplan.json</a></p></details>
+  <img src="assets/G1_0002223/waveform_mel.png" alt="W-channel waveform, spectrum, and mel of G1">
+</article>
+
+<article class="case" id="G2" data-task="generation">
+  <header>
+    <p class="kicker">G2 · generation · generation · spv2_test_no_speech_3_0000191</p>
+    <h3>Chiptune, a passing train, and a left-side drone</h3>
+    <p class="listen">Chiptune stays back-right; the train should travel right to left; the drone stays left.</p>
+    <p class="metrics">DOA 6.19° · IoU 1.000 · W log-mel MAE 7.23 dB</p>
+  </header>
+  <blockquote>Compose a spatial audio clip around me with three sources and outdoor acoustics. Place music described as “A male vocalist sings in a high-pitched, strained voice over a fast-paced, upbeat chiptune track. The music features synthesized melodies and a driving electronic beat, characteristic of retro video game soundtracks.” in the scene as the first sound. Let it come in near the beginning and finish near the end. Keep it stationary behind me on my right. Place music described as “A train approaches and passes by, its rhythmic clatter and low rumble growing louder before fading into the distance.” in the scene as the second sound. Let it come in near the beginning and finish near the end. Have it move from my right to my left. It should move closer to me as it goes. Place a sound effect described as “A low, sustained, and ominous drone creates a suspenseful atmosphere. The sound is deep and resonant, resembling a synthesized pad or a distant, rumbling engine, building tension.” in the scene as the third sound. Let it come in near the beginning and finish near the end. Keep it stationary on my left. Use only these sources.</blockquote>
+  <div class="grid"><div class="player"><strong>Ground truth</strong><audio id="G2-gt" controls preload="metadata" src="assets/G2_0003591/gt.wav"></audio><button type="button" data-audio="G2-gt">Switch at this time</button></div><div class="player"><strong>AMBIT</strong><audio id="G2-ours" controls preload="metadata" src="assets/G2_0003591/ours.wav"></audio><button type="button" data-audio="G2-ours">Switch at this time</button></div></div>
+  <details><summary>Predicted ScenePlan</summary><pre>source_0 · music · 0.21–9.38s · static at -140.0° az, 0.0° el, 2.56 m · A male vocalist sings in a high-pitched, strained voice over a fast-paced, upbeat chiptune track. The music features synthesized melodies and a driving electronic beat, characteristic of retro video game soundtracks.
+source_1 · music · 1.88–10.03s · linear -88.0° az, 0.0° el, 3.18 m → 91.0° az, 0.0° el, 2.21 m · A train approaches and passes by, its rhythmic clatter and low rumble growing louder before fading into the distance.
+source_2 · sound · 0.12–9.10s · static at 94.0° az, 0.0° el, 2.26 m · A low, sustained, and ominous drone creates a suspenseful atmosphere. The sound is deep and resonant, resembling a synthesized pad or a distant, rumbling engine, building tension.</pre><p><a href="assets/G2_0003591/sceneplan.json">sceneplan.json</a></p></details>
+  <img src="assets/G2_0003591/waveform_mel.png" alt="W-channel waveform, spectrum, and mel of G2">
+</article>
+
+<article class="case" id="G3" data-task="generation">
+  <header>
+    <p class="kicker">G3 · generation · generation · spv2_test_no_speech_3_0000063</p>
+    <h3>Three overlapping glitch and noise textures</h3>
+    <p class="listen">A left-stationary glitch bed, a left-to-front-right modulator, and a front-to-back receding noise.</p>
+    <p class="metrics">DOA 3.66° · IoU 1.000 · W log-mel MAE 7.11 dB</p>
+  </header>
+  <blockquote>Compose a spatial audio clip around me with three sources and outdoor acoustics. I want the first sound to contain music described as “A cacophony of distorted, high-pitched electronic sounds rapidly stutters and glitches, creating a harsh, chaotic, and abrasive texture characteristic of experimental noise music.”. It should remain still on my left. Have it begin near the beginning and stop near the end. I want the second sound to contain a sound effect described as “A high-pitched, distorted electronic sound rapidly modulates in pitch, creating a frantic and chaotic effect.”. Have it move from my left to my front right. Have it begin near the beginning and stop near the end. I want the third sound to contain music described as “A cacophony of distorted, high-pitched electronic sounds creates a chaotic and abrasive noise. The harsh, buzzing timbre suggests malfunctioning machinery or a heavily processed synthesizer, resulting in a jarring, industrial soundscape.”. Have it move from in front of me to behind me. It should move farther away from me as it goes. Have it begin near the beginning and stop near the end. Use only these sources.</blockquote>
+  <div class="grid"><div class="player"><strong>Ground truth</strong><audio id="G3-gt" controls preload="metadata" src="assets/G3_0003463/gt.wav"></audio><button type="button" data-audio="G3-gt">Switch at this time</button></div><div class="player"><strong>AMBIT</strong><audio id="G3-ours" controls preload="metadata" src="assets/G3_0003463/ours.wav"></audio><button type="button" data-audio="G3-ours">Switch at this time</button></div></div>
+  <details><summary>Predicted ScenePlan</summary><pre>source_0 · music · 0.39–9.98s · static at 85.0° az, 0.0° el, 2.96 m · A cacophony of distorted, high-pitched electronic sounds rapidly stutters and glitches, creating a harsh, chaotic, and abrasive texture characteristic of experimental noise music.
+source_1 · sound · 1.70–9.22s · linear 94.0° az, 0.0° el, 2.56 m → -44.0° az, 0.0° el, 2.56 m · A high-pitched, distorted electronic sound rapidly modulates in pitch, creating a frantic and chaotic effect.
+source_2 · music · 0.30–9.61s · linear -1.0° az, 0.0° el, 2.44 m → 174.0° az, 0.0° el, 3.34 m · A cacophony of distorted, high-pitched electronic sounds creates a chaotic and abrasive noise. The harsh, buzzing timbre suggests malfunctioning machinery or a heavily processed synthesizer, resulting in a jarring, industrial soundscape.</pre><p><a href="assets/G3_0003463/sceneplan.json">sceneplan.json</a></p></details>
+  <img src="assets/G3_0003463/waveform_mel.png" alt="W-channel waveform, spectrum, and mel of G3">
+</article>
+
+
+  <h2 id="editing">Editing</h2>
+  <p>Reference FOA + instruction → ScenePlan AR → FOA DiT conditioned on the reference latent. Each row keeps the source recording, AMBIT AR+DiT50k, and the real edited GT. SwanWeave is included when the archived official output exists for that pair.</p>
+  
+<article class="case" id="E1" data-task="editing">
+  <header>
+    <p class="kicker">E1 · editing · stationary_spatial_relocation · speditv1_test_2e336fbb88da900f18cdb7ed</p>
+    <h3>Relocate the ambient drone to the front</h3>
+    <p class="listen">Compare reference (behind) with AMBIT and GT (front, 0°).</p>
+    <p class="metrics">DOA 1.28° · change IoU 1.000 · W log-mel MAE 0.89 dB · NMSE 0.0051</p>
+  </header>
+  <blockquote>Could you revise the supplied audio in this way? Set the new stationary position of the music described as &quot;A deep, resonant, and rhythmic pulsating drone, characteristic of dark ambient or drone music, creates a hypnotic and suspenseful atmosphere.&quot; to azimuth 0 degrees, elevation 6.499 degrees and distance 1.3944 meters, keeping the source&#x27;s content, active interval and gain intact. Keep the unmentioned parts as they were.</blockquote>
+  <div class="grid"><div class="player"><strong>Reference</strong><audio id="E1-reference" controls preload="metadata" src="assets/E1_0002551/reference.wav"></audio><button type="button" data-audio="E1-reference">Switch at this time</button></div><div class="player"><strong>AMBIT</strong><audio id="E1-ours" controls preload="metadata" src="assets/E1_0002551/ours.wav"></audio><button type="button" data-audio="E1-ours">Switch at this time</button></div><div class="player"><strong>Ground truth</strong><audio id="E1-gt" controls preload="metadata" src="assets/E1_0002551/gt.wav"></audio><button type="button" data-audio="E1-gt">Switch at this time</button></div><div class="player"><strong>SwanWeave</strong><audio id="E1-swanweave" controls preload="metadata" src="assets/E1_0002551/swanweave.wav"></audio><button type="button" data-audio="E1-swanweave">Switch at this time</button></div></div>
+  <details><summary>Predicted ScenePlan</summary><pre>source_0 · music · 0.00–10.01s · static at 0.0° az, 6.0° el, 1.39 m · A deep, resonant, and rhythmic pulsing sound, like a slow, heavy heartbeat or a large engine idling, creates a suspenseful and ominous atmosphere.</pre><p><a href="assets/E1_0002551/sceneplan.json">sceneplan.json</a></p></details>
+  <img src="assets/E1_0002551/waveform_mel.png" alt="W-channel waveform, spectrum, and mel of E1">
+</article>
+
+<article class="case" id="E2" data-task="editing">
+  <header>
+    <p class="kicker">E2 · editing · stationary_spatial_relocation · speditv1_test_8df78e38274782be01e14563</p>
+    <h3>Relocate the retro organ to the right (−90°)</h3>
+    <p class="listen">The organ should jump from its original seat to the right ear.</p>
+    <p class="metrics">DOA 0.99° · change IoU 1.000 · W log-mel MAE 1.01 dB · NMSE 0.0078</p>
+  </header>
+  <blockquote>Could you revise the supplied audio in this way? Set the new stationary position of the music described as &quot;A synthesized, low-pitched electronic organ plays a simple, repeating chord progression in a retro video game style.&quot; to azimuth -90 degrees, elevation 18.213 degrees and distance 1.3752 meters, keeping the source&#x27;s content, active interval and gain intact. Keep the unmentioned parts as they were.</blockquote>
+  <div class="grid"><div class="player"><strong>Reference</strong><audio id="E2-reference" controls preload="metadata" src="assets/E2_0002538/reference.wav"></audio><button type="button" data-audio="E2-reference">Switch at this time</button></div><div class="player"><strong>AMBIT</strong><audio id="E2-ours" controls preload="metadata" src="assets/E2_0002538/ours.wav"></audio><button type="button" data-audio="E2-ours">Switch at this time</button></div><div class="player"><strong>Ground truth</strong><audio id="E2-gt" controls preload="metadata" src="assets/E2_0002538/gt.wav"></audio><button type="button" data-audio="E2-gt">Switch at this time</button></div><div class="player"><strong>SwanWeave</strong><audio id="E2-swanweave" controls preload="metadata" src="assets/E2_0002538/swanweave.wav"></audio><button type="button" data-audio="E2-swanweave">Switch at this time</button></div></div>
+  <details><summary>Predicted ScenePlan</summary><pre>source_0 · music · 0.00–10.03s · static at -90.0° az, 18.0° el, 1.39 m · A synthesized, low-pitched electronic organ plays a simple, repetitive melody. The sound is reminiscent of a retro video game or a music box, playing a simple, looping melody.</pre><p><a href="assets/E2_0002538/sceneplan.json">sceneplan.json</a></p></details>
+  <img src="assets/E2_0002538/waveform_mel.png" alt="W-channel waveform, spectrum, and mel of E2">
+</article>
+
+<article class="case" id="E3" data-task="editing">
+  <header>
+    <p class="kicker">E3 · editing · stationary_spatial_relocation · speditv1_test_8a3f12a6641adc3c062ef2e3</p>
+    <h3>Relocate the synth drone to the right (−90°)</h3>
+    <p class="listen">The drone should move to the right while the timbre stays put.</p>
+    <p class="metrics">DOA 0.38° · change IoU 0.994 · W log-mel MAE 1.01 dB · NMSE 0.0063</p>
+  </header>
+  <blockquote>Could you revise the supplied audio in this way? Relocate the music described as &quot;A deep, resonant synthesizer drone creates a dark and ominous ambient atmosphere. The sound slowly swells and fades, with a low, rumbling timbre that evokes suspense and tension.&quot; to azimuth -90 degrees, elevation 1.578 degrees and distance 2.1547 meters, where it should stay still. Preserve that source&#x27;s content, active interval and source gain. Keep the unmentioned parts as they were.</blockquote>
+  <div class="grid"><div class="player"><strong>Reference</strong><audio id="E3-reference" controls preload="metadata" src="assets/E3_0002511/reference.wav"></audio><button type="button" data-audio="E3-reference">Switch at this time</button></div><div class="player"><strong>AMBIT</strong><audio id="E3-ours" controls preload="metadata" src="assets/E3_0002511/ours.wav"></audio><button type="button" data-audio="E3-ours">Switch at this time</button></div><div class="player"><strong>Ground truth</strong><audio id="E3-gt" controls preload="metadata" src="assets/E3_0002511/gt.wav"></audio><button type="button" data-audio="E3-gt">Switch at this time</button></div><div class="player"><strong>SwanWeave</strong><audio id="E3-swanweave" controls preload="metadata" src="assets/E3_0002511/swanweave.wav"></audio><button type="button" data-audio="E3-swanweave">Switch at this time</button></div></div>
+  <details><summary>Predicted ScenePlan</summary><pre>source_0 · music · 0.00–10.01s · static at -90.0° az, 2.0° el, 2.16 m · A deep, resonant synthesizer drone with a slow, pulsating rhythm. The sound slowly fades in and then gradually fades out, creating a dark and atmospheric texture.</pre><p><a href="assets/E3_0002511/sceneplan.json">sceneplan.json</a></p></details>
+  <img src="assets/E3_0002511/waveform_mel.png" alt="W-channel waveform, spectrum, and mel of E3">
+</article>
+
+
+  <footer>
+    <p>Azimuth convention: 0° front, +90° left, −90° right. Generation DOA is execution error versus the predicted ScenePlan; editing DOA is common-frame error versus the real target. Figures are FOA W-channel waveform, linear spectrum, and mel.</p>
+  </footer>
+</main>
+<script>
+document.querySelectorAll("button[data-audio]").forEach((button) => {
+  button.addEventListener("click", () => {
+    const next = document.getElementById(button.dataset.audio);
+    const article = button.closest("article");
+    const current = article.querySelector("audio.playing") || article.querySelector("audio");
+    const time = current ? current.currentTime : 0;
+    article.querySelectorAll("audio").forEach((node) => {
+      node.pause();
+      node.classList.remove("playing");
+    });
+    next.currentTime = time;
+    next.classList.add("playing");
+    next.play();
+  });
+});
+document.querySelectorAll("audio").forEach((node) => {
+  node.addEventListener("play", () => {
+    const article = node.closest("article");
+    article.querySelectorAll("audio").forEach((other) => {
+      if (other !== node) other.pause();
+      other.classList.toggle("playing", other === node);
+    });
+  });
+});
+</script>
+</body>
+</html>

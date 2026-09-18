@@ -16,7 +16,6 @@ This is **synthetic** spatial audio (not YouTube FOA like Sphere360). Pair with 
 data (Sphere360, Spatial LibriSpeech) for diversity.
 
 Setup (project standard: uv, no manual venv activate):
-    cd ./stable-audio-tools
     uv sync --extra spatial
 
 Build input jsonl from AudioCaps parquet (one-time):

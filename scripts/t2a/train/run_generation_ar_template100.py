@@ -63,7 +63,7 @@ def prepare(root, data):
     sources = json.loads((REPO / 'T100_TRAINING_SNAPSHOT.json').read_text())['files']
     config = {'schema': 'generation_ar_template100_training_v1', 'data': str(data), 'train_rows': 1600000,
         'quality_report_sha256': sha(data / 'QUALITY_REPORT.json'), 'source_sha256': sources,
-        'initialize_checkpoint': os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/transfusion_sceneplan/generation_ar/attention_adaptation_quarter_epoch_20260905_v1/training/checkpoints/step_00002084.pt",
+        'initialize_checkpoint': os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/generation_ar/run/training/checkpoints/step_00002084.pt",
         'initialize_checkpoint_sha256': '9f7006171b64c061daa6cfda2bfef8621af4a19dacb6b624437d50f062b29bcb',
         'codec': os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4",
         'acceptance': str(REPO / 'docs/sceneplan_v2/generation_ar_template100_protocol_20260906.md'),
@@ -158,7 +158,7 @@ def main(args):
 
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__); p.add_argument('--root', type=Path, required=True)
-    p.add_argument('--python', default=os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/stable-audio-tools-workspace/.venv/bin/python3"); args = p.parse_args()
+    p.add_argument('--python', default=os.environ.get("AMBIT_PYTHON", "python3")); args = p.parse_args()
     try: main(args)
     except BaseException as exc:
         atomic(args.root / 'STATUS.json', {'status': 'FAILED_NEEDS_ATTENTION', 'error': f'{type(exc).__name__}: {exc}', 'updated_unix': time.time()})

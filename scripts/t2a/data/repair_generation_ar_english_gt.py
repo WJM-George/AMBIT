@@ -20,7 +20,7 @@ import numpy as np
 from transformers import AutoTokenizer
 from stable_audio_tools.data.model_sceneplan_codec_v4 import ModelScenePlanCodecV4
 
-ROOT = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/transfusion_sceneplan/generation_ar/template100_rebuild_20260905_v1")
+ROOT = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/generation_ar/template_run")
 SOURCE = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/transfusion_shared_v1/generation_ar")
 REPAIRS = {
     'wooden打击 instrument': 'wooden percussion instrument',

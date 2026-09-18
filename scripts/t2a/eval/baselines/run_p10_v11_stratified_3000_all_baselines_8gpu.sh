@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Two balanced phases keep all eight GPUs busy while every runnable public
 # baseline is regenerated on the frozen P10 v11 stratified 3k test contract.
-REPO_ROOT="${REPO_ROOT:-./stable-audio-tools}"
+REPO_ROOT="${REPO_ROOT:-.}"
 UPSTREAM_ROOT="${UPSTREAM_ROOT:-./evaluation_benchmark/repos}"
 ASSET_ROOT="${ASSET_ROOT:-${AMBIT_CKPT_ROOT}/baselines/p10_60k_15row_v1}"
 EVAL_ROOT="${EVAL_ROOT:-${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1/evaluation/p10_v11_150k_stratified_test_3000_semantic_v2}"

@@ -18,7 +18,6 @@ Outputs (--out, default ${AMBIT_CKPT_ROOT}/eval_metric/codec_compare):
   compare_codecs_per_file.csv, compare_codecs_summary.json, compare_codecs_summary.md
 
 Run (CPU-safe; all training GPUs may be busy):
-  cd ./stable-audio-tools
   uv run python dataset/evaluation/compare_codecs.py --device cpu
 """
 from __future__ import annotations

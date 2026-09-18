@@ -10,8 +10,8 @@ import sqlite3
 import sys
 import time
 
-SNAPSHOT = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/transfusion_sceneplan/generation_ar/source_snapshots/p10v11_gen_ar_20260904_10epoch_continuation_v8")
-REPO = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/stable-audio-tools-workspace")
+SNAPSHOT = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/generation_ar/source_snapshots/snapshot")
+REPO = Path(__file__).resolve().parents[3]
 
 
 def main():
@@ -35,7 +35,7 @@ def main():
     model.p10_dit.to(device=device, dtype=torch.bfloat16)
     model.prompt_conditioner.to(device=device, dtype=torch.bfloat16)
     model.ar_adapter.to(device=device, dtype=torch.float32); model.eval()
-    db = sqlite3.connect('file:${AMBIT_CKPT_ROOT}/transfusion_sceneplan/generation_ar/validation_diagnosis_20260905_v1/panel.sqlite?mode=ro&immutable=1', uri=True)
+    db = sqlite3.connect('file:${AMBIT_CKPT_ROOT}/generation_ar/diagnosis/panel.sqlite?mode=ro&immutable=1', uri=True)
     rows = [r for n in range(1,5) for r in db.execute('SELECT ordinal,raw_user_request FROM rows WHERE source_count=? ORDER BY ordinal LIMIT 8',(n,))]
     db.close()
     measurements = []

@@ -31,7 +31,6 @@ Outputs (--out, default ${AMBIT_CKPT_ROOT}/eval_metric):
   heldout_per_file.csv, heldout_summary.json, heldout_summary.md
 
 Run:
-  cd ./stable-audio-tools
   CUDA_VISIBLE_DEVICES=1 uv run python dataset/evaluation/compare_vae_heldout.py \
       --num 100 --out ${AMBIT_CKPT_ROOT}/eval_metric
 """

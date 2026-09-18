@@ -3,7 +3,7 @@ set -euo pipefail
 
 # High-throughput checkpoint sweep: one checkpoint/shard replica per GPU.
 # This deliberately refuses to share GPUs with a live training job.
-REPO_ROOT="${REPO_ROOT:-./stable-audio-tools}"
+REPO_ROOT="${REPO_ROOT:-.}"
 PYTHON_BIN="${PYTHON_BIN:-${REPO_ROOT}/.venv/bin/python}"
 EVAL_ROOT="${EVAL_ROOT:?set EVAL_ROOT to a frozen evaluation contract directory}"
 LOG_ROOT="${EVAL_ROOT}/logs"

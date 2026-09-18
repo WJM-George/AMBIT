@@ -3,13 +3,12 @@
 All downloaders run from the **repo root** with `uv` (do not use bare `python3` — deps live in the project venv).
 
 ```bash
-cd .
 uv sync
 ```
 
 ## Disk layout
 
-| Dataset | Mount | Path |
+| Dataset | Root | Path |
 |---------|-------|------|
 | AudioSet (~2.4 TB) | `${AMBIT_DATA_ROOT}` | `${AMBIT_DATA_ROOT}/datasets/audioset/` |
 | VGGSound (~338 GB) | `${AMBIT_DATA_ROOT}` | `${AMBIT_DATA_ROOT}/datasets/vggsound/` |

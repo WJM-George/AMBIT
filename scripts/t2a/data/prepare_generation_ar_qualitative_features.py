@@ -32,8 +32,8 @@ def main(args):
     head = importlib.util.module_from_spec(spec); spec.loader.exec_module(head)
     sys.path.insert(0, str(args.snapshot))
     from stable_audio_tools.data.sceneplan_generation_ar_natural_constraints import validate_requirements
-    copy = args.root.parent / 'learned_copy_pointer_20260906_v1'; features = copy / 'features'
-    base = args.root.parent / 'template100_rebuild_20260905_v1'; data = base / 'data_v2'
+    copy = args.root.parent / 'copy_run'; features = copy / 'features'
+    base = args.root.parent / 'template_run'; data = base / 'data_v2'
     output = args.root / 'features'; output.mkdir(parents=True, exist_ok=True)
     protocol = json.loads((args.root / 'PROTOCOL.json').read_text())
     assert sha(features / 'CONTRACT.json') == protocol['feature_contract_sha256']

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Download MusicCaps metadata (csv, ~3 MB) to ${AMBIT_DATA_ROOT}/datasets/musiccaps/.
 
-    cd . && uv sync
     uv run python scripts/downloaders/download_musiccaps.py
 """
 from pathlib import Path

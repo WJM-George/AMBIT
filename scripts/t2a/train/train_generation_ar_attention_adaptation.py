@@ -12,7 +12,7 @@ from pathlib import Path
 import sys
 import time
 
-SNAPSHOT=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/transfusion_sceneplan/generation_ar/source_snapshots/generation_ar_attention_adaptation_20260905_v2")
+SNAPSHOT=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/generation_ar/source_snapshots/snapshot")
 REPO=Path(__file__).resolve().parents[3]
 sys.path.insert(0,str(SNAPSHOT))
 from generation_ar_sampling import ShuffledGlobalBatchSampler
@@ -28,12 +28,12 @@ from stable_audio_tools.models.sceneplan_transfusion_generation_ar import load_p
 from stable_audio_tools.models.sceneplan_generation_ar_lora import AdaptedGenerationAR
 from stable_audio_tools.inference.sceneplan_generation_ar_precision import configure_float32_ar
 
-CACHE=Path('/dev/shm/generation_ar_manifests_20260905')
-PARENT=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/transfusion_sceneplan/generation_ar/sampling_repair_1ep_20260905_v1/training")
-CHECKPOINT=PARENT/'checkpoints/step_00008334.pt'
-CHECKPOINT_SHA='c2bdeef77f8c50ee2ffe9090ade6177cad8fce18dcf843c137ebc8f55644ceb7'
+CACHE=Path(os.environ.get("AMBIT_CACHE_ROOT", "cache")) / "generation_ar_manifests"
+PARENT=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/generation_ar/parent/training")
+CHECKPOINT=Path(os.environ.get("AMBIT_GENERATION_AR_INIT_CHECKPOINT", str(PARENT/'checkpoints/init.pt')))
+CHECKPOINT_SHA=os.environ.get("AMBIT_GENERATION_AR_INIT_SHA256", "")
 CODEC=Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4")
-ACCEPTANCE=Path("." + "/reports/generation_ar_goal_acceptance_20260905.md")
+ACCEPTANCE=Path("reports/generation_ar_goal_acceptance.md")
 
 
 def sha(path):
@@ -98,7 +98,8 @@ def main():
                   SNAPSHOT/'stable_audio_tools/inference/sceneplan_generation_ar_precision.py']
     source_hashes={str(p):sha(p) for p in source_paths}
     if rank==0:
-        assert sha(CHECKPOINT)==CHECKPOINT_SHA
+        if CHECKPOINT_SHA:
+            assert sha(CHECKPOINT)==CHECKPOINT_SHA
         for split,digest in parent['manifest_sha256'].items():assert sha(CACHE/(split+'.sqlite'))==digest
         if not args.gate:
             if args.gate_proof is None:raise ValueError('formal adaptation requires successful distributed gate')

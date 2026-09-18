@@ -33,7 +33,7 @@ REVISION_ROOT = Path(
 DEFAULT_SOURCE = REVISION_ROOT / "evaluation/p10_v9_balanced_1200_ckpt20k_100k_v1"
 DEFAULT_OUTPUT = REVISION_ROOT / "evaluation/p10_v10_music_sound_protection_fixed50"
 DEFAULT_105K = Path(
-    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//p10_pre_v11_20260831/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives/"
     "sceneplan_dit_v10_semantic_v2_protected_resume_110k/"
     "checkpoints/epoch=33-step=105000.ckpt"
 )

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_ROOT="${REPO_ROOT:-./stable-audio-tools}"
+REPO_ROOT="${REPO_ROOT:-.}"
 PYTHON_BIN="${PYTHON_BIN:-${REPO_ROOT}/.venv/bin/python}"
 BENCHMARK_ROOT="${BENCHMARK_ROOT:?BENCHMARK_ROOT is required}"
 BENCHMARK_KIND="${BENCHMARK_KIND:?BENCHMARK_KIND is required}"

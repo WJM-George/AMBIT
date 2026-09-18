@@ -1,7 +1,8 @@
 """Editing OPSD with request constraints and coverage of retained capabilities.
 
-Same native AR/DiT and one joint optimizer. New-request supervision never
-reads a target plan/audio. Paired audio objectives remain separately logged.
+Same native AR/DiT and one joint optimizer. Request rollout never reads a
+target plan/audio. Optional request correction is a separately logged native
+paired backward pass, declared by a versioned recipe.
 """
 from pathlib import Path
 import math
@@ -21,6 +22,12 @@ from stable_audio_tools.training.transfusion_opsd.editing_spatial_retention impo
 from stable_audio_tools.training.transfusion_opsd.native_coarse_choice_retention import field_balanced_native_set_ce
 from stable_audio_tools.training.transfusion_opsd.native_paired_rf import paired_rf_example, paired_rf_loss
 from stable_audio_tools.training.transfusion_opsd.supported_teacher import preserve_reference_support_mass
+from stable_audio_tools.training.transfusion_opsd.removal_retention import apply_removal_retention
+from stable_audio_tools.training.transfusion_opsd.removal_paired_supervision import removal_loss
+from stable_audio_tools.training.transfusion_opsd.request_paired_supervision import (
+    request_loss as paired_request_loss, execution_supervision, covered_request,
+)
+from stable_audio_tools.training.transfusion_opsd import branch_request_supervision
 from stable_audio_tools.training.transfusion_opsd.editing_binaural_retention import (
     FrozenKemarRenderer, binaural_features, binaural_distances, select_operation_rows,
 )
@@ -55,8 +62,10 @@ class CompleteLearner(spatial.SpatialLearner):
         base.write(out / f'COMPLETE_RECIPE_rank{rank}.json', dict(
             initialization=initial or q['base_checkpoint'], optimizer='new_AdamW', update=0,
             frozen_reference=q['base_checkpoint'], renderer=self.renderer.identity,
-            request_target_audio_access=False, paired_objectives_separate=True,
-            removal_execution_teacher='Unavailable without reliable source-specific acoustic evidence; negative quote scope, reference retention and paired objectives remain active. No inferred count label.'))
+            request_rollout_target_access=False, paired_objectives_separate=True,
+            removal_paired_correction=q.get('removal_repair'),
+            request_paired_correction=q.get('request_paired_correction'),
+            removal_execution_teacher='Unavailable without reliable source-specific acoustic evidence. Removal anchors are released consistently; optional native paired correction is separately logged. No inferred count label.'))
 
     @torch.no_grad()
     def execute(self, obs, plan, seed, feature, facts, *, register_plan=None, capture=None):
@@ -124,8 +133,15 @@ class CompleteLearner(spatial.SpatialLearner):
         authorized = {t['position'] for t in constraints['targets']}
         item['holds'] = [h for h in item['holds'] if h['position'] not in authorized]
         item['coarse'] = [h for h in item['coarse'] if h['position'] not in authorized]
+        removal = apply_removal_retention(self.adapter.codec, item, facts, binding)
+        if not removal['reference_velocity_allowed']:
+            # A whole-scene velocity anchor conditioned on the student's
+            # wrong plan would also retain the object the request removes.
+            item['velocity_reference'] = None
+            self._visited = []
+            return item
         if not self._visited:
-            # Includes deletion and overlapping/ambiguous cases lacking an
+            # Includes overlapping/ambiguous non-removal cases lacking an
             # improvement teacher. They still receive a DiT retention target
             # at a state the student actually visited under its own plan.
             text = ' '.join(s.get('description', s.get('transcript', '')) for s in item['plan']['sources'])
@@ -176,11 +192,77 @@ class CompleteLearner(spatial.SpatialLearner):
         (scale * (config['request_constraint_weight'] * request_loss
                   + config['retained_text_KL_weight'] * text_loss)).backward()
         visit = item['velocity_reference']
-        pred = self.adapter.velocity_function(visit['condition'], differentiable=True)(visit['state'], visit['time'])
-        retention = paired_rf_loss(pred, visit['target'], item['obs'].source_attention_mask)
-        (scale * config['reference_velocity_weight'] * retention).backward()
+        retention = None
+        if visit is not None:
+            pred = self.adapter.velocity_function(visit['condition'], differentiable=True)(visit['state'], visit['time'])
+            retention = paired_rf_loss(pred, visit['target'], item['obs'].source_attention_mask)
+            (scale * config['reference_velocity_weight'] * retention).backward()
+        correction = dict(enabled=False)
+        route = execution_supervision(stats, self.q['spatial_recipe'])
+        branch_recipe = branch_request_supervision.active(self.q)
+        if branch_recipe:
+            correction.update(recipe=branch_request_supervision.RECIPE['version'], AR=False, RF=False)
+        request_repair = self.q.get('request_paired_correction')
+        repair = request_repair or self.q.get('removal_repair')
+        required = (not route['execution_joint'] if request_repair else
+                    bool(repair and item['row']['operation'] == 'event_removal'))
+        if required:
+            from scripts.t2a.experiments.ar_structured_v1 import data
+            self.progress('PAIRED_REQUEST_CORRECTION' if request_repair else 'PAIRED_REMOVAL_CORRECTION',
+                          ordinal=item['row']['pair_ordinal'], operation=item['row']['operation'])
+            batch = data.collate([self.paired[item['row']['pair_ordinal']]],
+                                 pad_id=self.adapter.codec.pad_id, joint=True)
+            training = self.adapter.training
+            self.adapter.train()
+            try:
+                loss_fn = (branch_request_supervision.request_loss if branch_recipe else
+                           paired_request_loss if request_repair else removal_loss)
+                loss, correction = loss_fn(self.native, self.adapter, self.teacher, batch,
+                    self.cfg, self.device, row=item['row'], step=self.step, scale=scale,
+                    weight=repair['paired_native_weight'], **({'route': route} if branch_recipe else {}))
+                probe, hooks = {}, []
+                checked = getattr(self, '_correction_gradient_checked', set())
+                probe_key = ((item['row']['operation'], correction['AR'], correction['RF'])
+                             if branch_recipe else item['row']['operation'])
+                if probe_key not in checked:
+                    names = ['ar.plan_adapter.plan_head.weight',
+                             'ar.editing_dit.postprocess_conv.weight',
+                             'ar.editing_dit.transformer.layers.0.pre_norm.gamma']
+                    expected_names = (branch_request_supervision.gradient_parameters(correction)
+                                      if branch_recipe else names)
+                    for name in names:
+                        def record(gradient, name=name):
+                            probe[name] = float(gradient.detach().float().norm())
+                        hooks.append(self.trainable[name].register_hook(record))
+                try:
+                    loss.backward()
+                finally:
+                    for hook in hooks:
+                        hook.remove()
+                if hooks:
+                    if (not set(expected_names) <= set(probe)
+                            or any(not math.isfinite(probe[n]) or probe[n] <= 0 for n in expected_names)
+                            or any(probe[n] != 0. for n in set(probe) - set(expected_names))):
+                        raise RuntimeError('Request correction missed AR/DiT/shared gradients: ' + repr(probe))
+                    self._correction_gradient_checked = checked | {probe_key}
+                    correction['gradient_probe'] = probe
+                if request_repair:
+                    correction['fallback_reason'] = route['fallback_reason']
+                    self.count('paired_request_corrections')
+                if item['row']['operation'] == 'event_removal':
+                    self.count('paired_removal_corrections')
+            finally:
+                self.adapter.train(training)
+        supervision = covered_request(route, correction) if request_repair else None
         stats.update(request_constraint_CE=float(request_loss.detach()),
-            retained_text_KL=float(text_loss.detach()), reference_velocity_MSE=float(retention.detach()),
+            retained_text_KL=float(text_loss.detach()),
+            reference_velocity_MSE=None if retention is None else float(retention.detach()),
+            reference_velocity_enabled=visit is not None,
+            removal_retention=item['removal_retention'],
+            paired_removal_correction=correction if item['row']['operation'] == 'event_removal' else dict(enabled=False),
+            paired_request_correction=correction if request_repair else dict(enabled=False),
+            request_supervision=supervision,
+            evaluation_cache=item.get('evaluation_cache'),
             request_constraint_fields=[t['field'] for t in item['request_constraints']['targets']],
             request_constraint_unavailable=item['request_constraints']['unavailable'],
             retained_text_positions=len(item['text_reference']), binding=item['binding'],

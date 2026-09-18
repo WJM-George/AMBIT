@@ -28,7 +28,6 @@ Output: writes into  <output-base>/<tag>/  (default base = recon dir's parent):
     summary.md          human-readable table
 
 Run:
-    cd ./stable-audio-tools
     uv run python dataset/evaluation/eval_vae_recon.py \
         --recon-dir ${AMBIT_CKPT_ROOT}/vae_4ch_train_result_audio \
         --tag oobleck_ds2048_z64 \

@@ -424,7 +424,11 @@ class Learner:
             ar, target, meta, mask = self.native._move_joint_batch(b, self.device)
             den += den.new_tensor([(ar['plan_labels'] != -100).sum(), mask.sum() * 64, len(meta)])
         self.progress('GLOBAL_DENOMINATORS')
+        torch.cuda.synchronize(self.device)
+        paired_loaded = time.perf_counter()
         dist.all_reduce(den)
+        torch.cuda.synchronize(self.device)
+        denominators_ready = time.perf_counter()
         paired_loss = 0.
         self.adapter.train()
         for j, b in enumerate(batches):
@@ -435,11 +439,17 @@ class Learner:
                 raise RuntimeError('Nonfinite native joint loss.')
             loss.backward()
             paired_loss += float(loss.detach())
+        torch.cuda.synchronize(self.device)
+        paired_backward_done = time.perf_counter()
         missing = [n for n,p in self.trainable.items() if p.grad is None]
         if missing:
             raise RuntimeError('Native full joint loss missed trainable parameters: ' + repr(missing))
         extra = self.backward_extra(batches)
+        torch.cuda.synchronize(self.device)
+        extra_done = time.perf_counter()
         synchronize_gradients(self.parameters, self.world)
+        torch.cuda.synchronize(self.device)
+        gradients_ready = time.perf_counter()
         norms = {g['group_name']: float(torch.nn.utils.clip_grad_norm_(g['params'], 1., error_if_nonfinite=True)) for g in self.groups}
         self.optimizer.step()
         self.step += 1
@@ -460,6 +470,12 @@ class Learner:
                      actual_native_outputs=after, native_plan_audit_performed=audit,
                      performance=dict(step_seconds=finished-started, collection_seconds=collected-started,
                          self_distillation_seconds=self_distilled-collected, paired_update_seconds=trained-self_distilled,
+                         paired_load_seconds=paired_loaded-self_distilled,
+                         denominator_wait_seconds=denominators_ready-paired_loaded,
+                         paired_backward_seconds=paired_backward_done-denominators_ready,
+                         extra_objective_seconds=extra_done-paired_backward_done,
+                         gradient_reduce_seconds=gradients_ready-extra_done,
+                         optimizer_seconds=trained-gradients_ready,
                          native_plan_audit_seconds=finished-trained,
                          peak_allocated_MiB=torch.cuda.max_memory_allocated(self.device)/1024**2,
                          peak_reserved_MiB=torch.cuda.max_memory_reserved(self.device)/1024**2,

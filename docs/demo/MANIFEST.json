@@ -1,0 +1,270 @@
+{
+  "status": "COMPLETE",
+  "decoder": {
+    "name": "MIT KEMAR 8-virtual-speaker FOA binaural",
+    "id": "MIT_KEMAR_8virtual_ACN_SN3D_basic_44100_v1",
+    "note": "Headphones recommended. 0° is front, positive azimuth is left, negative is right. This is a fixed first-order binaural preview, not native FOA playback."
+  },
+  "selection": "listening shortlist",
+  "cases": [
+    {
+      "code": "G1",
+      "title": "Solo acoustic guitar, stationary behind the listener",
+      "listen": "The guitar should sit behind you for the full clip. The late swell near 8s should line up with GT.",
+      "task": "generation",
+      "id": "spv2_test_no_speech_1_0000223",
+      "ordinal": 2223,
+      "operation": "generation",
+      "request": "Compose a spatial audio clip around me with one sources and outdoor acoustics. Place music described as “A solo acoustic guitar plays a gentle, fingerstyle melody. The music has a calm, folk-like quality with a warm and resonant timbre.” in the scene as the first sound. Let it come in near the beginning and finish near the end. Keep it stationary behind me. Use only these sources.",
+      "doa_deg": 0.9524386525154114,
+      "activity_iou": 1.0,
+      "change_iou": null,
+      "logmel_mae_db": 9.126814842224121,
+      "nmse": null,
+      "model": "AMBIT AR → DiT150k",
+      "plan_summary": "source_0 · music · 0.19–10.01s · static at 172.0° az, 0.0° el, 2.56 m · A solo acoustic guitar plays a gentle, fingerstyle melody. The music has a calm, folk-like quality with a warm and resonant timbre.",
+      "players": [
+        {
+          "key": "gt",
+          "label": "Ground truth",
+          "src": "assets/G1_0002223/gt.wav",
+          "seconds": 10.027573696145124,
+          "sha256": "381461f92c64f72abda6b5aff4a23be516e646bb6045d55efdc625c2e6f301fe"
+        },
+        {
+          "key": "ours",
+          "label": "AMBIT",
+          "src": "assets/G1_0002223/ours.wav",
+          "seconds": 10.031020408163265,
+          "sha256": "173c812f6f79459d6d63b9d7feb3b70b7d4ab911c0bc630a9eeb63d35ee2e902"
+        }
+      ],
+      "spectrogram": "assets/G1_0002223/waveform_mel.png",
+      "sceneplan": "assets/G1_0002223/sceneplan.json",
+      "preview_gain": 4.787011380552712
+    },
+    {
+      "code": "G2",
+      "title": "Chiptune, a passing train, and a left-side drone",
+      "listen": "Chiptune stays back-right; the train should travel right to left; the drone stays left.",
+      "task": "generation",
+      "id": "spv2_test_no_speech_3_0000191",
+      "ordinal": 3591,
+      "operation": "generation",
+      "request": "Compose a spatial audio clip around me with three sources and outdoor acoustics. Place music described as “A male vocalist sings in a high-pitched, strained voice over a fast-paced, upbeat chiptune track. The music features synthesized melodies and a driving electronic beat, characteristic of retro video game soundtracks.” in the scene as the first sound. Let it come in near the beginning and finish near the end. Keep it stationary behind me on my right. Place music described as “A train approaches and passes by, its rhythmic clatter and low rumble growing louder before fading into the distance.” in the scene as the second sound. Let it come in near the beginning and finish near the end. Have it move from my right to my left. It should move closer to me as it goes. Place a sound effect described as “A low, sustained, and ominous drone creates a suspenseful atmosphere. The sound is deep and resonant, resembling a synthesized pad or a distant, rumbling engine, building tension.” in the scene as the third sound. Let it come in near the beginning and finish near the end. Keep it stationary on my left. Use only these sources.",
+      "doa_deg": 6.1874470710754395,
+      "activity_iou": 1.0,
+      "change_iou": null,
+      "logmel_mae_db": 7.226407527923584,
+      "nmse": null,
+      "model": "AMBIT AR → DiT150k",
+      "plan_summary": "source_0 · music · 0.21–9.38s · static at -140.0° az, 0.0° el, 2.56 m · A male vocalist sings in a high-pitched, strained voice over a fast-paced, upbeat chiptune track. The music features synthesized melodies and a driving electronic beat, characteristic of retro video game soundtracks.\nsource_1 · music · 1.88–10.03s · linear -88.0° az, 0.0° el, 3.18 m → 91.0° az, 0.0° el, 2.21 m · A train approaches and passes by, its rhythmic clatter and low rumble growing louder before fading into the distance.\nsource_2 · sound · 0.12–9.10s · static at 94.0° az, 0.0° el, 2.26 m · A low, sustained, and ominous drone creates a suspenseful atmosphere. The sound is deep and resonant, resembling a synthesized pad or a distant, rumbling engine, building tension.",
+      "players": [
+        {
+          "key": "gt",
+          "label": "Ground truth",
+          "src": "assets/G2_0003591/gt.wav",
+          "seconds": 10.024943310657596,
+          "sha256": "038cc18f72c4614cce184728a3c8cfb507e961d922f5e4122bafe69810713be3"
+        },
+        {
+          "key": "ours",
+          "label": "AMBIT",
+          "src": "assets/G2_0003591/ours.wav",
+          "seconds": 10.031020408163265,
+          "sha256": "379eb33b4ea3ced75970970b18ea4bba60510a49c24f8d51a949ece6e230a40b"
+        }
+      ],
+      "spectrogram": "assets/G2_0003591/waveform_mel.png",
+      "sceneplan": "assets/G2_0003591/sceneplan.json",
+      "preview_gain": 1.91978566139283
+    },
+    {
+      "code": "G3",
+      "title": "Three overlapping glitch and noise textures",
+      "listen": "A left-stationary glitch bed, a left-to-front-right modulator, and a front-to-back receding noise.",
+      "task": "generation",
+      "id": "spv2_test_no_speech_3_0000063",
+      "ordinal": 3463,
+      "operation": "generation",
+      "request": "Compose a spatial audio clip around me with three sources and outdoor acoustics. I want the first sound to contain music described as “A cacophony of distorted, high-pitched electronic sounds rapidly stutters and glitches, creating a harsh, chaotic, and abrasive texture characteristic of experimental noise music.”. It should remain still on my left. Have it begin near the beginning and stop near the end. I want the second sound to contain a sound effect described as “A high-pitched, distorted electronic sound rapidly modulates in pitch, creating a frantic and chaotic effect.”. Have it move from my left to my front right. Have it begin near the beginning and stop near the end. I want the third sound to contain music described as “A cacophony of distorted, high-pitched electronic sounds creates a chaotic and abrasive noise. The harsh, buzzing timbre suggests malfunctioning machinery or a heavily processed synthesizer, resulting in a jarring, industrial soundscape.”. Have it move from in front of me to behind me. It should move farther away from me as it goes. Have it begin near the beginning and stop near the end. Use only these sources.",
+      "doa_deg": 3.6606669425964355,
+      "activity_iou": 1.0,
+      "change_iou": null,
+      "logmel_mae_db": 7.111686706542969,
+      "nmse": null,
+      "model": "AMBIT AR → DiT150k",
+      "plan_summary": "source_0 · music · 0.39–9.98s · static at 85.0° az, 0.0° el, 2.96 m · A cacophony of distorted, high-pitched electronic sounds rapidly stutters and glitches, creating a harsh, chaotic, and abrasive texture characteristic of experimental noise music.\nsource_1 · sound · 1.70–9.22s · linear 94.0° az, 0.0° el, 2.56 m → -44.0° az, 0.0° el, 2.56 m · A high-pitched, distorted electronic sound rapidly modulates in pitch, creating a frantic and chaotic effect.\nsource_2 · music · 0.30–9.61s · linear -1.0° az, 0.0° el, 2.44 m → 174.0° az, 0.0° el, 3.34 m · A cacophony of distorted, high-pitched electronic sounds creates a chaotic and abrasive noise. The harsh, buzzing timbre suggests malfunctioning machinery or a heavily processed synthesizer, resulting in a jarring, industrial soundscape.",
+      "players": [
+        {
+          "key": "gt",
+          "label": "Ground truth",
+          "src": "assets/G3_0003463/gt.wav",
+          "seconds": 10.012380952380953,
+          "sha256": "24b6f2728b584b13077ff5bc10551c464a15b54fb0df57e7d55a784b3962c502"
+        },
+        {
+          "key": "ours",
+          "label": "AMBIT",
+          "src": "assets/G3_0003463/ours.wav",
+          "seconds": 10.031020408163265,
+          "sha256": "254da525a8b8363271f8a52adbdee792c0858211cc7330b1a3e1bbafb8ccfde2"
+        }
+      ],
+      "spectrogram": "assets/G3_0003463/waveform_mel.png",
+      "sceneplan": "assets/G3_0003463/sceneplan.json",
+      "preview_gain": 1.2724819855317893
+    },
+    {
+      "code": "E1",
+      "title": "Relocate the ambient drone to the front",
+      "listen": "Compare reference (behind) with AMBIT and GT (front, 0°).",
+      "task": "editing",
+      "id": "speditv1_test_2e336fbb88da900f18cdb7ed",
+      "ordinal": 2551,
+      "operation": "stationary_spatial_relocation",
+      "request": "Could you revise the supplied audio in this way? Set the new stationary position of the music described as \"A deep, resonant, and rhythmic pulsating drone, characteristic of dark ambient or drone music, creates a hypnotic and suspenseful atmosphere.\" to azimuth 0 degrees, elevation 6.499 degrees and distance 1.3944 meters, keeping the source's content, active interval and gain intact. Keep the unmentioned parts as they were.",
+      "doa_deg": 1.2836064100265503,
+      "activity_iou": null,
+      "change_iou": 1.0,
+      "logmel_mae_db": 0.8946142196655273,
+      "nmse": 0.005126540549099445,
+      "model": "AMBIT joint AR+DiT50k",
+      "plan_summary": "source_0 · music · 0.00–10.01s · static at 0.0° az, 6.0° el, 1.39 m · A deep, resonant, and rhythmic pulsing sound, like a slow, heavy heartbeat or a large engine idling, creates a suspenseful and ominous atmosphere.",
+      "players": [
+        {
+          "key": "reference",
+          "label": "Reference",
+          "src": "assets/E1_0002551/reference.wav",
+          "seconds": 10.008616780045351,
+          "sha256": "79fc45658895fdd1c3f2e604deb52f1205658062fc657f3751fb6d0989daa57b"
+        },
+        {
+          "key": "ours",
+          "label": "AMBIT",
+          "src": "assets/E1_0002551/ours.wav",
+          "seconds": 10.008616780045351,
+          "sha256": "30ad37b9bd301d960d32cc50615eb01c0139711a5231abec49dee7513f5e7edf"
+        },
+        {
+          "key": "gt",
+          "label": "Ground truth",
+          "src": "assets/E1_0002551/gt.wav",
+          "seconds": 10.008616780045351,
+          "sha256": "9fb87bf5baaf5035a981efd88ae96d514ad7f793937fc3c837e3bd6e6c17e99e"
+        },
+        {
+          "key": "swanweave",
+          "label": "SwanWeave",
+          "src": "assets/E1_0002551/swanweave.wav",
+          "seconds": 10.008616780045351,
+          "sha256": "be9f2d636c601abf9f40af7aeb5fe87a348882e3f4caff3472906739498897ae"
+        }
+      ],
+      "spectrogram": "assets/E1_0002551/waveform_mel.png",
+      "sceneplan": "assets/E1_0002551/sceneplan.json",
+      "preview_gain": 13.147128490716234
+    },
+    {
+      "code": "E2",
+      "title": "Relocate the retro organ to the right (−90°)",
+      "listen": "The organ should jump from its original seat to the right ear.",
+      "task": "editing",
+      "id": "speditv1_test_8df78e38274782be01e14563",
+      "ordinal": 2538,
+      "operation": "stationary_spatial_relocation",
+      "request": "Could you revise the supplied audio in this way? Set the new stationary position of the music described as \"A synthesized, low-pitched electronic organ plays a simple, repeating chord progression in a retro video game style.\" to azimuth -90 degrees, elevation 18.213 degrees and distance 1.3752 meters, keeping the source's content, active interval and gain intact. Keep the unmentioned parts as they were.",
+      "doa_deg": 0.9897112250328064,
+      "activity_iou": null,
+      "change_iou": 1.0,
+      "logmel_mae_db": 1.0059967041015625,
+      "nmse": 0.007830630987882614,
+      "model": "AMBIT joint AR+DiT50k",
+      "plan_summary": "source_0 · music · 0.00–10.03s · static at -90.0° az, 18.0° el, 1.39 m · A synthesized, low-pitched electronic organ plays a simple, repetitive melody. The sound is reminiscent of a retro video game or a music box, playing a simple, looping melody.",
+      "players": [
+        {
+          "key": "reference",
+          "label": "Reference",
+          "src": "assets/E2_0002538/reference.wav",
+          "seconds": 10.03031746031746,
+          "sha256": "5d72d75efebfce2b3da581efeaa2782ae56ef5878a0d638fe93b9a1c7ff926da"
+        },
+        {
+          "key": "ours",
+          "label": "AMBIT",
+          "src": "assets/E2_0002538/ours.wav",
+          "seconds": 10.03031746031746,
+          "sha256": "3b5ca52746d88f26ef653a6dec990ab9adfc6bbaca48414a9ab58ce623081800"
+        },
+        {
+          "key": "gt",
+          "label": "Ground truth",
+          "src": "assets/E2_0002538/gt.wav",
+          "seconds": 10.03031746031746,
+          "sha256": "1525ec223e2477ae6a3e29694af939c9a757be09d2341f238cf6d5eb630ecdcc"
+        },
+        {
+          "key": "swanweave",
+          "label": "SwanWeave",
+          "src": "assets/E2_0002538/swanweave.wav",
+          "seconds": 10.03031746031746,
+          "sha256": "a8e6065a6eff80fd69512bfb47afd3016cbe59c564e506a480f98774e69c943c"
+        }
+      ],
+      "spectrogram": "assets/E2_0002538/waveform_mel.png",
+      "sceneplan": "assets/E2_0002538/sceneplan.json",
+      "preview_gain": 5.845746605676786
+    },
+    {
+      "code": "E3",
+      "title": "Relocate the synth drone to the right (−90°)",
+      "listen": "The drone should move to the right while the timbre stays put.",
+      "task": "editing",
+      "id": "speditv1_test_8a3f12a6641adc3c062ef2e3",
+      "ordinal": 2511,
+      "operation": "stationary_spatial_relocation",
+      "request": "Could you revise the supplied audio in this way? Relocate the music described as \"A deep, resonant synthesizer drone creates a dark and ominous ambient atmosphere. The sound slowly swells and fades, with a low, rumbling timbre that evokes suspense and tension.\" to azimuth -90 degrees, elevation 1.578 degrees and distance 2.1547 meters, where it should stay still. Preserve that source's content, active interval and source gain. Keep the unmentioned parts as they were.",
+      "doa_deg": 0.3802333474159241,
+      "activity_iou": null,
+      "change_iou": 0.9942362904548645,
+      "logmel_mae_db": 1.0099400281906128,
+      "nmse": 0.006336041260510683,
+      "model": "AMBIT joint AR+DiT50k",
+      "plan_summary": "source_0 · music · 0.00–10.01s · static at -90.0° az, 2.0° el, 2.16 m · A deep, resonant synthesizer drone with a slow, pulsating rhythm. The sound slowly fades in and then gradually fades out, creating a dark and atmospheric texture.",
+      "players": [
+        {
+          "key": "reference",
+          "label": "Reference",
+          "src": "assets/E3_0002511/reference.wav",
+          "seconds": 10.025419501133786,
+          "sha256": "5dc473c8387e6d06b8efb25d4f06a3dd314a78d10b39075154e7891d72d4377f"
+        },
+        {
+          "key": "ours",
+          "label": "AMBIT",
+          "src": "assets/E3_0002511/ours.wav",
+          "seconds": 10.025419501133786,
+          "sha256": "e275dfce3bb68bd1b968dd98f2b2a0b92b96fd70ee77af3556465221ad9fe4c7"
+        },
+        {
+          "key": "gt",
+          "label": "Ground truth",
+          "src": "assets/E3_0002511/gt.wav",
+          "seconds": 10.025419501133786,
+          "sha256": "1fb253ec1b41ea70b1d7640c5d78ac1389fcb8fc851f8f14a4114e7f2c1baefb"
+        },
+        {
+          "key": "swanweave",
+          "label": "SwanWeave",
+          "src": "assets/E3_0002511/swanweave.wav",
+          "seconds": 10.025419501133786,
+          "sha256": "e581ab47b0f21b2f7038a12ed80cadcc01e7f5e1d0313e3bed8aa2355b9010ce"
+        }
+      ],
+      "spectrogram": "assets/E3_0002511/waveform_mel.png",
+      "sceneplan": "assets/E3_0002511/sceneplan.json",
+      "preview_gain": 4.6658980093880915
+    }
+  ],
+  "policy": "Qualitative shortlist after quality gates and audio-preview waveform/mel screen; not average-case."
+}

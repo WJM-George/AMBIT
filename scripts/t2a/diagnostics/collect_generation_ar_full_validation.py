@@ -15,7 +15,7 @@ import subprocess
 import time
 
 
-PYTHON = os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/stable-audio-tools-workspace/.venv/bin/python3"
+PYTHON = os.environ.get("AMBIT_PYTHON", "python3")
 
 
 def sha(path):
@@ -186,7 +186,7 @@ def collect_and_score(root, protocol):
     pairs = {row['id']: row for row in read(semantic / 'pairs.json')['pairs']}
     scoring = semantic / 'scoring'
     scoring.mkdir(exist_ok=True)
-    judge = ar / 'semantic_judge_20260905_v1'
+    judge = ar / 'judge'
     judge_sha = sha(judge / 'CONTRACT.json')
     assert judge_sha == protocol['judge_contract_sha256']
     cache, receipts = {}, []

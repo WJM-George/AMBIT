@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_ROOT="${REPO_ROOT:-${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace}"
+REPO_ROOT="${REPO_ROOT:-.}"
 PYTHON_BIN="${PYTHON_BIN:-${REPO_ROOT}/.venv/bin/python}"
 CHECKPOINT="${1:-}"
 OUTPUT_ROOT="${2:-}"

@@ -39,7 +39,8 @@ class SelectiveLearner(CompleteLearner):
             facts = parse_edit_request(item['row']['request'], item['row']['operation'])
             binding = bind_edit_target(plan, facts)
             holds = reference_prefix_targets(self.adapter.codec, tokens.tolist(), plan, facts, binding,
-                logits, lambda prefix: self.adapter.allowed_next_ids(item['obs'], prefix))
+                logits, lambda prefix: self.adapter.allowed_next_ids(item['obs'], prefix),
+                operation=item['row']['operation'])
             item['reference_prefix'] = dict(tokens=tokens, **holds)
         return item
 

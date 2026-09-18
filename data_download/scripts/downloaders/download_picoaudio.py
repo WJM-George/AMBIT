@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Download PicoAudio (~912 MB) to ${AMBIT_DATA_ROOT}/datasets/picoaudio/.
 
-    cd . && uv sync
     uv run python scripts/downloaders/download_picoaudio.py
 """
 from pathlib import Path

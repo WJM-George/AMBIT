@@ -8,7 +8,6 @@ from __future__ import annotations
 import gc
 import hashlib
 import json
-import os
 from pathlib import Path
 import sys
 
@@ -16,15 +15,9 @@ import numpy as np
 import soundfile as sf
 import torch
 
-from stable_audio_tools.paths import data_path
+from stable_audio_tools.paths import editing_bench
 
-BENCH = Path(os.environ.get(
-    "AMBIT_EDITING_BENCH",
-    str(data_path(
-        "sceneplan_transfusion_editing_v1/materialized/logs/"
-        "takeover-20260905T095122+0800/MAINLINE/EXTERNAL_BASELINES_SWANWEAVE_V1"
-    )),
-))
+BENCH = editing_bench()
 sys.path.insert(0, str(BENCH))
 
 

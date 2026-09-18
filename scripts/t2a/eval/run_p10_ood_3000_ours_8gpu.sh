@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_ROOT="${REPO_ROOT:-./stable-audio-tools}"
+REPO_ROOT="${REPO_ROOT:-.}"
 BENCHMARK_ROOT="${BENCHMARK_ROOT:-${AMBIT_DATA_ROOT}/evaluation_benchmark/p10_ood_3000_v1/cross_system_benchmark}"
 LOG_ROOT="${BENCHMARK_ROOT}/logs/ours_p10_150k_8gpu"
 GPU_IDS_CSV="${GPU_IDS:-1,2,3,4,5,6,7}"

@@ -29,7 +29,6 @@ real FOA (referenced in configs/dataset_configs/construct_dataset/*), NOT downmi
 re-synthesized. It is the speech category of the constructed dataset.
 
 Run (build the synth pools; SLS is added directly downstream, not here):
-    cd ./stable-audio-tools
     uv run python dataset/indexing/build_source_index.py \
         --out ${AMBIT_DATA_ROOT}/spatial_sources \
         --cache ${AMBIT_DATA_ROOT}/source_wav_cache \

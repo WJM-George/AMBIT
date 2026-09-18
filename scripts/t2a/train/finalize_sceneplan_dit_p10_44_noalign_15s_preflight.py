@@ -18,12 +18,12 @@ REVISION_ROOT = Path(
     "revisions/speech_expansion_noalign_15s_v1"
 )
 DEFAULT_OVERFIT = Path(
-    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//p10_pre_v11_20260831/pilots/"
-    "sceneplan_dit_speechexp_noalign_15s_overfit10_20260828/OVERFIT_GATE.json"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives/pilots/"
+    "overfit/OVERFIT_GATE.json"
 )
 DEFAULT_RESUME = Path(
-    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//p10_pre_v11_20260831/preflights/"
-    "sceneplan_dit_speechexp_noalign_15s_resume_preflight_20260828/RESUME_GATE.json"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives/preflights/"
+    "preflight/RESUME_GATE.json"
 )
 MODEL_CONFIG = REPO_ROOT / (
     "stable_audio_tools/configs/model_configs/txt2audio/t2a/dit/"

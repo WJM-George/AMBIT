@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-REPO="${P10_REPO:-${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace}"
+REPO="${P10_REPO:-.}"
 ROOT="${EDITING_DATA_ROOT:-${AMBIT_DATA_ROOT}/sceneplan_transfusion_editing_v1}"
 OUTPUT="${CLAP44_RUN_ROOT:-${AMBIT_CKPT_ROOT}/transfusion_editing/mainline/editing_clap44_v1_seed42}"
 GPUS="${EDITING_GPUS:-${CUDA_VISIBLE_DEVICES:-}}"

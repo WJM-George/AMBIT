@@ -16,7 +16,7 @@ from pathlib import Path
 import sys
 import time
 
-SNAPSHOT = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/transfusion_sceneplan/generation_ar/source_snapshots/p10v11_gen_ar_20260904_10epoch_continuation_v8")
+SNAPSHOT = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/generation_ar/source_snapshots/snapshot")
 REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(SNAPSHOT))
 from generation_ar_sampling import ShuffledGlobalBatchSampler
@@ -33,9 +33,9 @@ from stable_audio_tools.data.sceneplan_transfusion_generation_ar_dataset import 
 from stable_audio_tools.data.model_sceneplan_codec_v4 import ModelScenePlanCodecV4
 from stable_audio_tools.models.sceneplan_transfusion_generation_ar import load_p10v11_generation_ar
 
-CACHE = Path('/dev/shm/generation_ar_manifests_20260905')
-ACCEPTANCE = Path("." + "/reports/generation_ar_goal_acceptance_20260905.md")
-PARENT = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/transfusion_sceneplan/generation_ar/p10v11_shared_gen_ar_full_1p6m_10ep_s42_20260904_stage2_v1")
+CACHE = Path(os.environ.get("AMBIT_CACHE_ROOT", "cache")) / "generation_ar_manifests"
+ACCEPTANCE = Path("reports/generation_ar_goal_acceptance.md")
+PARENT = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/generation_ar/run")
 CODEC = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/p11_single_turn_15s_v2/model_sceneplan_codec_v4")
 
 

@@ -68,8 +68,8 @@ from stable_audio_tools.training.metrics.fad_metrics import (  # noqa: E402
 
 
 DEFAULT_RUN = Path(
-    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//p10_pre_v11_20260831/pilots/"
-    "sceneplan_dit_speechexp_noalign_15s_overfit10_20260828"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives/pilots/"
+    "overfit"
 )
 MODEL_CONFIG = REPO_ROOT / (
     "stable_audio_tools/configs/model_configs/txt2audio/t2a/dit/"

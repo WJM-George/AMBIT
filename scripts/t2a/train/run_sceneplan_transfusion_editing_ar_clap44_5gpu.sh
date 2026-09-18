@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-REPO="${P10_REPO:-${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace}"
+REPO="${P10_REPO:-.}"
 ROOT="${EDITING_DATA_ROOT:-${AMBIT_DATA_ROOT}/sceneplan_transfusion_editing_v1}"
 PHASE="${CLAP44_AR_PHASE:-pilot}"
 VARIANT="${CLAP44_AR_VARIANT:-global_and_sequence}"

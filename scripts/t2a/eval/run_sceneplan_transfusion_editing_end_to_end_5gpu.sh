@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO="${P10_REPO:-${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace}"
+REPO="${P10_REPO:-.}"
 ROOT="${EDITING_DATA_ROOT:-${AMBIT_DATA_ROOT}/sceneplan_transfusion_editing_v1}"
 PREFLIGHT="$ROOT/contracts/full_training/PREFLIGHT.json"
 VALIDATION_INDEX="$ROOT/training_index/validation.sqlite"

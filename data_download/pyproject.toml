@@ -3,9 +3,9 @@ requires = ["setuptools>=64"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "dataset-storage"
+name = "ambit-data-download"
 version = "0.1.0"
-description = "Audio dataset download utilities and scripts for dataset_storage"
+description = "Audio dataset download utilities for AMBIT"
 requires-python = ">=3.10,<3.12"
 dependencies = [
     "huggingface_hub[cli,hf_transfer]",

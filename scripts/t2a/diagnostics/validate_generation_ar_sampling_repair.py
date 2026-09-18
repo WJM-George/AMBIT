@@ -17,10 +17,10 @@ import subprocess
 import sys
 import time
 
-REPO=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/stable-audio-tools-workspace")
-D0=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/transfusion_sceneplan/generation_ar/validation_diagnosis_20260905_v1")
-R1=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/transfusion_sceneplan/generation_ar/sampling_repair_1ep_20260905_v1")
-PYTHON=os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/stable-audio-tools-workspace/.venv/bin/python3"
+REPO=Path(__file__).resolve().parents[3]
+D0=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/generation_ar/diagnosis")
+R1=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/generation_ar/parent")
+PYTHON=os.environ.get("AMBIT_PYTHON", "python3")
 sys.path.insert(0,str(REPO/'scripts/t2a/diagnostics'))
 import run_generation_ar_validation_comparison as baseline
 
@@ -79,7 +79,7 @@ def full_teacher(root,contract):
     model.p10_dit.to(device=device,dtype=torch.bfloat16)
     model.prompt_conditioner.to(device=device,dtype=torch.bfloat16)
     model.ar_adapter.to(device=device,dtype=torch.float32);model.eval()
-    manifest=Path('/dev/shm/generation_ar_manifests_20260905/validation.sqlite')
+    manifest=Path(os.environ.get("AMBIT_CACHE_ROOT", "cache")) / "generation_ar_manifests" / "validation.sqlite"
     if not manifest.exists():manifest=baseline.MANIFEST
     assert baseline.sha(manifest)==baseline.MANIFEST_SHA
     dataset=frozen.GenerationARSQLiteDataset(manifest,split='validation')

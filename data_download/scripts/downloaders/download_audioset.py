@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Download AudioSet wav snapshot (~2.4 TB) to ${AMBIT_DATA_ROOT}/datasets/audioset/.
 
-    cd . && uv sync
     uv run python scripts/downloaders/download_audioset.py --max-workers 8
 """
 from pathlib import Path

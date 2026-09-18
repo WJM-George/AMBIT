@@ -18,15 +18,15 @@ from typing import Any
 
 SNAPSHOT_ROOT = Path(__file__).resolve().parents[3]
 PARENT_RUN = Path(
-    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/transfusion_sceneplan/generation_ar/"
-    "p10v11_shared_gen_ar_full_1p6m_5ep_s42_20260904_v1"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/generation_ar/"
+    "parent"
 )
 PARENT_CHECKPOINT = PARENT_RUN / "checkpoints/step_00041670.pt"
 PARENT_SELECTION = PARENT_RUN / "CHECKPOINT_SELECTION.json"
 PARENT_POSTTRAIN_STATUS = PARENT_RUN / "posttrain/POSTTRAIN_STATUS.json"
 RUN_DIR = Path(
-    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/transfusion_sceneplan/generation_ar/"
-    "p10v11_shared_gen_ar_full_1p6m_10ep_s42_20260904_stage2_v1"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/generation_ar/"
+    "run"
 )
 TRAIN_MANIFEST = Path(
     os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m/transfusion_shared_v1/"
@@ -34,17 +34,16 @@ TRAIN_MANIFEST = Path(
 )
 VALIDATION_MANIFEST = TRAIN_MANIFEST.with_name("validation.sqlite")
 TEST_MANIFEST = TRAIN_MANIFEST.with_name("test.sqlite")
-VENV_ROOT = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/stable-audio-tools-venv")
+VENV_ROOT = Path(os.environ.get("AMBIT_VENV_ROOT", ".venv"))
 QWEN_ROOT = Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/pretrained/Qwen/Qwen3.5-0.8B")
 P10_CHECKPOINT = Path(
     os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/dit/sceneplan_dit_v11_semantic_v2_protected_resume_150k/"
     "checkpoints/epoch=48-step=150000.ckpt"
 )
-P10_MODEL_CONFIG = Path(
-    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/stable-audio-tools-workspace/stable_audio_tools/configs/"
-    "model_configs/txt2audio/t2a/dit/"
-    "qwen35_0p8b_300m_model_sceneplan_44_soundexp_noalign_15s_"
-    "resume_cosine_40k.json"
+P10_MODEL_CONFIG = (
+    SNAPSHOT_ROOT
+    / "stable_audio_tools/configs/model_configs/txt2audio/t2a/dit"
+    / "qwen35_0p8b_300m_model_sceneplan_44_soundexp_noalign_15s_resume_cosine_40k.json"
 )
 EXPECTED_PARENT = {
     "checkpoint_sha256": "037efa7999d81d28a8d75e4ad80c40e6160169b5f9cf3d748de7fe0003336e84",

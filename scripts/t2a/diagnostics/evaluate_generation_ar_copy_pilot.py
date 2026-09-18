@@ -9,7 +9,7 @@ import sqlite3
 import subprocess
 import time
 
-PYTHON = os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/stable-audio-tools-workspace/.venv/bin/python3"
+PYTHON = os.environ.get("AMBIT_PYTHON", "python3")
 
 
 def sha(path):
@@ -26,8 +26,8 @@ def atomic(path, value):
 
 
 def main(root):
-    root = root.resolve(); base = root.parent / 'template100_rebuild_20260905_v1'
-    judge = root.parent / 'semantic_judge_20260905_v1'; snap = root / 'evaluation_source_snapshot'
+    root = root.resolve(); base = root.parent / 'template_run'
+    judge = root.parent / 'judge'; snap = root / 'evaluation_source_snapshot'
     semantic = root / 'semantic'; scoring = semantic / 'scoring'
     def status(name, **kw):
         atomic(semantic / 'STATUS.json', {'status': name, 'pid': os.getpid(), 'updated_unix': time.time(),

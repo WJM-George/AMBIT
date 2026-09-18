@@ -5,7 +5,7 @@ set -euo pipefail
 # the now-idle eight GPUs directly to the canonical post-training evaluator.
 # This watcher never launches training and never accepts a non-terminal ckpt.
 
-REPO_ROOT="${REPO_ROOT:-${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace}"
+REPO_ROOT="${REPO_ROOT:-.}"
 PYTHON_BIN="${PYTHON_BIN:-${REPO_ROOT}/.venv/bin/python}"
 EVAL_RUNNER="${REPO_ROOT}/scripts/t2a/eval/run_sceneplan_p11_v4_scale_eval_8gpu.sh"
 RUN_ROOT="${1:-}"

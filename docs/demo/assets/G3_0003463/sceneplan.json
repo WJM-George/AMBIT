@@ -1,0 +1,73 @@
+{
+  "sample_id": "spv2_test_no_speech_3_0000063",
+  "duration_sec": 10.031020408163265,
+  "room": {
+    "type": "outdoor"
+  },
+  "sources": [
+    {
+      "source_id": "source_0",
+      "kind": "music",
+      "description": "A cacophony of distorted, high-pitched electronic sounds rapidly stutters and glitches, creating a harsh, chaotic, and abrasive texture characteristic of experimental noise music.",
+      "activity": {
+        "onset_sec": 0.3947392290249433,
+        "offset_sec": 9.984580498866213
+      },
+      "trajectory": {
+        "type": "static",
+        "position": {
+          "azimuth_deg": 85.0,
+          "elevation_deg": 0.0,
+          "distance_m": 2.959397
+        }
+      },
+      "gain_db": 0.0
+    },
+    {
+      "source_id": "source_1",
+      "kind": "sound",
+      "description": "A high-pitched, distorted electronic sound rapidly modulates in pitch, creating a frantic and chaotic effect.",
+      "activity": {
+        "onset_sec": 1.6950566893424037,
+        "offset_sec": 9.218321995464853
+      },
+      "trajectory": {
+        "type": "linear",
+        "start": {
+          "azimuth_deg": 94.0,
+          "elevation_deg": 0.0,
+          "distance_m": 2.556808
+        },
+        "end": {
+          "azimuth_deg": -44.0,
+          "elevation_deg": 0.0,
+          "distance_m": 2.556808
+        }
+      },
+      "gain_db": 0.0
+    },
+    {
+      "source_id": "source_2",
+      "kind": "music",
+      "description": "A cacophony of distorted, high-pitched electronic sounds creates a chaotic and abrasive noise. The harsh, buzzing timbre suggests malfunctioning machinery or a heavily processed synthesizer, resulting in a jarring, industrial soundscape.",
+      "activity": {
+        "onset_sec": 0.301859410430839,
+        "offset_sec": 9.613061224489796
+      },
+      "trajectory": {
+        "type": "linear",
+        "start": {
+          "azimuth_deg": -1.0,
+          "elevation_deg": 0.0,
+          "distance_m": 2.435172
+        },
+        "end": {
+          "azimuth_deg": 174.0,
+          "elevation_deg": 0.0,
+          "distance_m": 3.342907
+        }
+      },
+      "gain_db": 0.0
+    }
+  ]
+}

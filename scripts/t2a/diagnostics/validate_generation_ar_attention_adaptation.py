@@ -16,11 +16,11 @@ import sys
 import time
 import zlib
 
-R3=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/transfusion_sceneplan/generation_ar/attention_adaptation_quarter_epoch_20260905_v1")
-R1=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/transfusion_sceneplan/generation_ar/sampling_repair_1ep_20260905_v1/training")
-SNAPSHOT=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/transfusion_sceneplan/generation_ar/source_snapshots/generation_ar_attention_adaptation_20260905_v2")
-D0=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/transfusion_sceneplan/generation_ar/validation_diagnosis_20260905_v1")
-REPO=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/stable-audio-tools-workspace")
+R3=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/generation_ar/run")
+R1=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/generation_ar/parent/training")
+SNAPSHOT=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/generation_ar/source_snapshots/snapshot")
+D0=Path(os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/generation_ar/diagnosis")
+REPO=Path(__file__).resolve().parents[3]
 PYTHON=REPO/'.venv/bin/python3'
 
 
@@ -65,7 +65,7 @@ def prepare():
 
 def cache_gate(model,codec,torch,device):
     import numpy as np
-    db=sqlite3.connect('file:/dev/shm/generation_ar_manifests_20260905/train.sqlite?mode=ro&immutable=1',uri=True)
+    db=sqlite3.connect('file:' + str(Path(os.environ.get("AMBIT_CACHE_ROOT", "cache")) / "generation_ar_manifests" / "train.sqlite") + '?mode=ro&immutable=1',uri=True)
     ordinal,request,blob=db.execute('SELECT ordinal,raw_user_request,target_token_ids_u16le FROM rows WHERE source_count=2 ORDER BY target_token_count,ordinal LIMIT 1').fetchone();db.close()
     ids=torch.tensor(np.frombuffer(blob,dtype='<u2').astype(np.int64),device=device)[None,:-1];mask=torch.ones_like(ids,dtype=torch.bool)
     with torch.no_grad(),torch.autocast('cuda',dtype=torch.bfloat16):

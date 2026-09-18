@@ -41,7 +41,6 @@ Preflight (no GPU load):
     python dataset/captioning/refine_caption_qwen35.py --preflight
 
 Run (pick *idle* GPUs via CUDA_VISIBLE_DEVICES; 27B bf16 needs ~2×48GB):
-    cd ./stable-audio-tools
     CUDA_VISIBLE_DEVICES=6,7 uv run python dataset/captioning/refine_caption_qwen35.py \\
         --manifest ${AMBIT_CACHE_ROOT}/spatial_foa/manifest.jsonl \\
         --out ${AMBIT_CACHE_ROOT}/spatial_foa/captions_qwen35.jsonl \\

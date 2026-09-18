@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-REPO="${P10_REPO:-${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace}"
+REPO="${P10_REPO:-.}"
 ROOT="${EDITING_DATA_ROOT:-${AMBIT_DATA_ROOT}/sceneplan_transfusion_editing_v1}"
 RUN_DIR="${CLAP44_AR_RUN_DIR:?set the completed native CLAP44 full AR run directory}"
 SELECTION="$RUN_DIR/evaluation/validation_20k_clap44_joint_selection/SELECTED.json"

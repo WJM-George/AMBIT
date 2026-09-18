@@ -4,7 +4,7 @@ set -euo pipefail
 # Resume the two expensive baseline lanes after the fast systems have finished.
 # Six GPUs take disjoint Stable Audio Open shards and two GPUs take disjoint
 # Qwen3-TTS shards. Existing, fully audited outputs are skipped.
-REPO_ROOT="${REPO_ROOT:-./stable-audio-tools}"
+REPO_ROOT="${REPO_ROOT:-.}"
 UPSTREAM_ROOT="${UPSTREAM_ROOT:-./evaluation_benchmark/repos}"
 ASSET_ROOT="${ASSET_ROOT:-${AMBIT_CKPT_ROOT}/baselines/p10_60k_15row_v1}"
 SOURCE_EVAL_ROOT="${SOURCE_EVAL_ROOT:-${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1/evaluation/p10_v9_balanced_1200_ckpt20k_100k_v1}"

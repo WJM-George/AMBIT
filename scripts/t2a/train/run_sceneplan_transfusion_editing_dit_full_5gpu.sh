@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO="${P10_REPO:-${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace}"
+REPO="${P10_REPO:-.}"
 ROOT="${EDITING_DATA_ROOT:-${AMBIT_DATA_ROOT}/sceneplan_transfusion_editing_v1}"
 MODEL_CONFIG="${MODEL_CONFIG:-$REPO/stable_audio_tools/configs/model_configs/txt2audio/t2a/dit/qwen35_0p8b_300m_sceneplan_transfusion_editing_dit_full_v1.json}"
 DATASET_CONFIG="${DATASET_CONFIG:-$ROOT/contracts/full_training/train_dataset.json}"
@@ -153,7 +153,7 @@ export TRAINING_GATE_MAX_LOSS_RATIO=-1
 export TRAINING_GATE_GRADIENT_EVERY=100
 export MIN_FREE_DISK_GIB=100
 export MIN_ROOT_FREE_GIB=10
-export TEMP_DIR="${TEMP_DIR:-/dev/shm/spedit_dit_full}"
+export TEMP_DIR="${TEMP_DIR:-${AMBIT_CACHE_ROOT:-cache}/spedit_dit_full}"
 export TRAINING_SEED="${TRAINING_SEED:-42}"
 if [[ "$TRAINING_SEED" != "42" ]]; then
     echo "[editing-dit-full] formal lineage requires TRAINING_SEED=42" >&2

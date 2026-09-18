@@ -21,7 +21,6 @@ Each clip writes:
 Resumable (skip done ids), shardable (--num-shards/--shard), CPU-parallel (--jobs).
 
 Run:
-    cd ./stable-audio-tools
     uv run python dataset/synthesis/build_spatial_dataset.py \
         --sources-dir ${AMBIT_DATA_ROOT}/spatial_sources \
         --out-dir ${AMBIT_DATA_ROOT}/spatial_foa/audio \

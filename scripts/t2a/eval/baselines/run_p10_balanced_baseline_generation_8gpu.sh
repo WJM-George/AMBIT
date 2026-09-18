@@ -4,7 +4,7 @@ set -euo pipefail
 # High-throughput generation of every runnable public baseline on the frozen
 # 400-music / 400-sound / 400-speech panel.  Incompatible upstream projects
 # deliberately keep their pinned environments.
-REPO_ROOT="${REPO_ROOT:-./stable-audio-tools}"
+REPO_ROOT="${REPO_ROOT:-.}"
 UPSTREAM_ROOT="${UPSTREAM_ROOT:-./evaluation_benchmark/repos}"
 ASSET_ROOT="${ASSET_ROOT:-${AMBIT_CKPT_ROOT}/baselines/p10_60k_15row_v1}"
 SOURCE_EVAL_ROOT="${SOURCE_EVAL_ROOT:-${AMBIT_DATA_ROOT}/sceneplan_v2_1p124m/revisions/speech_expansion_noalign_15s_v1/evaluation/p10_v9_balanced_1200_ckpt20k_100k_v1}"

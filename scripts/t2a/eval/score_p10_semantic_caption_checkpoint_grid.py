@@ -41,7 +41,7 @@ DEFAULT_WHISPER = Path(
     "faster-distil-whisper-large-v3"
 )
 DEFAULT_OUTPUT = Path(
-    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//p10_pre_v11_20260831/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives/"
     "sceneplan_dit_v10_semantic_v2_protected_resume_110k/"
     "evaluation/speech_100k_105k_semantic_v1_v2_fixed6"
 )

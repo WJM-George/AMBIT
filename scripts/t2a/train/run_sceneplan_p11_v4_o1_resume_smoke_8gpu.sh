@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO="${P11_REPO:-${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace}"
+REPO="${P11_REPO:-.}"
 PY="${P11_PYTHON:-$REPO/.venv/bin/python}"
 RUN_NAME="${RUN_NAME:?set a unique RUN_NAME for the O(1) resume smoke}"
 RUN_ROOT="${RUN_ROOT:-${AMBIT_CKPT_ROOT}/sceneplan_p11/$RUN_NAME}"

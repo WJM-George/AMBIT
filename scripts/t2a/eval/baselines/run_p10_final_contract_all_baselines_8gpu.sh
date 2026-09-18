@@ -4,7 +4,7 @@ set -euo pipefail
 # Run one baseline at a time with one persistent model replica on each selected
 # GPU.  GPU0 is reserved for the approved P11 workload by default; GPU_IDS can
 # override the seven-GPU evaluation set.  Resumption is per output waveform.
-REPO_ROOT="${REPO_ROOT:-./stable-audio-tools}"
+REPO_ROOT="${REPO_ROOT:-.}"
 UPSTREAM_ROOT="${UPSTREAM_ROOT:-./evaluation_benchmark/repos}"
 ASSET_ROOT="${ASSET_ROOT:-${AMBIT_CKPT_ROOT}/baselines/p10_60k_15row_v1}"
 BENCHMARK_ROOT="${BENCHMARK_ROOT:?BENCHMARK_ROOT is required}"

@@ -21,6 +21,7 @@ import torch
 from torch import Tensor, nn
 
 from stable_audio_tools.configuration import load_config
+from stable_audio_tools.paths import repo_root
 from stable_audio_tools.models.conditioners import QwenTextConditioner
 from stable_audio_tools.models.dit import DiffusionTransformer
 from stable_audio_tools.models.transformer import (
@@ -30,11 +31,10 @@ from stable_audio_tools.models.transformer import (
 from stable_audio_tools.models.utils import load_ckpt_state_dict
 
 
-P10_V11_MODEL_CONFIG = Path(
-    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/stable-audio-tools-workspace/stable_audio_tools/configs/"
-    "model_configs/txt2audio/t2a/dit/"
-    "qwen35_0p8b_300m_model_sceneplan_44_soundexp_noalign_15s_"
-    "resume_cosine_40k.json"
+P10_V11_MODEL_CONFIG = (
+    repo_root()
+    / "stable_audio_tools/configs/model_configs/txt2audio/t2a/dit"
+    / "qwen35_0p8b_300m_model_sceneplan_44_soundexp_noalign_15s_resume_cosine_40k.json"
 )
 P10_V11_MODEL_CONFIG_SHA256 = (
     "3ebcd2b6b3c9a8b78b9160243f6509fb9eb11a32959b2eeddb86f48bb0b44827"

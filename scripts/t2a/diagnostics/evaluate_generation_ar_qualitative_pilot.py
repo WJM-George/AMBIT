@@ -10,7 +10,7 @@ import sqlite3
 import subprocess
 import time
 
-PYTHON = os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/stable-audio-tools-workspace/.venv/bin/python3"
+PYTHON = os.environ.get("AMBIT_PYTHON", "python3")
 
 
 def sha(path):
@@ -31,7 +31,7 @@ def rows(path):
 
 
 def main(root, existing_shards=0, extra_candidates=()):
-    root = root.resolve(); ar = root.parent; base = ar / 'template100_rebuild_20260905_v1'; copy = ar / 'learned_copy_pointer_20260906_v1'
+    root = root.resolve(); ar = root.parent; base = ar / 'template_run'; copy = ar / 'copy_run'
     output = root / 'raw_evaluation'; output.mkdir(exist_ok=True)
     protocol = json.loads((root / 'RAW_VALIDATION_PROTOCOL.json').read_text())
     assert sha(root / 'candidate.pt') == protocol['checkpoint_sha256']
@@ -119,9 +119,9 @@ def main(root, existing_shards=0, extra_candidates=()):
         *extra_arguments, '--output', semantic, '--prove-exact-satisfied'], '', semantic / 'preparation', 300)
     pairs = {row['id']: row for row in json.loads((semantic / 'pairs.json').read_text())['pairs']}
     scoring = semantic / 'scoring'; scoring.mkdir(exist_ok=True); cache = {}; receipts = []
-    judge = ar / 'semantic_judge_20260905_v1'; judge_sha = sha(judge / 'CONTRACT.json')
+    judge = ar / 'judge'; judge_sha = sha(judge / 'CONTRACT.json')
     for source in [copy / 'semantic/scoring', base / 'validation_after_epoch/semantic_full/scoring',
-            ar / 'learned_qualitative_field_attention_20260906_v1/raw_evaluation/semantic/scoring']:
+            ar / 'qualitative_run/raw_evaluation/semantic/scoring']:
         if source.resolve() == scoring.resolve() or not (source / 'CONTRACT.json').exists(): continue
         contract = json.loads((source / 'CONTRACT.json').read_text())
         assert contract['judge_contract_sha256'] == judge_sha and contract['script_sha256'] == sha(worker)

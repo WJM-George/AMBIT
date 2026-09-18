@@ -1,0 +1,68 @@
+{
+  "sample_id": "spv2_test_no_speech_3_0000191",
+  "duration_sec": 10.031020408163265,
+  "room": {
+    "type": "outdoor"
+  },
+  "sources": [
+    {
+      "source_id": "source_0",
+      "kind": "music",
+      "description": "A male vocalist sings in a high-pitched, strained voice over a fast-paced, upbeat chiptune track. The music features synthesized melodies and a driving electronic beat, characteristic of retro video game soundtracks.",
+      "activity": {
+        "onset_sec": 0.2089795918367347,
+        "offset_sec": 9.380861678004536
+      },
+      "trajectory": {
+        "type": "static",
+        "position": {
+          "azimuth_deg": -140.0,
+          "elevation_deg": 0.0,
+          "distance_m": 2.556808
+        }
+      },
+      "gain_db": 0.0
+    },
+    {
+      "source_id": "source_1",
+      "kind": "music",
+      "description": "A train approaches and passes by, its rhythmic clatter and low rumble growing louder before fading into the distance.",
+      "activity": {
+        "onset_sec": 1.8808163265306121,
+        "offset_sec": 10.031020408163265
+      },
+      "trajectory": {
+        "type": "linear",
+        "start": {
+          "azimuth_deg": -88.0,
+          "elevation_deg": 0.0,
+          "distance_m": 3.183874
+        },
+        "end": {
+          "azimuth_deg": 91.0,
+          "elevation_deg": 0.0,
+          "distance_m": 2.208986
+        }
+      },
+      "gain_db": 0.0
+    },
+    {
+      "source_id": "source_2",
+      "kind": "sound",
+      "description": "A low, sustained, and ominous drone creates a suspenseful atmosphere. The sound is deep and resonant, resembling a synthesized pad or a distant, rumbling engine, building tension.",
+      "activity": {
+        "onset_sec": 0.11609977324263039,
+        "offset_sec": 9.102222222222222
+      },
+      "trajectory": {
+        "type": "static",
+        "position": {
+          "azimuth_deg": 94.0,
+          "elevation_deg": 0.0,
+          "distance_m": 2.263482
+        }
+      },
+      "gain_db": 0.0
+    }
+  ]
+}

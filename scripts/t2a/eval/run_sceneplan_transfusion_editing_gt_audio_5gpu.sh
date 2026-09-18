@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-REPO="${P10_REPO:-${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace}"
+REPO="${P10_REPO:-.}"
 RUN_ROOT="${RUN_ROOT:-${AMBIT_CKPT_ROOT}/transfusion_editing/mainline/sceneplan_transfusion_editing_dit_full_seed42_v1}"
 SELECTION="${DIT_CHECKPOINT_SELECTION:-$RUN_ROOT/evaluation/validation_20k_checkpoint_selection/SELECTED.json}"
 OUTPUT="${GT_AUDIO_OUTPUT:-$RUN_ROOT/evaluation/validation_1k_gt_audio}"

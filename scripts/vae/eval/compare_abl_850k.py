@@ -7,7 +7,6 @@ and reports aggregate metrics side-by-side. Designed to run on CPU while
 training keeps the GPUs busy.
 
 Example:
-  cd ./stable-audio-tools
   uv run python scripts/vae/eval/compare_abl_850k.py --step 900 --num 40 --device cpu
 """
 

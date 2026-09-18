@@ -9,9 +9,11 @@ import random
 import sys
 import time
 
+from stable_audio_tools.paths import clap_task_root, editing_bench
+
 REPO = Path(__file__).resolve().parents[4]
-OPS = Path(os.environ.get('AMBIT_DATA_ROOT', 'data') + '/sceneplan_transfusion_editing_v1/materialized/logs/ar_clap_task_20260906')
-OLD = OPS.parent / 'takeover-20260905T095122+0800'
+OPS = clap_task_root()
+OLD = editing_bench()
 sys.path[:0] = [str(REPO), str(OPS), str(OLD)]
 
 import numpy as np

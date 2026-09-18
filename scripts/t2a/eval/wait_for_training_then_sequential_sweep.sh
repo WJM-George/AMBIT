@@ -9,7 +9,7 @@ OUTPUT_ROOT="${OUTPUT_ROOT:?set OUTPUT_ROOT to the evaluation directory}"
 POLL_SECONDS="${POLL_SECONDS:-30}"
 TRAIN_START_TIMEOUT_SECONDS="${TRAIN_START_TIMEOUT_SECONDS:-300}"
 FINAL_STEP="${FINAL_STEP:-300}"
-SWEEP="${SWEEP:-./stable-audio-tools/scripts/t2a/eval/run_spatial_cot_sequential_family_sweep.sh}"
+SWEEP="${SWEEP:-scripts/t2a/eval/run_spatial_cot_sequential_family_sweep.sh}"
 
 if [[ ! "$POLL_SECONDS" =~ ^[1-9][0-9]*$ ]]; then
     echo "[post-train-sweep] POLL_SECONDS must be a positive integer" >&2

@@ -14,7 +14,7 @@ from build_p10_60k_baseline_contract import BASELINES
 
 
 DEFAULT_SOURCE_EVAL = Path(
-    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//p10_pre_v11_20260831/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives/"
     "sceneplan_dit_v7_sao_300m_from_scratch_160k/evaluation/"
     "p10_40k_60k_80k_100k_120k_140k_50x3_v1"
 )

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-REPO="${P10_REPO:-${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace}"
+REPO="${P10_REPO:-.}"
 PROBE_PARENT="${CLAP44_PROBE_ROOT:-${AMBIT_CKPT_ROOT}/transfusion_editing/diagnostics/clap44_gpu}"
 PROBE_SECONDS="${CLAP44_PROBE_MAX_WALL_SECONDS:-900}"
 PROBE_CONFIG="${CLAP44_PROBE_CONFIG:-$REPO/stable_audio_tools/configs/model_configs/txt2audio/t2a/editing_clap44_v1.json}"

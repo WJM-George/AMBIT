@@ -14,10 +14,8 @@
 #  - Checkpoints every 10k steps: a crash costs <=~2h of steps, not 9h.
 set -u
 
-cd ./stable-audio-tools
 
-PY=./stable-audio-tools/.venv/bin/python
-export PATH="./stable-audio-tools/.venv/bin:$PATH"
+PY=${PYTHON:-python3}
 
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 export WANDB_MODE=offline

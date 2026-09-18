@@ -1,0 +1,27 @@
+{
+  "duration_sec": 10.008617,
+  "room": {
+    "type": "outdoor"
+  },
+  "sample_id": "edited_000000",
+  "sources": [
+    {
+      "activity": {
+        "offset_sec": 10.00780045351474,
+        "onset_sec": 0.0
+      },
+      "description": "A deep, resonant, and rhythmic pulsing sound, like a slow, heavy heartbeat or a large engine idling, creates a suspenseful and ominous atmosphere.",
+      "gain_db": 0.0,
+      "kind": "music",
+      "source_id": "source_0",
+      "trajectory": {
+        "position": {
+          "azimuth_deg": 0.0,
+          "distance_m": 1.390251,
+          "elevation_deg": 6.0
+        },
+        "type": "static"
+      }
+    }
+  ]
+}

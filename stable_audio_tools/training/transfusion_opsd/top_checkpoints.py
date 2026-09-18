@@ -9,6 +9,7 @@ import hashlib
 import json
 import math
 import os
+import statistics
 from pathlib import Path
 
 
@@ -17,6 +18,10 @@ METRIC_DIRECTIONS = {
     'KL': -1, 'LSD': -1, 'GCC': -1, 'CRW': -1, 'FSAD': -1,
 }
 RANKING = 'mean_signed_relative_improvement_percent'
+GUARDED_RANKING = 'guardrails_then_median_relative_gain_v1'
+OPERATIONS = ('event_addition', 'event_removal', 'static_to_linear',
+              'linear_to_static', 'stationary_spatial_relocation')
+SCALAR_METRICS = ('Paired CLAP', 'KL', 'LSD', 'GCC', 'CRW')
 PRIORITY_METRICS = ('FAD', 'FD-PANN', 'KL', 'LSD', 'GCC', 'CRW', 'FSAD')
 
 
@@ -55,6 +60,33 @@ def _managed_path(folder, step):
     return folder / f'step-{step:08d}.pt'
 
 
+def guarded_selection(score, diagnostics, policy):
+    """Predeclared non-regression limits; unavailable evidence is not a pass."""
+    overall = policy['maximum_overall_regression_percent']
+    operation = policy['maximum_operation_regression_percent']
+    if any(not math.isfinite(v) or v < 0 for v in (overall, operation)):
+        raise ValueError('Regression tolerances must be finite and nonnegative.')
+    if diagnostics is None:
+        raise ValueError('Guarded selection requires per-operation validation evidence.')
+    failures = [dict(scope='overall', metric=k, relative_gain_percent=v, limit=overall)
+                for k,v in score['relative_improvement_percent'].items() if v < -overall]
+    evidence = {}
+    for name in OPERATIONS:
+        group = diagnostics['groups'][name]
+        if group['requests'] <= 0:
+            raise ValueError('An operation has no validation coverage: '+name)
+        evidence[name] = dict(requests=group['requests'], relative_gains={})
+        for metric in SCALAR_METRICS:
+            value = group['scalar_metrics'][metric]['relative_gain_percent']
+            if value is None or not math.isfinite(value):
+                raise ValueError('Missing finite per-operation metric.')
+            evidence[name]['relative_gains'][metric] = value
+            if value < -operation:
+                failures.append(dict(scope=name, metric=metric, relative_gain_percent=value, limit=operation))
+    return dict(eligible=not failures, guardrail_failures=failures, guardrail_evidence=evidence,
+                median_relative_improvement_percent=statistics.median(score['relative_improvement_percent'].values()))
+
+
 def _prune_retired_links(folder, ledger):
     # Only unlink paths recorded by this manager. Milestone/recovery paths
     # are separate directory entries, even when they share the same inode.
@@ -71,7 +103,7 @@ def _prune_retired_links(folder, ledger):
         path.unlink()
 
 
-def retain_top_checkpoints(output, evaluation_path, config_path, policy):
+def retain_top_checkpoints(output, evaluation_path, config_path, policy, *, diagnostics=None):
     """Persist ranked hardlinks, their complete metrics and an eviction history.
 
     A crash after writing the index but before unlinking a retired candidate is
@@ -79,7 +111,7 @@ def retain_top_checkpoints(output, evaluation_path, config_path, policy):
     """
     output, evaluation_path, config_path = map(Path, (output, evaluation_path, config_path))
     keep = policy['keep']
-    if type(keep) is not int or keep < 1 or policy['ranking'] != RANKING:
+    if type(keep) is not int or keep < 1 or policy['ranking'] not in (RANKING, GUARDED_RANKING):
         raise ValueError('Unsupported Top-K selection policy.')
     baseline_path = output / 'EVALUATION_step000000.json'
     baseline, evaluation = _read(baseline_path), _read(evaluation_path)
@@ -128,6 +160,8 @@ def retain_top_checkpoints(output, evaluation_path, config_path, policy):
         evaluation_path=str(evaluation_path), evaluation_sha256=_sha(evaluation_path),
         checkpoint_path=str(_managed_path(folder, step)), model_sha256=checkpoint['model_sha256'],
         logical_bytes=recovery.stat().st_size, link_identity=None)
+    if policy['ranking'] == GUARDED_RANKING:
+        item.update(guarded_selection(score, diagnostics, policy))
     del checkpoint
     old = ledger['history'].get(str(step))
     if old is not None:
@@ -136,8 +170,12 @@ def retain_top_checkpoints(output, evaluation_path, config_path, policy):
         item = old
     else:
         ledger['history'][str(step)] = item
-    ranked = sorted(ledger['history'].values(),
-                    key=lambda row: (-row['score'], -row['improved_metrics'], row['step']))[:keep]
+    if policy['ranking'] == GUARDED_RANKING:
+        ranked = sorted((row for row in ledger['history'].values() if row['eligible']),
+            key=lambda row: (-row['median_relative_improvement_percent'], -row['score'], row['step']))[:keep]
+    else:
+        ranked = sorted(ledger['history'].values(),
+                        key=lambda row: (-row['score'], -row['improved_metrics'], row['step']))[:keep]
     for row in ranked:
         path = _managed_path(folder, row['step'])
         if not path.exists():
@@ -161,8 +199,12 @@ def retain_top_checkpoints(output, evaluation_path, config_path, policy):
     }
     _write(index, ledger)
     _prune_retired_links(folder, ledger)
-    lines = ['# Top development checkpoints', '',
-        'Ranked by the equal mean of nine relative improvements against this run’s step0. '
+    method = (f"Only candidates meeting all nine overall limits ({policy['maximum_overall_regression_percent']}%) "
+        f"and all five operations' scalar limits ({policy['maximum_operation_regression_percent']}%) qualify. "
+        'Ranked by median relative improvement, then mean. Fewer than five may qualify. '
+        if policy['ranking'] == GUARDED_RANKING else
+        'Ranked by the equal mean of nine relative improvements against this run’s step0. ')
+    lines = ['# Top development checkpoints', '', method +
         'Positive is better. Ranking among candidates does not guarantee improvement over the baseline. '
         'Loss values and test-set results do not select these checkpoints.', '',
         '| Rank | Update | Mean relative gain | Improved metrics | Priority seven | Checkpoint |',

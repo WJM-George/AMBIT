@@ -1,4 +1,4 @@
-"""Locate the stable-audio-tools repo root from any nested scripts/ path."""
+"""Locate the AMBIT repository root from any nested scripts/ path."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -11,4 +11,4 @@ def repo_root(start: Path | None = None) -> Path:
     for cand in [p, *p.parents]:
         if (cand / "stable_audio_tools").is_dir() and (cand / "train_4ch.py").is_file():
             return cand
-    raise RuntimeError(f"Could not find stable-audio-tools repo root from {start}")
+    raise RuntimeError(f"Could not find AMBIT repository root from {start}")

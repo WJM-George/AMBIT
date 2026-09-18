@@ -8,7 +8,7 @@ set -euo pipefail
 # promotion gate records independent MoE and attention wins, and then starts
 # from the promoted MoE-only checkpoint.
 
-REPO="${P10_V12_REPO:-./stable-audio-tools}"
+REPO="${P10_V12_REPO:-.}"
 PY="$REPO/.venv/bin/python"
 ARM="${ARM:?set ARM to dense, moe, attention, or combined}"
 PROFILE="${PROFILE:-preflight}"
@@ -344,7 +344,7 @@ export ENABLE_TORCH_COMPILE="${ENABLE_TORCH_COMPILE:-0}"
 export WANDB_MODE="${WANDB_MODE:-offline}"
 export MIN_FREE_DISK_GIB="${MIN_FREE_DISK_GIB:-50}"
 export MIN_ROOT_FREE_GIB="${MIN_ROOT_FREE_GIB:-20}"
-export TEMP_DIR="${TEMP_DIR:-/dev/shm/p10_v12_${ARM}_${PROFILE}}"
+export TEMP_DIR="${TEMP_DIR:-${AMBIT_CACHE_ROOT:-cache}/p10_v12_${ARM}_${PROFILE}}"
 export TRITON_CACHE_DIR="${TRITON_CACHE_DIR:-${AMBIT_CKPT_ROOT}/dit/triton-cache/sceneplan_qwen35_fla052_cc170}"
 
 if [[ "$PROFILE" == "preflight" ]]; then

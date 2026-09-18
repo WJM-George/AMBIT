@@ -4,7 +4,7 @@ set -euo pipefail
 # Active P11 launcher.  The audio-aware G/U/E contract is the only mainline
 # candidate; the old v4 arms remain explicit experiment baselines and are
 # never selected by default.  Every profile keeps batch/GPU=8 and seed=42.
-REPO="${P11_REPO:-${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace}"
+REPO="${P11_REPO:-.}"
 PY="${P11_PYTHON:-$REPO/.venv/bin/python}"
 PROFILE="${1:-preflight}"
 RUN_NAME="${RUN_NAME:?set a unique RUN_NAME}"

@@ -25,10 +25,9 @@ import pyarrow.parquet as pq
 
 DATASET_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/sceneplan_v2_1p124m")
 RUN_ROOT = Path(
-    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//p10_pre_v11_20260831/sceneplan_dit_fail/"
-    "sceneplan_dit_v4_r8_300m"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives/p10_eval"
 )
-DEFAULT_OUTPUT = RUN_ROOT / "evaluation/p10_ckpt_5k_10k_15k_sceneplan44_v1"
+DEFAULT_OUTPUT = RUN_ROOT / "p10_ckpt_5k_10k_15k_sceneplan44_v1"
 CHECKPOINT_STEPS = (5_000, 10_000, 15_000)
 LISTENING_SEED = "sceneplan-p10-listening-panel-44-v1-20260821"
 NOISE_SEED = "sceneplan-p10-common-noise-44-v1-20260821"

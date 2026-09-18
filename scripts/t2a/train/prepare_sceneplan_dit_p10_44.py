@@ -36,8 +36,8 @@ OVERFIT_DATASET_CONFIG = REPO / (
     "stable_audio_tools/configs/dataset_configs/sceneplan_44_overfit10.json"
 )
 DEFAULT_OVERFIT_GATE = Path(
-    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//p10_pre_v11_20260831/pilots/"
-    "sceneplan_dit_soundexp_v1_qwenalign_overfit10_20260825/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives/pilots/"
+    "overfit/"
     "OVERFIT_GATE.json"
 )
 PRETRANSFORM_CKPT = Path(

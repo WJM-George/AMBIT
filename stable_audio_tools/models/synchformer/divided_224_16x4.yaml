@@ -6,7 +6,7 @@ TRAIN:
   CHECKPOINT_PERIOD: 5
   AUTO_RESUME: True
   CHECKPOINT_EPOCH_RESET: True
-  CHECKPOINT_FILE_PATH: /checkpoint/fmetze/neurips_sota/40944587/checkpoints/checkpoint_epoch_00035.pyth
+  CHECKPOINT_FILE_PATH: ""
 DATA:
   NUM_FRAMES: 16
   SAMPLING_RATE: 4
@@ -16,8 +16,8 @@ DATA:
   INPUT_CHANNEL_NUM: [3]
   MEAN: [0.5, 0.5, 0.5]
   STD: [0.5, 0.5, 0.5]
-  PATH_TO_DATA_DIR: /private/home/mandelapatrick/slowfast/data/ssv2
-  PATH_PREFIX: /datasets01/SomethingV2/092720/20bn-something-something-v2-frames
+  PATH_TO_DATA_DIR: ""
+  PATH_PREFIX: ""
   INV_UNIFORM_SAMPLE: True
   RANDOM_FLIP: False
   REVERSE_INPUT_CHANNEL: True

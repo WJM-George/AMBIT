@@ -27,6 +27,7 @@ from stable_audio_tools.training.transfusion_opsd.native_coarse_choice_retention
 from stable_audio_tools.training.transfusion_opsd.native_prefix_supervision import field_balanced_native_ce
 from stable_audio_tools.training.transfusion_opsd.native_paired_rf import paired_rf_example, paired_rf_loss
 from stable_audio_tools.training.transfusion_opsd.supported_teacher import preserve_reference_support_mass
+from stable_audio_tools.training.transfusion_opsd import branch_request_supervision as branch_supervision
 
 
 class SpatialLearner(base.Learner):
@@ -148,6 +149,9 @@ class SpatialLearner(base.Learner):
                             for j, terminal in enumerate(item['terminals'])]
         if len(coefficients) != len(item['terminals']) or any(not math.isfinite(c) or c < 0 for c in coefficients):
             raise ValueError('Invalid stopped same-plan terminal coefficients.')
+        selected_mass = math.fsum(coefficients)
+        if branch_supervision.active(self.q):
+            coefficients, selected_mass = branch_supervision.normalize_selected_coefficients(coefficients)
         for j, (terminal, coefficient) in enumerate(zip(item['terminals'], coefficients)):
             if coefficient == 0:
                 continue
@@ -165,6 +169,7 @@ class SpatialLearner(base.Learner):
             coarse_choice_CE=float(coarse.detach()), structure_KL=float(hold.detach()),
             frozen_reference=True, retained_native_decisions=len(item['holds']), terminal_RF=rf,
             terminal_RF_coefficients=coefficients,
+            terminal_RF_mass_before_budget=selected_mass,
             reference_exempt_field=item['reference_exempt_field'],
             qualified_terminals=sum(item['terminal_qualified']), proposed_terminals=len(item['terminals']),
             field=None if item['decision'] is None else item['decision']['field'], enabled=item['enabled'],

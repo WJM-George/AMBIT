@@ -2,6 +2,7 @@
 from collections import defaultdict
 import hashlib
 import time
+import types
 
 import torch
 import torch.distributed as dist
@@ -9,7 +10,7 @@ import torch.distributed as dist
 
 @torch.no_grad()
 def validate_native(learner, model, *, max_batches=0, label='full'):
-    from scripts.t2a.experiments.ar_structured_v1 import data
+    from scripts.t2a.experiments.ar_structured_v1 import data, model as native_model
     from scripts.t2a.rl.train_editing_opsd_stream import write
     rank, world, device = learner.rank, learner.world, learner.device
     started = time.monotonic()
@@ -28,12 +29,18 @@ def validate_native(learner, model, *, max_batches=0, label='full'):
             speech[ordinal] = domain in ('speech_only', 'speech_mixed')
     batches = [ids[start:start+32] for _, ids in sorted(buckets.items()) for start in range(0, len(ids), 32)]
     if max_batches:
-        batches = batches[:max_batches]
+        # Startup probes exercise both short and long native shapes.
+        probes = [ids[:32] for _, ids in sorted(buckets.items())]
+        batches = probes[:max_batches]
     totals = None
     denominators = torch.zeros(3, dtype=torch.float64, device=device)
     seen, speech_rows = [], 0
     was_training = model.training
     model.eval()
+    # frozen_copy() clones AR/DiT modules, not the instance-level forward
+    # installed on the trainable adapter. Bind the identical native joint
+    # function explicitly to the selected student OR original40k reference.
+    forward = types.MethodType(native_model.model_forward, model)
     try:
         for index, ids in enumerate(batches):
             learner.progress('NATIVE_VALIDATION_LOSS', completed_local_rows=len(seen),
@@ -42,7 +49,7 @@ def validate_native(learner, model, *, max_batches=0, label='full'):
             ar, target, metadata, mask = learner.native._move_joint_batch(batch, device)
             den = denominators.new_tensor([(ar['plan_labels'] != -100).sum(), mask.sum()*64, len(ids)])
             # Fixed generator index across checkpoints, not training step.
-            loss, sums, names, outputs = learner.native.batch_loss(model, learner.teacher, batch,
+            loss, sums, names, outputs = learner.native.batch_loss(forward, learner.teacher, batch,
                 learner.cfg, device, 500000 + index, rank, world, den)
             if not torch.isfinite(sums).all() or not torch.isfinite(loss):
                 raise RuntimeError('Nonfinite full-split native validation.')

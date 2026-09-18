@@ -16,7 +16,7 @@ import math
 from pathlib import Path
 from typing import Any, Mapping, MutableMapping, Optional, Sequence, Union
 
-from .paths import expand_config_values
+from .paths import expand_config_values, repo_root
 
 
 ConfigPath = Union[str, Path]
@@ -1580,11 +1580,10 @@ def validate_t2a_config(
             ),
             "transcript_state_authority": "sceneplan.source.transcript",
             "canonical_executor_family": "sceneplan_dit_v11_semantic_v2_15s_300m",
-            "canonical_model_config": (
-                os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/stable-audio-tools-workspace/stable_audio_tools/configs/"
-                "model_configs/txt2audio/t2a/dit/"
-                "qwen35_0p8b_300m_model_sceneplan_44_soundexp_noalign_15s_"
-                "resume_cosine_40k.json"
+            "canonical_model_config": str(
+                repo_root()
+                / "stable_audio_tools/configs/model_configs/txt2audio/t2a/dit"
+                / "qwen35_0p8b_300m_model_sceneplan_44_soundexp_noalign_15s_resume_cosine_40k.json"
             ),
             "canonical_model_config_sha256": (
                 "3ebcd2b6b3c9a8b78b9160243f6509fb9eb11a32959b2eeddb86f48bb0b44827"

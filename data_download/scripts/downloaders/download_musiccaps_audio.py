@@ -13,7 +13,6 @@ Prereqs (already present in this repo's setup):
                        are skipped. Installed at ~/.deno/bin on this box.
 
 Run the metadata downloader first so the CSV exists:
-    cd . && uv sync
     uv run python scripts/downloaders/download_musiccaps.py
 
 Then fetch the audio (resumable; already-downloaded clips are skipped):

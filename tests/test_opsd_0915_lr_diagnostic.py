@@ -1,5 +1,6 @@
 import copy
 import json
+import os
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -12,7 +13,7 @@ from scripts.t2a.rl.train_editing_opsd_0915_recipe import base, current, load_re
 from stable_audio_tools.paths import ckpt_path
 from test_opsd_native_token_alignment import codec, native_plan, alternative_segmentation
 
-RUN = ckpt_path('transfusion_opsd/editing_opsd_0915_lr_alignment_20260916_v1')
+RUN = Path(os.environ["AMBIT_OPSD_DIAGNOSTIC"]) if os.environ.get("AMBIT_OPSD_DIAGNOSTIC") else ckpt_path("transfusion_opsd", "diagnostic")
 
 
 @pytest.fixture

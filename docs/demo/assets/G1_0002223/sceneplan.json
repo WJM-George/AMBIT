@@ -1,0 +1,27 @@
+{
+  "sample_id": "spv2_test_no_speech_1_0000223",
+  "duration_sec": 10.031020408163265,
+  "room": {
+    "type": "outdoor"
+  },
+  "sources": [
+    {
+      "source_id": "source_0",
+      "kind": "music",
+      "description": "A solo acoustic guitar plays a gentle, fingerstyle melody. The music has a calm, folk-like quality with a warm and resonant timbre.",
+      "activity": {
+        "onset_sec": 0.18575963718820862,
+        "offset_sec": 10.00780045351474
+      },
+      "trajectory": {
+        "type": "static",
+        "position": {
+          "azimuth_deg": 172.0,
+          "elevation_deg": 0.0,
+          "distance_m": 2.556808
+        }
+      },
+      "gain_db": 0.0
+    }
+  ]
+}

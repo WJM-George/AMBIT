@@ -10,8 +10,10 @@ from pathlib import Path
 import sys
 import time
 
+from stable_audio_tools.paths import clap_task_root
+
 ROOT = Path(__file__).resolve().parents[4]
-OPS = Path(os.environ.get('AMBIT_DATA_ROOT', 'data') + '/sceneplan_transfusion_editing_v1/materialized/logs/ar_clap_task_20260906')
+OPS = clap_task_root()
 sys.path[:0] = [str(ROOT), str(OPS / 'diagnostics'), str(OPS)]
 import torch
 from torch import distributed as dist

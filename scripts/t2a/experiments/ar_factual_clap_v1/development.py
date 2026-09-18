@@ -13,8 +13,10 @@ from pathlib import Path
 import sys
 import textwrap
 
+from stable_audio_tools.paths import clap_task_root
+
 REPO = Path(__file__).resolve().parents[4]
-OPS = Path(os.environ.get('AMBIT_DATA_ROOT', 'data') + '/sceneplan_transfusion_editing_v1/materialized/logs/ar_clap_task_20260906')
+OPS = clap_task_root()
 sys.path[:0] = [str(REPO), str(OPS / 'diagnostics'), str(OPS)]
 import ar_t200_development as t200
 from scripts.t2a.experiments.ar_factual_clap_v1 import integration, training_binding

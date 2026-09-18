@@ -1,0 +1,27 @@
+{
+  "duration_sec": 10.030317,
+  "room": {
+    "type": "outdoor"
+  },
+  "sample_id": "edited_000000",
+  "sources": [
+    {
+      "activity": {
+        "offset_sec": 10.030317,
+        "onset_sec": 0.0
+      },
+      "description": "A synthesized, low-pitched electronic organ plays a simple, repetitive melody. The sound is reminiscent of a retro video game or a music box, playing a simple, looping melody.",
+      "gain_db": 0.0,
+      "kind": "music",
+      "source_id": "source_0",
+      "trajectory": {
+        "position": {
+          "azimuth_deg": -90.0,
+          "distance_m": 1.390251,
+          "elevation_deg": 18.0
+        },
+        "type": "static"
+      }
+    }
+  ]
+}

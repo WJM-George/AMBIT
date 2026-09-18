@@ -6,7 +6,7 @@ set -euo pipefail
 # Every stage remains independently fail-closed; this wrapper only makes the
 # already-published boundaries safely re-entrant after an external stop.
 
-REPO="${P10_REPO:-${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace}"
+REPO="${P10_REPO:-.}"
 ROOT="${EDITING_DATA_ROOT:-${AMBIT_DATA_ROOT}/sceneplan_transfusion_editing_v1}"
 PAIR_INDEX="$ROOT/pair_index/train.sqlite"
 TRAIN_INDEX="$ROOT/training_index/train.sqlite"

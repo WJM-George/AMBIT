@@ -154,7 +154,7 @@ def main():
     # The failed full-chain service owns the obsolete collective GPU3–7
     # reservation. New user-authorized jobs lease their actual GPUs only.
     state = subprocess.check_output(["systemctl","--user","show",
-        "transfusion-editing-full-20260905.service","--property=ActiveState,MainPID"],text=True)
+        "editing-training.service","--property=ActiveState,MainPID"],text=True)
     state = dict(line.split("=",1) for line in state.splitlines())
     if state.get("MainPID") != "0" or state.get("ActiveState") not in {"failed","inactive"}:
         raise RuntimeError("legacy full-chain is active; resolve ownership before a new allocation")

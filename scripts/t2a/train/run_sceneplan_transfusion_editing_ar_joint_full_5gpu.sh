@@ -6,7 +6,7 @@ set -euo pipefail
 echo '[editing-ar-joint-full] The M2D route is retired. CLAP44 validation and AR integration must precede the new joint run.' >&2
 exit 2
 
-REPO="${P10_REPO:-${AMBIT_CKPT_ROOT}/stable-audio-tools-workspace}"
+REPO="${P10_REPO:-.}"
 ROOT="${EDITING_DATA_ROOT:-${AMBIT_DATA_ROOT}/sceneplan_transfusion_editing_v1}"
 PREFLIGHT="$ROOT/contracts/full_training/PREFLIGHT.json"
 TRAIN_INDEX="$ROOT/training_index/train.sqlite"

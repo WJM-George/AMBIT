@@ -1633,11 +1633,8 @@ def prepare_storage(path_value: str, label: str, min_free_gib: float) -> Path:
     return runtime_path
 
 def main():
-    # Removed: torch.multiprocessing.set_sharing_strategy('file_system')
-    # 'file_system' creates named files in /dev/shm that accumulate over long runs,
-    # causing gradual slowdown and eventual "Shared memory manager connection has
-    # timed out" crashes. The default 'file_descriptor' strategy uses kernel-managed
-    # FDs with automatic cleanup. Requires ulimit -n 65536 in SLURM script.
+    # Keep the default file-descriptor sharing strategy. The file-system
+    # alternative leaves named temporary files that accumulate on long runs.
     torch._dynamo.config.capture_scalar_outputs = True
     torch.set_float32_matmul_precision('high')
     raise_open_file_limit()

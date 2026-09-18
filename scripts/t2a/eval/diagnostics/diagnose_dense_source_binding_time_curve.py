@@ -50,7 +50,7 @@ DEFAULT_MODEL_CONFIG = REPO_ROOT / (
 )
 DEFAULT_CHECKPOINT = Path(
     os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/spatial_cot/probes/"
-    "spcot_dense_source_kv_v15_identity100_20260813_073308/"
+    "binding_curve/"
     "checkpoints/epoch=99-step=100.ckpt"
 )
 DEFAULT_LATENT_ROOT = Path(os.environ.get("AMBIT_DATA_ROOT", "data") + "/spatial_cot_v1/latents/train")

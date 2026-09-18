@@ -10,7 +10,7 @@
 #   STEPS="200000 400000" bash scripts/vae/eval/run_vae_sweep.sh
 set -euo pipefail
 
-SAT=./stable-audio-tools
+SAT=.
 cd "$SAT"
 
 MODE="${MODE:-heldout}"

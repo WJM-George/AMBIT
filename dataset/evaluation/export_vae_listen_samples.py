@@ -11,7 +11,6 @@ Output layout (under --out):
   manifest.json
 
 Run:
-  cd ./stable-audio-tools
   CUDA_VISIBLE_DEVICES=1 uv run python dataset/evaluation/export_vae_listen_samples.py \\
     --steps 660000 700000 720000 740000 --with-baseline --num 10 --seed 1234 \\
     --out ${AMBIT_CKPT_ROOT}/eval_metric/result_compare

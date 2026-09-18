@@ -14,7 +14,7 @@ import numpy as np
 
 
 DEFAULT_SOUND_ROOT = Path(
-    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives//p10_pre_v11_20260831/"
+    os.environ.get("AMBIT_CKPT_ROOT", "checkpoints") + "/archives/"
     "probes/p10_sound_transient_heldout_v1"
 )
 DEFAULT_SPEECH_ROOT = Path(

@@ -24,6 +24,7 @@ outputs/
 *.safetensors
 *.bin
 *.wav
+!docs/demo/assets/**/*.wav
 *.flac
 *.mp3
 *.mp4

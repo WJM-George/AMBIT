@@ -22,13 +22,13 @@ def main(root, interval):
             root / 'validation_after_epoch/semantic_baseline/scoring/STATUS.json',
             root / 'p10_validation16/STATUS.json', root / 'p10_validation16/output/STATUS.json',
             root / 'validation_recovery/STATUS.json',
-            root.parent / 'learned_copy_pointer_20260906_v1/features/STATUS.json',
-            root.parent / 'learned_copy_pointer_20260906_v1/training/STATUS.json',
-            root.parent / 'learned_copy_pointer_20260906_v1/raw_validation/STATUS.json',
-            root.parent / 'learned_copy_pointer_20260906_v1/raw_validation_v2/STATUS.json',
-            root.parent / 'learned_copy_pointer_20260906_v1/semantic/STATUS.json',
-            root.parent / 'learned_copy_pointer_20260906_v1/semantic/scoring/STATUS.json',
-            root.parent / 'learned_copy_pointer_20260906_v1/p10_validation16/STATUS.json']
+            root.parent / 'copy_run/features/STATUS.json',
+            root.parent / 'copy_run/training/STATUS.json',
+            root.parent / 'copy_run/raw_validation/STATUS.json',
+            root.parent / 'copy_run/raw_validation_v2/STATUS.json',
+            root.parent / 'copy_run/semantic/STATUS.json',
+            root.parent / 'copy_run/semantic/scoring/STATUS.json',
+            root.parent / 'copy_run/p10_validation16/STATUS.json']
         extra_path = root / 'ADDITIONAL_JOBS.json'
         extra_jobs = json.loads(extra_path.read_text())['jobs'] if extra_path.exists() else []
         paths.extend(Path(job['status']) for job in extra_jobs)
@@ -77,7 +77,7 @@ def main(root, interval):
         if not audio_reported and (root / 'p10_validation16/TECHNICAL_GATE.json').exists():
             print(json.dumps({'event': 'P10_TECHNICAL_RESULT_READY', 'result': str(root / 'p10_validation16/TECHNICAL_GATE.json')}), flush=True)
             audio_reported = True
-        copy_root = root.parent / 'learned_copy_pointer_20260906_v1'
+        copy_root = root.parent / 'copy_run'
         copy_ready = not (copy_root / 'PROTOCOL.json').exists() or (copy_root / 'PILOT_RESULT.json').exists()
         if (copy_root / 'RAW_RECOVERY_V2_PROTOCOL.json').exists():
             copy_ready = copy_ready and (copy_root / 'raw_validation_v2/SUMMARY.json').exists()

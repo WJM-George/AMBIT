@@ -32,7 +32,6 @@ Outputs (--out, default ${AMBIT_CKPT_ROOT}/eval_metric):
   summary.md       human-readable side-by-side table with a winner per metric
 
 Run:
-  cd ./stable-audio-tools
   CUDA_VISIBLE_DEVICES=0 uv run python dataset/evaluation/compare_vae_4ch_vs_2stereo.py \
       --num 100 --out ${AMBIT_CKPT_ROOT}/eval_metric
 """
