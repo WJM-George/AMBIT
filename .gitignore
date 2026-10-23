@@ -1,0 +1,27 @@
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+.env
+.env.*
+checkpoints/
+bundles/
+outputs/
+*.ckpt
+*.pt
+*.pth
+*.safetensors
+*.bin
+*.model
+*.wav
+*.flac
+*.mp3
+*.mp4
+
+# Curated public demo media only; training and evaluation audio stay ignored.
+!docs/assets/**/preview.flac
+!docs/assets/**/original.flac

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore AMBIT spatial audio generation and editing: text inputs, executable ScenePlans, and first-order ambisonic audio.">
+  <meta name="theme-color" content="#ffffff">
+  <meta property="og:title" content="AMBIT — Spatial Audio Generation and Editing">
+  <meta property="og:description" content="Explore twenty spatial audio scenes, from a single voice to four-source soundscapes.">
+  <link rel="canonical" href="https://wjm-george.github.io/AMBIT/">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css?v=20261024-3">
+  <script src="data.js?v=20261024-3" defer></script>
+  <script src="app.js?v=20261024-3" defer></script>
+  <title>AMBIT — Spatial Audio Generation and Editing</title>
+</head>
+<body>
+  <a class="skip-link" href="#examples">Skip to audio examples</a>
+  <header class="topbar shell">
+    <a class="brand" href="#top">AMBIT</a>
+    <nav aria-label="Main navigation"><a href="#abstract">Abstract</a><a href="#examples">Demos</a><a href="https://github.com/WJM-George/AMBIT" target="_blank" rel="noopener noreferrer">Code</a></nav>
+  </header>
+  <main id="top">
+    <section class="paper-header shell" aria-labelledby="title">
+      <h1 id="title"><span>AMBIT</span>Spatial Audio Generation and Editing<br class="desktop-break"> with Executable Plans and<br class="desktop-break"> Self-Distilling Transfusion</h1>
+      <p class="authors"><span>Kam Man Wu<sup>*1,2</sup></span><span>Yu Zhang<sup>*3</sup></span><span>Pengjun Fang<sup>1,2</sup></span><span>Mingfei Chen<sup>4</sup></span><span>Weijia Chen<sup>2</sup></span><span>Zeyue Tian<sup>†1,2</sup></span><span>Qifeng Chen<sup>†1</sup></span></p>
+      <p class="affiliations"><span><sup>1</sup> HKUST</span><span><sup>2</sup> Noiz AI</span><span><sup>3</sup> Independent Researcher</span><span><sup>4</sup> University of Washington</span></p>
+      <p class="author-notes"><sup>*</sup> Equal contribution. &nbsp; <sup>†</sup> Corresponding authors.</p>
+      <div class="paper-links"><a href="https://github.com/WJM-George/AMBIT" target="_blank" rel="noopener noreferrer">Code</a><a href="#examples">Audio demos</a></div>
+    </section>
+    <section class="abstract shell" id="abstract" aria-labelledby="abstract-title">
+      <h2 id="abstract-title">Abstract</h2>
+      <p>Spatial audio authoring coordinates source decisions with soundfield synthesis. For editing, plans specify what to change and retain, while reference audio supplies further acoustic detail. We present AMBIT, a unified framework for native First-Order Ambisonics (FOA) generation and editing with three connected contributions. First, a shared Transfusion backbone couples autoregressive planning with rectified-flow rendering through executable ScenePlans that specify source content, activity, and 3D trajectories. For editing, the plan describes the full target scene, including retained sources; contrastive features ground the requested change, while full reference latents supply residual acoustic detail for preservation. Second, an FOA-aware continuous VAE combines shared-decoder omnidirectional recovery, asymmetric grouped KL, and spatial covariance matching to preserve content and inter-channel structure. Third, joint Transfusion on-policy self-distillation (OPSD) refines planning on student-generated prefixes and rendering at sampling states reached under student plans, with target-conditioned teachers supervising both modes of the shared student. Evaluations across speech, music, and sound show improved generation content and spatial quality, acoustic fidelity during instruction-guided editing, and unedited-source preservation over the compared baselines.</p>
+    </section>
+    <figure class="pipeline shell">
+      <a href="figures/pipeline.png" target="_blank" rel="noopener" aria-label="Open the AMBIT pipeline figure at full size">
+        <img src="figures/pipeline.png" width="4320" height="2430" alt="AMBIT overview: a shared Transfusion backbone connects AR planning and DiT rendering, joint OPSD refines both modes, and an FOA-aware VAE preserves audio content and spatial structure.">
+      </a>
+    </figure>
+    <div class="demo-content shell" id="examples">
+      <p class="listening-note">Please use headphones for the spatial audio examples.</p>
+      <nav class="page-nav" aria-label="Audio examples"><a href="#generation" data-section="generation" class="active">Generation</a><a href="#editing" data-section="editing">Editing</a></nav>
+      <section class="demo-section" id="generation" aria-labelledby="generation-title">
+        <header class="section-heading"><h2 id="generation-title">Generation</h2></header>
+        <div class="generation-grid" id="generation-examples"></div>
+      </section>
+      <section class="demo-section" id="editing" aria-labelledby="editing-title">
+        <header class="section-heading"><h2 id="editing-title">Editing</h2></header>
+        <div class="editing-list" id="editing-examples"></div>
+      </section>
+    </div>
+  </main>
+  <noscript><p class="noscript">Please enable JavaScript to explore the scenes and their audio players.</p></noscript>
+</body>
+</html>

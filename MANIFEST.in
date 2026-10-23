@@ -1,0 +1,2 @@
+include README.md THIRD_PARTY_NOTICES.md
+include docs/figures/pipeline.png
