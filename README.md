@@ -5,9 +5,6 @@
 [![arXiv](https://img.shields.io/badge/arXiv-2610.34415-b31b1b)](https://arxiv.org/abs/2610.34415)
 [![Demo Page](https://img.shields.io/badge/Demo-Page-2563eb)](https://wjm-george.github.io/AMBIT/)
 
-[Overview](#overview) · [Installation](#installation) ·
-[Generation](#spatial-audio-generation) · [Editing](#spatial-audio-editing)
-
 ## Overview
 
 ![AMBIT pipeline](docs/figures/pipeline.png)
