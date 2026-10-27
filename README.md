@@ -4,6 +4,7 @@
 
 [![arXiv](https://img.shields.io/badge/arXiv-2610.34415-b31b1b)](https://arxiv.org/abs/2610.34415)
 [![Demo Page](https://img.shields.io/badge/Demo-Page-2563eb)](https://wjm-george.github.io/AMBIT/)
+[![Hugging Face Paper](https://img.shields.io/badge/Hugging%20Face-Paper-FFD21E?logo=huggingface&logoColor=FFD21E)](https://huggingface.co/papers/2610.34415)
 
 ## Overview
 
