@@ -1,10 +1,12 @@
 # AMBIT
 
+**Spatial Audio Generation and Editing with Executable Plans and Self-Distilling Transfusion**
+
+[![arXiv](https://img.shields.io/badge/arXiv-2610.34415-b31b1b)](https://arxiv.org/abs/2610.34415)
+[![Demo Page](https://img.shields.io/badge/Demo-Page-2563eb)](https://wjm-george.github.io/AMBIT/)
+
 [Overview](#overview) · [Installation](#installation) ·
 [Generation](#spatial-audio-generation) · [Editing](#spatial-audio-editing)
-
-[Listen to the interactive AMBIT demo](https://wjm-george.github.io/AMBIT/):
-spatial audio generation and editing examples.
 
 ## Overview
 
@@ -62,3 +64,17 @@ AMBIT is developed on top of
 [stable-audio-tools](https://github.com/Stability-AI/stable-audio-tools).
 
 See [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
+## Citation
+
+```bibtex
+@misc{wu2026ambit,
+  title={Spatial Audio Generation and Editing with Executable Plans and Self-Distilling Transfusion},
+  author={Kam Man Wu and Yu Zhang and Pengjun Fang and Mingfei Chen and Weijia Chen and Zeyue Tian and Qifeng Chen},
+  year={2026},
+  eprint={2610.34415},
+  archivePrefix={arXiv},
+  primaryClass={cs.SD},
+  url={https://arxiv.org/abs/2610.34415}
+}
+```
