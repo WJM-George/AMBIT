@@ -66,13 +66,10 @@ See [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 ## Citation
 
 ```bibtex
-@misc{wu2026ambit,
+@article{wu2026spatial,
   title={Spatial Audio Generation and Editing with Executable Plans and Self-Distilling Transfusion},
-  author={Kam Man Wu and Yu Zhang and Pengjun Fang and Mingfei Chen and Weijia Chen and Zeyue Tian and Qifeng Chen},
-  year={2026},
-  eprint={2610.34415},
-  archivePrefix={arXiv},
-  primaryClass={cs.SD},
-  url={https://arxiv.org/abs/2610.34415}
+  author={Wu, Kam Man and Zhang, Yu and Fang, Pengjun and Chen, Mingfei and Chen, Weijia and Tian, Zeyue and Chen, Qifeng},
+  journal={arXiv preprint arXiv:2610.34415},
+  year={2026}
 }
 ```
