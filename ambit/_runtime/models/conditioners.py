@@ -267,19 +267,19 @@ class QwenTextConditioner(Conditioner):
                 "Text conditioning requires complete captions, zero padding and four slots"
             )
         super().__init__(hidden_dim, output_dim, project_out=project_out, padding_mode=padding_mode)
-        from transformers import AutoTokenizer, AutoModelForCausalLM
+        from transformers import AutoTokenizer, AutoModel
 
         self.tokenizer = AutoTokenizer.from_pretrained(
             model_path, local_files_only=True, trust_remote_code=False
         )
-        causal = AutoModelForCausalLM.from_pretrained(
+        model = AutoModel.from_pretrained(
             model_path,
             dtype=torch.bfloat16,
             local_files_only=True,
             trust_remote_code=False,
             use_safetensors=True,
         )
-        model = causal.model.eval().requires_grad_(False)
+        model = model.eval().requires_grad_(False)
         cfg = getattr(model.config, "text_config", model.config)
         if cfg.hidden_size != hidden_dim:
             raise ValueError("Text encoder width differs from the renderer config")
@@ -349,10 +349,8 @@ class QwenTextConditioner(Conditioner):
         (ids, mask, event, speech) = [
             torch.stack([row[i][:length] for row in rows]).to(device) for i in range(4)
         ]
-        self.model.to(
-            device=device,
-            dtype=torch.bfloat16 if torch.device(device).type == "cuda" else torch.float32,
-        )
+        # Preserve HF's float32 state-space parameters alongside bf16 weights.
+        self.model.to(device=device)
         with torch.no_grad():
             hidden = self.model(
                 input_ids=ids, attention_mask=mask, use_cache=False, return_dict=True

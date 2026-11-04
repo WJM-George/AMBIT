@@ -1189,6 +1189,7 @@ class ContinuousTransformer(nn.Module):
         skip_output_projection: bool = False,
         self_attention_causal: Optional[bool] = None,
         self_attention_bias: Optional[torch.Tensor] = None,
+        audio_transcript_condition=None,
         **kwargs,
     ):
         (batch, seq, device) = (*x.shape[:2], x.device)
@@ -1295,6 +1296,13 @@ class ContinuousTransformer(nn.Module):
                     return (x, info)
                 return x
         x = x[:, self.num_memory_tokens :, :]
+        if audio_transcript_condition is not None:
+            if skip_output_projection or self_attention_causal:
+                raise ValueError('Audio transcript attention cannot enter the AR path')
+            attention, memory = audio_transcript_condition
+            prefix = x.shape[1] - seq
+            audio = attention(x[:, prefix:], memory, padding_mask)
+            x = torch.cat((x[:, :prefix], audio), dim=1) if prefix else audio
         if not skip_output_projection:
             x = self.project_out(x)
         if return_info:

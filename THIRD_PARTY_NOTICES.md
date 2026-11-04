@@ -20,3 +20,7 @@ Martin, converted to SOFA by ARI. The measurement license allows unrestricted
 use and requests citation of Gardner and Martin, *HRTF Measurements of a KEMAR
 Dummy-Head Microphone*, MIT Media Lab Perceptual Computing Technical Report 280
 (1994), and *HRTF Measurements of a KEMAR*, JASA 97(6), 3907–3908 (1995).
+
+The separately distributed model bundle includes frozen text encoders from
+Qwen3.5-4B and Qwen3.5-0.8B under Apache-2.0; their licenses and attribution
+are included in the model repository.

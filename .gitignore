@@ -25,3 +25,5 @@ outputs/
 # Curated public demo media only; training and evaluation audio stay ignored.
 !docs/assets/**/preview.flac
 !docs/assets/**/original.flac
+
+/models/

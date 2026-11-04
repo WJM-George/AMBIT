@@ -23,7 +23,7 @@ def build_parser():
             type=Path,
             help="New .wav file; also writes a .json ScenePlan",
         )
-        sub.add_argument("--device", default="cuda", help="cpu, cuda, or cuda:N")
+        sub.add_argument("--device", default="cuda", help="cuda or cuda:N")
         sub.add_argument("--seed", type=int, default=42)
         sub.add_argument("--steps", type=int, help="Override the bundle's Euler step count")
         sub.add_argument("--cfg-scale", type=float, help="Override the bundle's guidance scale")
