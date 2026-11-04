@@ -34,10 +34,7 @@ Download the [AMBIT model checkpoint](https://huggingface.co/WJM-George/AMBIT):
 hf download WJM-George/AMBIT --local-dir models/AMBIT
 ```
 
-One unified model supports both generation and editing. This release uses the
-275k checkpoint, with a Qwen3.5-4B AR request encoder and an expanded ScenePlan
-head. The DiT text encoder remains Qwen3.5-0.8B. AR and DiT share the same
-Transformer backbone. All necessary model assets are included in the download.
+One unified model supports both generation and editing. AR and DiT share the same Transformer backbone. All necessary model assets are included in the download.
 
 ## Spatial audio generation
 
