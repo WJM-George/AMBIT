@@ -34,8 +34,8 @@ class Bundle:
     def open(cls, directory, *, task):
         root = Path(directory).expanduser().resolve(strict=True)
         spec = read_json(root / "bundle.json")
-        if spec.get("format") != "ambit-unified-v2":
-            raise ValueError("Expected an ambit-unified-v2 model bundle")
+        if spec.get("format") != "ambit":
+            raise ValueError("Expected an ambit model bundle")
         if task not in ("generation", "editing"):
             raise ValueError("Unknown inference task")
         s = spec["sampling"][task]
